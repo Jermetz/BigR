@@ -74,8 +74,7 @@ document.getElementById('golf-signup-form').addEventListener('submit', function(
         });
     }
 
-    // PASTE YOUR GOOGLE APP SCRIPT URL HERE
-    const GOOGLE_APP_SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE';
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
 
     fetch(GOOGLE_APP_SCRIPT_URL, {
         method: 'POST',
