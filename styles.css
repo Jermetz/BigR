@@ -18,7 +18,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #000; /* Pure black to create the seamless letterbox effect */
+    background-color: #000;
     z-index: 99999;
     display: flex;
     flex-direction: column;
@@ -26,6 +26,21 @@ body {
     align-items: center;
     transition: opacity 1s ease-in-out, transform 1s ease-in-out;
 }
+
+/* physical black bars to cover the white top/bottom of the video */
+#splash-screen::before,
+#splash-screen::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 25vh; /* Covers the top and bottom 25% of the screen */
+    background-color: #000;
+    z-index: 2; /* Sits above the video */
+    pointer-events: none;
+}
+#splash-screen::before { top: 0; }
+#splash-screen::after { bottom: 0; }
 
 #gate-content {
     position: absolute;
@@ -38,6 +53,7 @@ body {
     justify-content: center;
     text-align: center;
     width: 100%;
+    z-index: 3; /* Ensures the logo/button sit above the black bars */
     animation: fadeIn 1.5s ease-in;
 }
 
@@ -69,9 +85,9 @@ body {
 
 #intro-video {
     width: 100vw;
-    height: 100vh;
-    object-fit: contain; /* Shows 100% of the video, adding black bars automatically where needed */
-    background-color: #000;
+    max-width: 100%;
+    height: auto; /* Guarantees the left and right sides NEVER get cut off */
+    z-index: 1; /* Sits under the black bars */
 }
 
 .splash-fade-zoom {
