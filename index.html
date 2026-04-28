@@ -972,10 +972,10 @@
                 <p class="marquee-title">Thank You To Our Premium Sponsors</p>
                 <div class="marquee-track">
                     <div class="marquee-content" id="marquee-set-1">
-                        <div class="marquee-logo">Your Logo Here</div>
+                        <div class="marquee-logo">Sponsors Loading...</div>
                     </div>
                     <div class="marquee-content" id="marquee-set-2">
-                        <div class="marquee-logo">Your Logo Here</div>
+                        <div class="marquee-logo">Sponsors Loading...</div>
                     </div>
                 </div>
             </div>
@@ -1237,11 +1237,16 @@
                     updateMeterUI(data.newTotal);
                     alert("Meter successfully updated!");
                     document.getElementById('admin-total-input').value = '';
-                } else { alert("Failed: Check password."); }
+                } else { 
+                    alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
+                }
+            })
+            .catch(error => {
+                alert("Network Error: Could not connect to Google Script. Check Deployment.");
             });
         }
 
-        // --- Client-Side Compression Engine (Uploads in MS instead of Seconds) ---
+        // --- Client-Side Compression Engine ---
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -1250,7 +1255,7 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_HEIGHT = 150; // Perfectly scaled for the marquee
+                    const MAX_HEIGHT = 150; 
                     const scaleSize = MAX_HEIGHT / img.height;
                     canvas.width = img.width * scaleSize;
                     canvas.height = MAX_HEIGHT;
@@ -1291,7 +1296,13 @@
                         updateMarqueeUI(data.sponsors);
                         alert("Sponsor logo uploaded successfully!");
                         fileInput.value = '';
-                    } else { alert("Failed: Check password."); }
+                    } else { 
+                        alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('admin-loader').style.display = 'none';
+                    alert("Network Error: Could not connect to Google Script. Check Deployment.");
                 });
             });
         }
