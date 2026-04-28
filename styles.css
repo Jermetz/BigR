@@ -18,7 +18,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #0f172a; /* Deep slate background */
+    background-color: #000; /* Pure black to create the seamless letterbox effect */
     z-index: 99999;
     display: flex;
     flex-direction: column;
@@ -68,10 +68,11 @@ body {
 }
 
 #intro-video {
-    max-width: 100%;
-    max-height: 100vh;
-    width: auto;
-    height: 100%;
+    width: 100%;
+    max-width: 500px; /* Keeps the square proportionate on large screens */
+    aspect-ratio: 1 / 1; /* Forces the video into a perfect square */
+    object-fit: cover; /* Automatically slices off the vertical top and bottom! */
+    background-color: #000;
 }
 
 .splash-fade-zoom {
