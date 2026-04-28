@@ -657,12 +657,15 @@
             });
         });
 
+        // UPDATED: Now resets the view to the top INSTANTLY
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(sectionId).classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Force the scroll to the top of the new content immediately
+            window.scrollTo(0, 0);
         }
 
         let playerCount = 1;
@@ -734,11 +737,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Hide form and show modal
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
-                    
-                    // Reset form fields
                     document.getElementById('golf-signup-form').reset();
                 } else {
                     throw new Error('Script error');
@@ -751,18 +751,12 @@
             });
         });
 
-        // FIXED: Now bypasses the splash page entirely
         function closeSuccessAndGoHome() {
-            // Hide the modal
             document.getElementById('success-overlay').style.display = 'none';
-            
-            // Re-show the form container and reset buttons so it's ready for future use
             document.getElementById('signup-form-container').style.display = 'block';
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = false;
             submitBtn.innerText = "Submit Registration";
-            
-            // Go back to Home section
             showSection('home');
         }
 
