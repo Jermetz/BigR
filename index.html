@@ -277,22 +277,22 @@
             align-items: center;
             text-align: center;
         }
-            .anniversary-badge {
+          
+        .anniversary-badge {
             background: linear-gradient(135deg, #f39c12, #f1c40f);
             color: #000;
             display: inline-block;
-            /* Reduced padding slightly for better mobile fit */
-            padding: 8px 15px; 
+            /* Tighter padding to save edge space */
+            padding: 6px 12px; 
             border-radius: 50px;
             font-weight: bold;
-            /* Uses 'clamp' to stay at 14px on desktop, but shrink dynamically on phones */
-            font-size: clamp(9px, 3.2vw, 14px); 
+            /* More aggressive mobile shrinking (drops to 8px on tiny screens) */
+            font-size: clamp(8px, 2.8vw, 14px); 
             text-transform: uppercase;
-            /* Reduced letter spacing slightly to save horizontal room */
-            letter-spacing: 1px; 
+            /* Cut letter-spacing in half to save ~20px of width */
+            letter-spacing: 0.5px; 
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-            /* This is the magic rule that completely prevents two lines */
             white-space: nowrap; 
         }
 
