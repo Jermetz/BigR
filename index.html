@@ -650,7 +650,80 @@
             }
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
+        
+        /* --- Sponsor Section Enhancements --- */
+        .sponsor-tier {
+            margin-bottom: 30px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .tier-platinum { border-top: 4px solid #e5e4e2; }
+        .tier-gold { border-top: 4px solid #ffd700; }
+        .tier-silver { border-top: 4px solid #c0c0c0; }
+        .tier-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .tier-platinum .tier-title { color: #e5e4e2; }
+        .tier-gold .tier-title { color: #ffd700; }
+        .tier-silver .tier-title { color: #c0c0c0; }
+        .sponsor-logos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .sponsor-placeholder {
+            width: 140px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .hole-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .hole-card {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            width: 100px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .hole-card:hover { transform: scale(1.05); }
+        .hole-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        .hole-status {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #cbd5e1;
+        }
+        .hole-sold {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+        .hole-sold .hole-status { color: #2ecc71; }
     </style>
 </head>
 <body>
@@ -737,6 +810,7 @@
                 <h3>📍 Location</h3>
                 <p>The Bucks Club<br>2600 York Rd, Jamison, PA 18929</p>
                 <a href="https://www.google.com/maps/search/?api=1&query=The+Bucks+Club,+2600+York+Rd,+Jamison,+PA+18929" target="_blank" class="secondary-btn maps-btn">🗺️ Get Directions</a>
+                <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
             </div>
             <button class="primary-btn" onclick="showSection('signup')">Sign Up Now</button>
         </section>
@@ -817,9 +891,55 @@
             </div>
         </section>
 
-        <section id="section-sponsors" class="content-section">
+<section id="section-sponsors" class="content-section">
             <h2>Our Sponsors</h2>
-            <p>Thank you to our generous sponsors who make this event possible.</p>
+            <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>
+
+            <div class="sponsor-tier tier-platinum">
+                <div class="tier-title">Platinum Sponsors</div>
+                <div class="sponsor-logos">
+                    <div class="sponsor-placeholder">Logo Here</div>
+                </div>
+            </div>
+
+            <div class="sponsor-tier tier-gold">
+                <div class="tier-title">Gold Sponsors</div>
+                <div class="sponsor-logos">
+                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder">Logo Here</div>
+                </div>
+            </div>
+
+            <div class="sponsor-tier tier-silver">
+                <div class="tier-title">Silver Sponsors</div>
+                <div class="sponsor-logos">
+                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder">Logo Here</div>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
+            <div class="hole-grid">
+                <div class="hole-card">
+                    <div class="hole-number">Hole 1</div>
+                    <div class="hole-status">Available</div>
+                </div>
+                <div class="hole-card hole-sold">
+                    <div class="hole-number">Hole 2</div>
+                    <div class="hole-status">Sold</div>
+                </div>
+                <script>
+                    for(let i=3; i<=18; i++) {
+                        document.write(`
+                        <div class="hole-card">
+                            <div class="hole-number">Hole ${i}</div>
+                            <div class="hole-status">Available</div>
+                        </div>
+                        `);
+                    }
+                </script>
+            </div>
         </section>
     </main>
 <script>
@@ -1007,6 +1127,12 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
+                    // Play celebratory golf clap
+                    try {
+                        const clap = new Audio('https://www.soundjay.com/human/sounds/applause-01.mp3');
+                        clap.volume = 0.5;
+                        clap.play();
+                    } catch(e) { console.log('Audio blocked by browser'); }
                     // Force the meter to refresh globally from Google
                     fetchGlobalTotal(); 
                     
