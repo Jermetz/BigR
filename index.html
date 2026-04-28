@@ -1160,9 +1160,15 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Play the pre-loaded audio
-                    if (typeof clapAudio !== 'undefined') {
-                        clapAudio.play().catch(err => console.log('Browser blocked audio playback:', err));
+                  // Play the audio and clip it after 3 seconds
+                    if (window.clapAudio) {
+                        window.clapAudio.play().catch(err => console.log('Playback failed:', err));
+                        
+                        // Stop the audio exactly 3 seconds (3000ms) later
+                        setTimeout(() => {
+                            window.clapAudio.pause();
+                            window.clapAudio.currentTime = 0; 
+                        }, 3000);
                     }
                     // Force the meter to refresh globally from Google
                     fetchGlobalTotal(); 
