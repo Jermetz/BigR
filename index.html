@@ -16,10 +16,16 @@
             font-family: 'Inter', sans-serif;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%; /* Fixes the mobile address bar scroll-jump bug */
+        }
+
         body {
-            display: flex;
+            /* Removed display: flex; to prevent layout shifting on scroll */
             color: #f8fafc; 
             background-color: #111;
+            overflow-x: hidden; /* Prevents side-to-side scrolling */
         }
 
         /* --- Intro Splash Screen Gate --- */
@@ -27,8 +33,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            right: 0;
+            bottom: 0;
             background-color: #000;
             z-index: 99999;
             display: flex;
@@ -108,7 +114,6 @@
             object-fit: cover; 
             background-color: #000;
             z-index: 1; 
-            /* Digital scissors: Shaves 1.5% off the left and right to hide the baked-in white artifacts */
             clip-path: inset(0 1.5% 0 1.5%);
         }
 
@@ -128,14 +133,14 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100vh;
+            right: 0;
+            bottom: 0; /* Prevents height recalculation jumping */
             z-index: -1;
             overflow: hidden;
         }
         #bg-video {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
         .video-overlay {
@@ -152,7 +157,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            height: 100vh;
+            height: 100%;
             background-color: rgba(44, 62, 80, 0.9);
             backdrop-filter: blur(10px);
             color: white;
@@ -349,7 +354,7 @@
         }
 
         .payment-note {
-            color: #f1c40f; /* Yellow pop for visibility */
+            color: #f1c40f; 
             font-size: 14px;
             font-style: italic;
             margin-top: 8px;
@@ -386,7 +391,7 @@
         }
 
         .action-buttons button {
-            flex: 1; /* Makes the add and remove buttons share width equally */
+            flex: 1; 
         }
 
         .secondary-btn {
@@ -482,14 +487,14 @@
                 overflow: hidden;
             }
             #sidebar.expanded {
-                height: 100vh;
+                height: 100%;
                 width: 100%;
             }
             .form-group {
                 flex-direction: column;
             }
             .action-buttons {
-                flex-direction: column; /* Stack add/remove buttons on mobile */
+                flex-direction: column; 
             }
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
@@ -524,12 +529,12 @@
             <span class="menu-text">Menu</span>
         </div>
         <ul class="nav-links">
-            <li><a href="#home" onclick="showSection('home')">🏠 <span class="menu-text">Home</span></a></li>
-            <li><a href="#signup" onclick="showSection('signup')">⛳ <span class="menu-text">Sign Up</span></a></li>
-            <li><a href="#donate" onclick="showSection('donate')">❤️ <span class="menu-text">Donate</span></a></li>
-            <li><a href="#photos" onclick="showSection('photos')">📷 <span class="menu-text">Photos</span></a></li>
-            <li><a href="#story" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
-            <li><a href="#sponsors" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('home')">🏠 <span class="menu-text">Home</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('signup')">⛳ <span class="menu-text">Sign Up</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('donate')">❤️ <span class="menu-text">Donate</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('photos')">📷 <span class="menu-text">Photos</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
         </ul>
     </nav>
 
@@ -698,11 +703,9 @@
             `;
             container.appendChild(playerCard);
 
-            // Hide the add button if we hit the limit
             if (playerCount === 4) {
                 document.getElementById('add-player-btn').style.display = 'none';
             }
-            // Always show the remove button if there's more than 1 player
             document.getElementById('remove-player-btn').style.display = 'block';
         }
 
@@ -712,10 +715,8 @@
                 container.removeChild(container.lastElementChild);
                 playerCount--;
                 
-                // Bring back the add button
                 document.getElementById('add-player-btn').style.display = 'block';
                 
-                // Hide the remove button if we are back down to just 1 player
                 if (playerCount === 1) {
                     document.getElementById('remove-player-btn').style.display = 'none';
                 }
@@ -742,7 +743,6 @@
             
             showToast("Submitting registration... please wait.", "success");
 
-            // Grab the payment type so we can attach it to the data
             const selectedPaymentType = document.getElementById('payment-type').value;
 
             let players = [];
@@ -752,7 +752,7 @@
                     lastName: document.getElementById(`p${i}-last`).value,
                     email: document.getElementById(`p${i}-email`).value || "N/A",
                     isPrimary: i === 1,
-                    paymentType: selectedPaymentType // Binds the payment selection
+                    paymentType: selectedPaymentType
                 });
             }
 
@@ -768,7 +768,6 @@
                     showToast("Registration successful! Thank you.", "success");
                     document.getElementById('golf-signup-form').reset();
                     
-                    // Reset the form layout perfectly back to Player 1
                     document.getElementById('players-container').innerHTML = `
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
@@ -784,7 +783,7 @@
                     playerCount = 1;
                     document.getElementById('add-player-btn').style.display = 'block';
                     document.getElementById('remove-player-btn').style.display = 'none';
-                    document.getElementById('payment-note').innerText = ''; // Clear note
+                    document.getElementById('payment-note').innerText = ''; 
                 } else {
                     throw new Error('Script returned an error');
                 }
@@ -831,15 +830,12 @@
             const introVideo = document.getElementById('intro-video');
             const muteBtn = document.getElementById('mute-btn');
             
-            // Flip the mute state
             videoIsMuted = !videoIsMuted; 
             
-            // If the video is actively loaded, apply it
             if (introVideo) {
                 introVideo.muted = videoIsMuted; 
             }
             
-            // Update the button text
             if (muteBtn) {
                 muteBtn.innerHTML = videoIsMuted ? "🔇 Muted" : "🔊 Unmuted";
             }
@@ -855,8 +851,6 @@
                 gateContent.style.display = 'none';
                 
                 introVideo.style.display = 'block';
-                
-                // Apply whatever state the user chose before hitting enter
                 introVideo.muted = videoIsMuted; 
                 introVideo.play();
 
