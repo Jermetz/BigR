@@ -149,6 +149,28 @@ function initCountdown() {
     }, 1000);
 }
 
+// --- Global state to track mute preference ---
+let videoIsMuted = false;
+
+// --- Mute Toggle Logic ---
+function toggleMute() {
+    const introVideo = document.getElementById('intro-video');
+    const muteBtn = document.getElementById('mute-btn');
+    
+    // Flip the mute state
+    videoIsMuted = !videoIsMuted; 
+    
+    // If the video is actively loaded, apply it
+    if (introVideo) {
+        introVideo.muted = videoIsMuted; 
+    }
+    
+    // Update the button text
+    if (muteBtn) {
+        muteBtn.innerHTML = videoIsMuted ? "🔇 Muted" : "🔊 Unmuted";
+    }
+}
+
 // --- Intro Video Splash Screen Logic ---
 function startExperience() {
     const introVideo = document.getElementById('intro-video');
@@ -159,7 +181,9 @@ function startExperience() {
         gateContent.style.display = 'none';
         
         introVideo.style.display = 'block';
-        introVideo.muted = false; 
+        
+        // Apply whatever state the user chose before hitting enter
+        introVideo.muted = videoIsMuted; 
         introVideo.play();
 
         introVideo.addEventListener('ended', () => {
