@@ -20,11 +20,10 @@
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* Safely prevents side-to-side scrolling */
+            overflow-x: hidden; 
         }
 
         body {
-            /* Removed the 100vh/100dvh heights to completely free the native scrollbar */
             color: #f8fafc; 
             background-color: #111;
         }
@@ -219,7 +218,7 @@
         #main-content {
             margin-left: 60px;
             padding: 40px;
-            width: calc(100% - 60px); /* Mathematically sets perfect width to stop invisible barriers */
+            width: calc(100% - 60px); 
             transition: margin-left 0.3s ease;
         }
 
@@ -306,6 +305,68 @@
             padding: 10px 20px;
             font-size: 14px;
             border-radius: 50px;
+        }
+
+        /* --- Drive to the Green Meter --- */
+        .fundraiser-meter-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .meter-header h3 {
+            color: #2ecc71;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        #meter-text {
+            font-weight: bold;
+            color: #f8fafc;
+            font-size: 14px;
+        }
+        .meter-track {
+            width: 100%;
+            height: 24px;
+            background-color: #144d29; 
+            border-radius: 50px;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71); 
+            border-radius: 50px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .meter-ball {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+            z-index: 2;
+        }
+        .meter-flag {
+            position: absolute;
+            top: 50%;
+            right: -5px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            z-index: 1;
         }
 
         /* Forms and Buttons */
@@ -498,7 +559,7 @@
         @media (max-width: 768px) {
             #main-content {
                 margin-left: 0;
-                width: 100%; /* Sets perfect width for mobile layout */
+                width: 100%; 
                 padding: 80px 15px 20px 15px;
             }
             #sidebar {
@@ -568,7 +629,8 @@
         
         <section id="section-home" class="content-section active">
             <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
-            <h1>Welcome to the Big R Invitational</h1>
+            
+            <h1 onclick="handleSecretAdminClick()" style="cursor: pointer; user-select: none;">Welcome to the Big R Invitational</h1>
             
             <h3 class="event-date">Friday, October 9th, '26</h3>
             <p class="home-subtitle">Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>
@@ -578,6 +640,18 @@
                 <div class="time-box"><span id="hours">00</span><p>Hours</p></div>
                 <div class="time-box"><span id="minutes">00</span><p>Minutes</p></div>
                 <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>
+            </div>
+
+            <div class="fundraiser-meter-container">
+                <div class="meter-header">
+                    <h3>Drive to the Goal</h3>
+                    <span id="meter-text">$0 Raised / $10,000 Goal</span>
+                </div>
+                <div class="meter-track">
+                    <div id="meter-fill" class="meter-fill"></div>
+                    <div id="meter-ball" class="meter-ball">⚪</div>
+                    <div class="meter-flag">⛳</div>
+                </div>
             </div>
 
             <div class="event-details">
@@ -684,7 +758,6 @@
             });
         });
 
-        // The exact target is now appended with "section-" to break the browser hash loop
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
@@ -698,6 +771,60 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
+        }
+
+        // --- Fundraiser Meter & Secret Admin Logic ---
+        const FUNDRAISING_GOAL = 10000; 
+        let secretClickCount = 0;
+        let secretClickTimer;
+
+        function handleSecretAdminClick() {
+            secretClickCount++;
+            clearTimeout(secretClickTimer);
+            
+            secretClickTimer = setTimeout(() => {
+                secretClickCount = 0;
+            }, 1000);
+
+            if (secretClickCount >= 5) {
+                secretClickCount = 0; 
+                let password = prompt("Admin Override: Enter Password");
+                
+                if (password === "Ryan2026") { 
+                    let newAmount = prompt("Enter the new Total Raised amount (numbers only, no commas or $):");
+                    if (newAmount && !isNaN(newAmount)) {
+                        localStorage.setItem('bigRFundTotal', newAmount);
+                        updateMeterDisplay();
+                        alert("Meter successfully updated!");
+                    } else {
+                        alert("Invalid amount entered.");
+                    }
+                } else if (password !== null) {
+                    alert("Incorrect password.");
+                }
+            }
+        }
+
+        function updateMeterDisplay(additionalAmount = 0) {
+            let baseTotal = parseInt(localStorage.getItem('bigRFundTotal')) || 0;
+            let currentTotal = baseTotal + additionalAmount;
+            
+            if (additionalAmount > 0) {
+                localStorage.setItem('bigRFundTotal', currentTotal);
+            }
+
+            let percentage = (currentTotal / FUNDRAISING_GOAL) * 100;
+            if (percentage > 100) percentage = 100; 
+
+            const fillBar = document.getElementById('meter-fill');
+            const textDisplay = document.getElementById('meter-text');
+            const ballIcon = document.getElementById('meter-ball');
+
+            if (fillBar && textDisplay && ballIcon) {
+                fillBar.style.width = percentage + '%';
+                textDisplay.innerText = `$${currentTotal.toLocaleString()} Raised / $${FUNDRAISING_GOAL.toLocaleString()} Goal`;
+                ballIcon.style.left = percentage + '%'; 
+            }
         }
 
         // --- Pricing Logic ---
@@ -785,6 +912,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
+                    updateMeterDisplay(finalTotal); // Moves the golf ball forward by the sign-up cost!
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
@@ -855,6 +983,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
             showSection('home'); 
+            updateMeterDisplay();
         });
     </script>
 </body>
