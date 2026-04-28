@@ -1142,20 +1142,12 @@
             });
         });
 
-        function showSection(sectionId) {
+                function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none'; 
             });
-                    function selectSponsorship(levelValue) {
-            const sponsorDropdown = document.getElementById('sponsorship-level');
-            if (sponsorDropdown) {
-                sponsorDropdown.value = levelValue;
-                updateCostDisplay();
-            }
-            showSection('signup');
-        }
-
+            
             const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
@@ -1164,6 +1156,16 @@
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
         }
+
+        function selectSponsorship(levelValue) {
+            const sponsorDropdown = document.getElementById('sponsorship-level');
+            if (sponsorDropdown) {
+                sponsorDropdown.value = levelValue;
+                updateCostDisplay();
+            }
+            showSection('signup');
+        }
+
 
         // --- Global Fetches & UI Updates ---
         function fetchGlobalData() {
