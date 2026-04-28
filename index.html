@@ -439,7 +439,101 @@
             font-size: 24px;
             z-index: 1;
         }
+/* --- Event Itinerary --- */
+        .itinerary-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        .itinerary-container h3 {
+            color: #3498db;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .itinerary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-left: 2px solid #3498db;
+            margin-left: 10px;
+        }
+        .itinerary-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        .itinerary-list li:last-child {
+            margin-bottom: 0;
+        }
+        .itinerary-list li::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
+        }
+        .itinerary-time {
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 14px;
+            display: block;
+        }
+        .itinerary-event {
+            color: #f8fafc;
+            font-size: 15px;
+        }
 
+        /* --- Sponsor Marquee --- */
+        .sponsor-marquee-container {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .marquee-title {
+            font-size: 12px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        .marquee-track {
+            display: flex;
+            width: fit-content;
+            animation: scroll-marquee 20s linear infinite;
+        }
+        .marquee-content {
+            display: flex;
+            gap: 30px;
+            padding-right: 30px;
+            align-items: center;
+        }
+        .marquee-logo {
+            font-size: 16px;
+            font-weight: bold;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 25px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        @keyframes scroll-marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* Scrolls exactly one inner block perfectly */
+        }
         /* Forms and Buttons */
         .player-card {
             background: rgba(255, 255, 255, 0.15);
@@ -806,6 +900,14 @@
                     <div class="meter-flag">⛳</div>
                 </div>
             </div>
+            <div class="itinerary-container">
+                <h3>🏌️‍♂️ Event Itinerary</h3>
+                <ul class="itinerary-list">
+                    <li><span class="itinerary-time">8:00 AM</span> <span class="itinerary-event">Registration & Breakfast</span></li>
+                    <li><span class="itinerary-time">9:30 AM</span> <span class="itinerary-event">Shotgun Start</span></li>
+                    <li><span class="itinerary-time">2:30 PM</span> <span class="itinerary-event">Lunch, Drinks & Awards</span></li>
+                </ul>
+            </div>
 
             <div class="event-details">
                 <h3>📍 Location</h3>
@@ -814,6 +916,23 @@
                 <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
             </div>
             <button class="primary-btn" onclick="showSection('signup')">Sign Up Now</button>
+            <div class="sponsor-marquee-container">
+                <p class="marquee-title">Thank You To Our Premium Sponsors</p>
+                <div class="marquee-track">
+                    <div class="marquee-content">
+                        <div class="marquee-logo">Sponsor 1</div>
+                        <div class="marquee-logo">Sponsor 2</div>
+                        <div class="marquee-logo">Sponsor 3</div>
+                        <div class="marquee-logo">Sponsor 4</div>
+                    </div>
+                    <div class="marquee-content">
+                        <div class="marquee-logo">Sponsor 1</div>
+                        <div class="marquee-logo">Sponsor 2</div>
+                        <div class="marquee-logo">Sponsor 3</div>
+                        <div class="marquee-logo">Sponsor 4</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="section-signup" class="content-section">
