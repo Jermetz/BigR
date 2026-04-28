@@ -108,6 +108,8 @@
             object-fit: cover; 
             background-color: #000;
             z-index: 1; 
+            /* Digital scissors: Shaves 1.5% off the left and right to hide the baked-in white artifacts */
+            clip-path: inset(0 1.5% 0 1.5%);
         }
 
         .splash-fade-zoom {
