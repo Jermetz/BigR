@@ -150,7 +150,7 @@
             background: radial-gradient(circle at bottom right, rgba(52, 152, 219, 0.2) 0%, rgba(15, 23, 42, 0.5) 50%, rgba(15, 23, 42, 0) 100%);
         }
 
-        /* Sidebar Navigation */
+              /* Sidebar Navigation */
         #sidebar {
             position: fixed;
             top: 0;
@@ -164,6 +164,9 @@
             overflow: hidden;
             z-index: 1000;
             cursor: pointer;
+            /* Flexbox allows us to push the contact info to the bottom */
+            display: flex;
+            flex-direction: column;
         }
 
         #sidebar.expanded {
@@ -196,6 +199,8 @@
         .nav-links {
             list-style: none;
             margin-top: 20px;
+            /* This forces the links to take up empty space, pushing the footer down */
+            flex-grow: 1; 
         }
 
         .nav-links li {
@@ -212,6 +217,47 @@
 
         .nav-links li:hover {
             background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Sidebar Contact Info Styling --- */
+        .sidebar-contact {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2); 
+            font-size: 14px;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+            pointer-events: none; /* Prevents invisible clicking when closed */
+        }
+
+        #sidebar.expanded .sidebar-contact {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar-contact .contact-title {
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .sidebar-contact p {
+            margin-bottom: 5px;
+            color: #f8fafc;
+        }
+
+        .sidebar-contact a {
+            color: #f8fafc;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .sidebar-contact a:hover {
+            color: #3498db;
         }
 
         /* Main Content */
@@ -648,6 +694,13 @@
             <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
         </ul>
+                <div class="sidebar-contact">
+            <div class="contact-title">Tournament Contact</div>
+            <p>Shawn Thomas</p>
+            <p><a href="tel:2677840928">(267) 784-0928</a></p>
+            <p><a href="mailto:bigrgolfinvitational@gmail.com">bigrgolfinvitational@gmail.com</a></p>
+        </div>
+
     </nav>
 
     <main id="main-content">
