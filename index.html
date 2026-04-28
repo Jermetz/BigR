@@ -650,6 +650,7 @@
             }
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
+        }
         
         /* --- Sponsor Section Enhancements --- */
         .sponsor-tier {
@@ -838,6 +839,20 @@
                     <div class="total-display">
                         <h3>Registration Total</h3>
                         <div id="total-amount" class="total-amount">$175</div>
+                    </div>
+
+                    <div class="player-card">
+                        <h3>Sponsorship Opportunities</h3>
+                        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">Boost your impact by adding a sponsorship to your registration.</p>
+                        <div class="form-group">
+                            <select id="sponsorship-level" onchange="updateCostDisplay()">
+                                <option value="0" selected>No Sponsorship (Golf Only)</option>
+                                <option value="250">Hole Sponsor — $250</option>
+                                <option value="1000">Silver Sponsor — $1,000</option>
+                                <option value="2500">Gold Sponsor — $2,500</option>
+                                <option value="5000">Platinum Sponsor — $5,000</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="player-card">
@@ -1052,8 +1067,12 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
         let playerCount = 1;
 
         function updateCostDisplay() {
-            const total = playerCount * COST_PER_PERSON;
-            document.getElementById('total-amount').innerText = `$${total}`;
+            const playerTotal = playerCount * COST_PER_PERSON;
+            const sponsorLevel = document.getElementById('sponsorship-level');
+            const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
+            
+            const finalTotal = playerTotal + sponsorTotal;
+            document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString()}`;
         }
 
         function addPlayer() {
@@ -1100,12 +1119,21 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Initialize audio immediately on click to satisfy browser interaction policies
+            const clapAudio = new Audio('golf-clap.mp3');
+            clapAudio.volume = 0.5;
+            
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Submitting Registration...";
 
             const selectedPaymentType = document.getElementById('payment-type').value;
-            const finalTotal = playerCount * COST_PER_PERSON; 
+            
+            const sponsorLevelSelect = document.getElementById('sponsorship-level');
+            const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
+            const sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
+            
+            const finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
 
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
@@ -1121,18 +1149,21 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
 
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
-                // Explicitly send action: "signup" to trigger the correct backend logic
-                body: JSON.stringify({ action: "signup", players: players })
+                body: JSON.stringify({ 
+                    action: "signup", 
+                    players: players,
+                    sponsorship: sponsorName,
+                    sponsorshipAmount: sponsorCost,
+                    grandTotal: finalTotal
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Play celebratory golf clap
-                    try {
-                        const clap = new Audio('https://www.soundjay.com/human/sounds/applause-01.mp3');
-                        clap.volume = 0.5;
-                        clap.play();
-                    } catch(e) { console.log('Audio blocked by browser'); }
+                    // Play the pre-loaded audio
+                    if (typeof clapAudio !== 'undefined') {
+                        clapAudio.play().catch(err => console.log('Browser blocked audio playback:', err));
+                    }
                     // Force the meter to refresh globally from Google
                     fetchGlobalTotal(); 
                     
