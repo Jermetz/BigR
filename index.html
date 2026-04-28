@@ -18,10 +18,13 @@
 
         html, body {
             width: 100%;
-            height: 100%;
+            /* Removed height: 100% so native window scrolling works again */
         }
 
         body {
+            /* 100dvh is the modern fix for mobile address bars */
+            min-height: 100vh;
+            min-height: 100dvh; 
             color: #f8fafc; 
             background-color: #111;
             overflow-x: hidden;
@@ -686,12 +689,18 @@
             });
         });
 
+        // --- UPDATED SCROLL LOGIC ---
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
-            document.getElementById(sectionId).classList.add('active');
-            window.scrollTo(0, 0);
+            const activeSection = document.getElementById(sectionId);
+            activeSection.classList.add('active');
+            
+            // Bulletproof scroll-to-top that forces the browser to the literal top of the document
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
         }
 
         // --- Pricing Logic ---
@@ -721,7 +730,7 @@
             `;
             container.appendChild(playerCard);
             
-            updateCostDisplay(); // Recalculate price
+            updateCostDisplay(); 
 
             if (playerCount === 4) document.getElementById('add-player-btn').style.display = 'none';
             document.getElementById('remove-player-btn').style.display = 'block';
@@ -733,7 +742,7 @@
                 container.removeChild(container.lastElementChild);
                 playerCount--;
                 
-                updateCostDisplay(); // Recalculate price
+                updateCostDisplay(); 
 
                 document.getElementById('add-player-btn').style.display = 'block';
                 if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
@@ -756,7 +765,7 @@
             submitBtn.innerText = "Submitting Registration...";
 
             const selectedPaymentType = document.getElementById('payment-type').value;
-            const finalTotal = playerCount * COST_PER_PERSON; // Capture the total
+            const finalTotal = playerCount * COST_PER_PERSON; 
 
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
@@ -766,7 +775,7 @@
                     email: document.getElementById(`p${i}-email`).value || "N/A",
                     isPrimary: i === 1,
                     paymentType: selectedPaymentType,
-                    totalCost: finalTotal // Attach the total cost to each player record
+                    totalCost: finalTotal 
                 });
             }
 
