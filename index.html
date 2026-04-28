@@ -10,6 +10,20 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="splash-screen">
+        <video id="intro-video" autoplay muted playsinline>
+            <source src="intro-animation.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div class="video-background">
+        <div class="video-overlay"></div>
+        <video autoplay loop muted playsinline id="bg-video">
+            <source src="golf-background.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <nav id="sidebar" class="collapsed" onclick="toggleMenu()">
         <div class="menu-header">
@@ -32,6 +46,14 @@
             <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
             <h1>Welcome to the Big R Invitational</h1>
             <p>Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>
+            
+            <div id="countdown-timer">
+                <div class="time-box"><span id="days">00</span><p>Days</p></div>
+                <div class="time-box"><span id="hours">00</span><p>Hours</p></div>
+                <div class="time-box"><span id="minutes">00</span><p>Minutes</p></div>
+                <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>
+            </div>
+
             <div class="event-details">
                 <h3>📍 Location</h3>
                 <p>The Bucks Club<br>2600 York Rd, Jamison, PA 18929</p>
@@ -94,7 +116,7 @@
         <section id="sponsors" class="content-section">
             <h2>Our Sponsors</h2>
             <p>Thank you to our generous sponsors who make this event possible.</p>
-            </section>
+        </section>
 
     </main>
 
