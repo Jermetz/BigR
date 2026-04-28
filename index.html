@@ -150,7 +150,7 @@
             background: radial-gradient(circle at bottom right, rgba(52, 152, 219, 0.2) 0%, rgba(15, 23, 42, 0.5) 50%, rgba(15, 23, 42, 0) 100%);
         }
 
-              /* Sidebar Navigation */
+        /* Sidebar Navigation */
         #sidebar {
             position: fixed;
             top: 0;
@@ -164,7 +164,6 @@
             overflow: hidden;
             z-index: 1000;
             cursor: pointer;
-            /* Flexbox allows us to push the contact info to the bottom */
             display: flex;
             flex-direction: column;
         }
@@ -199,7 +198,6 @@
         .nav-links {
             list-style: none;
             margin-top: 20px;
-            /* This forces the links to take up empty space, pushing the footer down */
             flex-grow: 1; 
         }
 
@@ -219,7 +217,6 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* --- Sidebar Contact Info Styling --- */
         .sidebar-contact {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -228,7 +225,7 @@
             opacity: 0;
             white-space: nowrap;
             transition: opacity 0.2s ease;
-            pointer-events: none; /* Prevents invisible clicking when closed */
+            pointer-events: none; 
         }
 
         #sidebar.expanded .sidebar-contact {
@@ -328,14 +325,11 @@
             background: linear-gradient(135deg, #f39c12, #f1c40f);
             color: #000;
             display: inline-block;
-            /* Tighter padding to save edge space */
             padding: 6px 12px; 
             border-radius: 50px;
             font-weight: bold;
-            /* More aggressive mobile shrinking (drops to 8px on tiny screens) */
             font-size: clamp(8px, 2.8vw, 14px); 
             text-transform: uppercase;
-            /* Cut letter-spacing in half to save ~20px of width */
             letter-spacing: 0.5px; 
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
@@ -378,68 +372,7 @@
             border-radius: 50px;
         }
 
-        /* --- Drive to the Green Meter --- */
-        .fundraiser-meter-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .meter-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .meter-header h3 {
-            color: #2ecc71;
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-        #meter-text {
-            font-weight: bold;
-            color: #f8fafc;
-            font-size: 14px;
-        }
-        .meter-track {
-            width: 100%;
-            height: 24px;
-            background-color: #144d29; 
-            border-radius: 50px;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .meter-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71); 
-            border-radius: 50px;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .meter-ball {
-            position: absolute;
-            top: 50%;
-            left: 0%;
-            transform: translate(-50%, -50%);
-            font-size: 20px;
-            transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
-            z-index: 2;
-        }
-        .meter-flag {
-            position: absolute;
-            top: 50%;
-            right: -5px;
-            transform: translateY(-50%);
-            font-size: 24px;
-            z-index: 1;
-        }
-/* --- Event Itinerary --- */
+        /* --- Event Itinerary --- */
         .itinerary-container {
             width: 100%;
             max-width: 600px;
@@ -509,11 +442,12 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 15px;
+            text-align: center;
         }
         .marquee-track {
             display: flex;
             width: fit-content;
-            animation: scroll-marquee 20s linear infinite;
+            animation: scroll-marquee 25s linear infinite;
         }
         .marquee-content {
             display: flex;
@@ -521,19 +455,81 @@
             padding-right: 30px;
             align-items: center;
         }
-        .marquee-logo {
-            font-size: 16px;
-            font-weight: bold;
-            color: #94a3b8;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 25px;
-            border-radius: 8px;
-            white-space: nowrap;
+        .marquee-logo-img {
+            height: 50px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         @keyframes scroll-marquee {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } /* Scrolls exactly one inner block perfectly */
+            100% { transform: translateX(-50%); } 
         }
+
+        /* --- Drive to the Green Meter --- */
+        .fundraiser-meter-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .meter-header h3 {
+            color: #2ecc71;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        #meter-text {
+            font-weight: bold;
+            color: #f8fafc;
+            font-size: 14px;
+        }
+        .meter-track {
+            width: 100%;
+            height: 24px;
+            background-color: #144d29; 
+            border-radius: 50px;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71); 
+            border-radius: 50px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .meter-ball {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+            z-index: 2;
+        }
+        .meter-flag {
+            position: absolute;
+            top: 50%;
+            right: -5px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            z-index: 1;
+        }
+
         /* Forms and Buttons */
         .player-card {
             background: rgba(255, 255, 255, 0.15);
@@ -579,7 +575,6 @@
             min-height: 20px;
         }
 
-        /* --- Total Cost Box --- */
         .total-display {
             background: rgba(39, 174, 96, 0.2);
             border: 1px solid #27ae60;
@@ -656,8 +651,8 @@
 
         .danger-btn:hover { background-color: #c0392b; }
 
-        /* --- Success Message Overlay --- */
-        #success-overlay {
+        /* --- Full Screen Overlays (Success & Admin) --- */
+        .fullscreen-overlay {
             display: none; 
             position: fixed;
             top: 0;
@@ -672,7 +667,7 @@
             padding: 20px;
         }
 
-        .success-card {
+        .overlay-card {
             background: #1e293b;
             padding: 40px;
             border-radius: 16px;
@@ -682,6 +677,12 @@
             width: 100%;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white;
+        }
+
+        .overlay-card.admin-card {
+            border-color: #3498db;
+            text-align: left;
         }
 
         @keyframes popIn {
@@ -691,6 +692,29 @@
 
         .success-card h2 { color: #2ecc71; margin-bottom: 10px; }
         .success-card p { margin-bottom: 25px; line-height: 1.5; color: #cbd5e1; }
+
+        /* --- Admin UI Elements --- */
+        .admin-section {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .admin-section label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+        .admin-loader {
+            display: none;
+            color: #f1c40f;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
 
         /* Countdown Timer */
         #countdown-timer {
@@ -720,33 +744,7 @@
             letter-spacing: 1px;
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            #main-content {
-                margin-left: 0;
-                width: 100%; 
-                padding: 80px 15px 20px 15px;
-            }
-            #sidebar {
-                height: 60px;
-                width: 100%;
-                overflow: hidden;
-            }
-            #sidebar.expanded {
-                height: 100%;
-                width: 100%;
-            }
-            .form-group {
-                flex-direction: column;
-            }
-            .action-buttons {
-                flex-direction: column; 
-            }
-            #countdown-timer { gap: 10px; }
-            .time-box { min-width: 65px; padding: 10px; }
-        }
-        
-        /* --- Sponsor Section Enhancements --- */
+        /* Sponsor Section Enhancements */
         .sponsor-tier {
             margin-bottom: 30px;
             text-align: center;
@@ -819,14 +817,67 @@
             background: rgba(39, 174, 96, 0.1);
         }
         .hole-sold .hole-status { color: #2ecc71; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0;
+                width: 100%; 
+                padding: 80px 15px 20px 15px;
+            }
+            #sidebar {
+                height: 60px;
+                width: 100%;
+                overflow: hidden;
+            }
+            #sidebar.expanded {
+                height: 100%;
+                width: 100%;
+            }
+            .form-group {
+                flex-direction: column;
+            }
+            .action-buttons {
+                flex-direction: column; 
+            }
+            #countdown-timer { gap: 10px; }
+            .time-box { min-width: 65px; padding: 10px; }
+        }
     </style>
 </head>
 <body>
-    <div id="success-overlay">
-        <div class="success-card">
+    
+    <div id="success-overlay" class="fullscreen-overlay">
+        <div class="overlay-card success-card">
             <h2>⛳ Registration Success!</h2>
             <p>Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
+        </div>
+    </div>
+
+    <div id="admin-overlay" class="fullscreen-overlay">
+        <div class="overlay-card admin-card">
+            <h2 style="color: #3498db; margin-bottom: 5px;">Admin Dashboard</h2>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Secure Access Required</p>
+            
+            <input type="password" id="admin-pass" placeholder="Enter Admin Password" style="margin-bottom: 20px;">
+
+            <div class="admin-section">
+                <label>Override Total Raised ($)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="admin-total-input" placeholder="e.g. 15000">
+                    <button class="secondary-btn" onclick="submitAdminTotal()" style="width: auto;">Save</button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <label>Upload Sponsor Logo to Marquee</label>
+                <input type="file" id="admin-sponsor-file" accept="image/*" style="padding: 10px; font-size: 12px; margin-bottom: 10px;">
+                <button class="primary-btn" onclick="submitAdminSponsor()">Upload & Sync</button>
+                <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
+            </div>
+
+            <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
 
@@ -862,13 +913,12 @@
             <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
         </ul>
-                <div class="sidebar-contact">
+        <div class="sidebar-contact">
             <div class="contact-title">Tournament Contact</div>
             <p>Shawn Thomas</p>
             <p><a href="tel:2677840928">(267) 784-0928</a></p>
             <p><a href="mailto:bigrgolfinvitational@gmail.com">bigrgolfinvitational@gmail.com</a></p>
         </div>
-
     </nav>
 
     <main id="main-content">
@@ -900,6 +950,7 @@
                     <div class="meter-flag">⛳</div>
                 </div>
             </div>
+
             <div class="itinerary-container">
                 <h3>🏌️‍♂️ Event Itinerary</h3>
                 <ul class="itinerary-list">
@@ -916,23 +967,19 @@
                 <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
             </div>
             <button class="primary-btn" onclick="showSection('signup')">Sign Up Now</button>
+
             <div class="sponsor-marquee-container">
                 <p class="marquee-title">Thank You To Our Premium Sponsors</p>
                 <div class="marquee-track">
-                    <div class="marquee-content">
-                        <div class="marquee-logo">Sponsor 1</div>
-                        <div class="marquee-logo">Sponsor 2</div>
-                        <div class="marquee-logo">Sponsor 3</div>
-                        <div class="marquee-logo">Sponsor 4</div>
+                    <div class="marquee-content" id="marquee-set-1">
+                        <div class="marquee-logo">Your Logo Here</div>
                     </div>
-                    <div class="marquee-content">
-                        <div class="marquee-logo">Sponsor 1</div>
-                        <div class="marquee-logo">Sponsor 2</div>
-                        <div class="marquee-logo">Sponsor 3</div>
-                        <div class="marquee-logo">Sponsor 4</div>
+                    <div class="marquee-content" id="marquee-set-2">
+                        <div class="marquee-logo">Your Logo Here</div>
                     </div>
                 </div>
             </div>
+
         </section>
 
         <section id="section-signup" class="content-section">
@@ -1004,10 +1051,9 @@
             <a href="#" class="primary-btn">Click here to Donate</a>
         </section>
 
-<section id="section-photos" class="content-section">
+        <section id="section-photos" class="content-section">
             <h2>Photos</h2>
             <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
-            
             <div class="photo-grid" style="text-align: center;">
                 <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
             </div>
@@ -1025,7 +1071,7 @@
             </div>
         </section>
 
-<section id="section-sponsors" class="content-section">
+        <section id="section-sponsors" class="content-section">
             <h2>Our Sponsors</h2>
             <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>
 
@@ -1076,8 +1122,9 @@
             </div>
         </section>
     </main>
-<script>
-const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
+
+    <script>
+        const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
         const FUNDRAISING_GOAL = 30000;
 
         // --- Navigation Logic ---
@@ -1110,16 +1157,19 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             document.documentElement.scrollTop = 0; 
         }
 
-        // --- Global Fundraiser Meter Logic ---
-        function fetchGlobalTotal() {
+        // --- Global Fetches & UI Updates ---
+        function fetchGlobalData() {
             fetch(GOOGLE_APP_SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
-                    if(data && data.total !== undefined) {
+                    if (data && data.total !== undefined) {
                         updateMeterUI(data.total);
                     }
+                    if (data && data.sponsors && data.sponsors.length > 0) {
+                        updateMarqueeUI(data.sponsors);
+                    }
                 })
-                .catch(error => console.error("Error fetching global total:", error));
+                .catch(error => console.error("Error fetching global data:", error));
         }
 
         function updateMeterUI(currentTotal) {
@@ -1137,7 +1187,17 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             }
         }
 
-        // --- Secret Admin Override Logic ---
+        function updateMarqueeUI(sponsorsArray) {
+            let html = '';
+            sponsorsArray.forEach(url => {
+                html += `<img src="${url}" class="marquee-logo-img" alt="Sponsor">`;
+            });
+
+            document.getElementById('marquee-set-1').innerHTML = html;
+            document.getElementById('marquee-set-2').innerHTML = html;
+        }
+
+        // --- Secret Admin Dashboard Logic ---
         let secretClickCount = 0;
         let secretClickTimer;
 
@@ -1151,34 +1211,89 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
 
             if (secretClickCount >= 5) {
                 secretClickCount = 0; 
-                let password = prompt("Admin Override: Enter Password");
-                
-                if (password === "Ryan2026") { 
-                    let newAmount = prompt("Enter the new Total Raised amount (numbers only):");
-                    if (newAmount && !isNaN(newAmount)) {
-                        
-                        // Push new total to Google securely
-                        fetch(GOOGLE_APP_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: "override", password: password, newTotal: parseInt(newAmount) })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if(data.result === 'success') {
-                                updateMeterUI(data.newTotal);
-                                alert("Global meter successfully updated!");
-                            } else {
-                                alert("Failed to update meter. Check password.");
-                            }
-                        });
-                        
-                    } else {
-                        alert("Invalid amount entered.");
-                    }
-                } else if (password !== null) {
-                    alert("Incorrect password.");
+                document.getElementById('admin-overlay').style.display = 'flex';
+                document.getElementById('admin-pass').value = '';
+            }
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('admin-overlay').style.display = 'none';
+        }
+
+        function submitAdminTotal() {
+            let password = document.getElementById('admin-pass').value;
+            let newAmount = document.getElementById('admin-total-input').value;
+            
+            if (!password) { alert("Please enter password"); return; }
+            if (!newAmount || isNaN(newAmount)) { alert("Please enter a valid amount."); return; }
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "override", password: password, newTotal: parseInt(newAmount) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === 'success') {
+                    updateMeterUI(data.newTotal);
+                    alert("Meter successfully updated!");
+                    document.getElementById('admin-total-input').value = '';
+                } else { alert("Failed: Check password."); }
+            });
+        }
+
+        // --- Client-Side Compression Engine (Uploads in MS instead of Seconds) ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_HEIGHT = 150; // Perfectly scaled for the marquee
+                    const scaleSize = MAX_HEIGHT / img.height;
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = MAX_HEIGHT;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    const base64 = dataUrl.split(',')[1];
+                    callback(base64, 'image/jpeg');
                 }
             }
+        }
+
+        function submitAdminSponsor() {
+            let password = document.getElementById('admin-pass').value;
+            let fileInput = document.getElementById('admin-sponsor-file');
+            
+            if (!password) { alert("Please enter password"); return; }
+            if (!fileInput.files || fileInput.files.length === 0) { alert("Select an image first."); return; }
+
+            document.getElementById('admin-loader').style.display = 'block';
+
+            compressImage(fileInput.files[0], (base64Data, mimeType) => {
+                fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: "upload_sponsor", 
+                        password: password, 
+                        imageBase64: base64Data,
+                        mimeType: mimeType
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('admin-loader').style.display = 'none';
+                    if(data.result === 'success') {
+                        updateMarqueeUI(data.sponsors);
+                        alert("Sponsor logo uploaded successfully!");
+                        fileInput.value = '';
+                    } else { alert("Failed: Check password."); }
+                });
+            });
         }
 
         // --- Pricing & Form Logic ---
@@ -1238,7 +1353,6 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Initialize audio immediately on click to satisfy browser interaction policies
             const clapAudio = new Audio('golf-clap.mp3');
             clapAudio.volume = 0.5;
             
@@ -1279,18 +1393,15 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                  // Play the audio and clip it after 3 seconds
                     if (window.clapAudio) {
                         window.clapAudio.play().catch(err => console.log('Playback failed:', err));
-                        
-                        // Stop the audio exactly 3 seconds (3000ms) later
                         setTimeout(() => {
                             window.clapAudio.pause();
                             window.clapAudio.currentTime = 0; 
                         }, 3000);
                     }
-                    // Force the meter to refresh globally from Google
-                    fetchGlobalTotal(); 
+                    
+                    fetchGlobalData(); 
                     
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
@@ -1360,11 +1471,10 @@ const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83G
             }
         }
 
-        // Initialize App On Load
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
             showSection('home'); 
-            fetchGlobalTotal(); // Pings Google immediately when the site loads
+            fetchGlobalData(); 
         });
     </script>
 </body>
