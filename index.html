@@ -18,14 +18,15 @@
 
         html, body {
             width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Safely prevents side-to-side scrolling */
         }
 
         body {
-            min-height: 100vh;
-            min-height: 100dvh; 
+            /* Removed the 100vh/100dvh heights to completely free the native scrollbar */
             color: #f8fafc; 
             background-color: #111;
-            overflow-x: hidden;
         }
 
         /* --- Intro Splash Screen Gate --- */
@@ -218,11 +219,10 @@
         #main-content {
             margin-left: 60px;
             padding: 40px;
-            width: 100%;
+            width: calc(100% - 60px); /* Mathematically sets perfect width to stop invisible barriers */
             transition: margin-left 0.3s ease;
         }
 
-        /* SLEDGEHAMMER HIDE */
         .content-section {
             display: none !important; 
             max-width: 800px;
@@ -237,7 +237,6 @@
             color: white;
         }
 
-        /* SLEDGEHAMMER SHOW */
         .content-section.active {
             display: block !important; 
             animation: fadeSlideUp 0.6s ease-out forwards;
@@ -273,13 +272,6 @@
         }
 
         /* Home Page Enhancements */
-        #home {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
         .event-date {
             color: #3498db;
             text-transform: uppercase;
@@ -506,6 +498,7 @@
         @media (max-width: 768px) {
             #main-content {
                 margin-left: 0;
+                width: 100%; /* Sets perfect width for mobile layout */
                 padding: 80px 15px 20px 15px;
             }
             #sidebar {
@@ -572,7 +565,8 @@
     </nav>
 
     <main id="main-content">
-        <section id="home" class="content-section active">
+        
+        <section id="section-home" class="content-section active">
             <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
             <h1>Welcome to the Big R Invitational</h1>
             
@@ -594,7 +588,7 @@
             <button class="primary-btn" onclick="showSection('signup')">Sign Up Now</button>
         </section>
 
-        <section id="signup" class="content-section">
+        <section id="section-signup" class="content-section">
             <div id="signup-form-container">
                 <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
                 <h2>Golf Outing Sign Up</h2>
@@ -643,13 +637,13 @@
             </div>
         </section>
 
-        <section id="donate" class="content-section">
+        <section id="section-donate" class="content-section">
             <h2>Donate</h2>
             <p>Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
             <a href="#" class="primary-btn">Click here to Donate</a>
         </section>
 
-        <section id="photos" class="content-section">
+        <section id="section-photos" class="content-section">
             <h2>Photos</h2>
             <p>Memories from past events will be posted here.</p>
             <div class="photo-grid">
@@ -657,7 +651,7 @@
             </div>
         </section>
 
-        <section id="story" class="content-section">
+        <section id="section-story" class="content-section">
             <h2>Ryan's Story</h2>
             <h4>Written by Michael Mignogna</h4>
             <div class="story-text">
@@ -669,7 +663,7 @@
             </div>
         </section>
 
-        <section id="sponsors" class="content-section">
+        <section id="section-sponsors" class="content-section">
             <h2>Our Sponsors</h2>
             <p>Thank you to our generous sponsors who make this event possible.</p>
         </section>
@@ -690,20 +684,17 @@
             });
         });
 
-        // THE ULTIMATE "SLEDGEHAMMER" SHOW SECTION FIX
+        // The exact target is now appended with "section-" to break the browser hash loop
         function showSection(sectionId) {
-            // 1. Force hide every single section with literal CSS styling
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none'; 
             });
             
-            // 2. Force show ONLY the target section
-            const activeSection = document.getElementById(sectionId);
+            const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
             
-            // 3. Snap to top
             window.scrollTo({ top: 0, behavior: 'instant' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
@@ -861,7 +852,6 @@
             }
         }
 
-        // Initialize the app immediately on load to force everything to hide correctly
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
             showSection('home'); 
