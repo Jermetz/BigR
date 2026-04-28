@@ -222,8 +222,9 @@
             transition: margin-left 0.3s ease;
         }
 
+        /* SLEDGEHAMMER HIDE */
         .content-section {
-            display: none;
+            display: none !important; 
             max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
@@ -236,8 +237,9 @@
             color: white;
         }
 
+        /* SLEDGEHAMMER SHOW */
         .content-section.active {
-            display: block;
+            display: block !important; 
             animation: fadeSlideUp 0.6s ease-out forwards;
         }
 
@@ -688,13 +690,20 @@
             });
         });
 
+        // THE ULTIMATE "SLEDGEHAMMER" SHOW SECTION FIX
         function showSection(sectionId) {
+            // 1. Force hide every single section with literal CSS styling
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
+                section.style.display = 'none'; 
             });
+            
+            // 2. Force show ONLY the target section
             const activeSection = document.getElementById(sectionId);
             activeSection.classList.add('active');
+            activeSection.style.display = 'block'; 
             
+            // 3. Snap to top
             window.scrollTo({ top: 0, behavior: 'instant' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
@@ -852,8 +861,10 @@
             }
         }
 
+        // Initialize the app immediately on load to force everything to hide correctly
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
+            showSection('home'); 
         });
     </script>
 </body>
