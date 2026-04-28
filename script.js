@@ -7,7 +7,7 @@ function toggleMenu() {
 // Ensure clicking a link doesn't instantly close before navigating
 document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop click from bubbling to the sidebar toggle
+        e.stopPropagation();
         if (window.innerWidth <= 768) {
             document.getElementById('sidebar').classList.remove('expanded');
         }
@@ -16,12 +16,27 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 
 // Navigation Logic
 function showSection(sectionId) {
-    // Hide all sections
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.remove('active');
     });
-    // Show target section
     document.getElementById(sectionId).classList.add('active');
+}
+
+// --- Toast Notification Logic ---
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if(!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = message;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 3000);
 }
 
 // Form Logic - Add up to 4 players
@@ -29,7 +44,7 @@ let playerCount = 1;
 
 function addPlayer() {
     if (playerCount >= 4) {
-        alert("You can only register up to 4 players at a time.");
+        showToast("You can only register up to 4 players at a time.", "error");
         return;
     }
     
@@ -59,11 +74,8 @@ function addPlayer() {
 document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const messageEl = document.getElementById('form-message');
-    messageEl.style.color = '#333';
-    messageEl.innerText = "Submitting registration... please wait.";
+    showToast("Submitting registration... please wait.", "success");
 
-    // Gather data
     let players = [];
     for (let i = 1; i <= playerCount; i++) {
         players.push({
@@ -83,10 +95,8 @@ document.getElementById('golf-signup-form').addEventListener('submit', function(
     .then(response => response.json())
     .then(data => {
         if (data.result === 'success') {
-            messageEl.style.color = 'green';
-            messageEl.innerText = "Registration successful! Thank you.";
+            showToast("Registration successful! Thank you.", "success");
             document.getElementById('golf-signup-form').reset();
-            // Reset player count visually
             document.getElementById('players-container').innerHTML = `
                 <div class="player-card">
                     <h3>Player 1 (Primary Contact)</h3>
@@ -106,8 +116,51 @@ document.getElementById('golf-signup-form').addEventListener('submit', function(
         }
     })
     .catch(error => {
-        messageEl.style.color = 'red';
-        messageEl.innerText = "There was an error submitting your form. Please try again.";
+        showToast("There was an error submitting your form. Please try again.", "error");
         console.error(error);
     });
+});
+
+// --- Countdown Timer Logic ---
+function initCountdown() {
+    const teeTime = new Date('October 9, 2026 09:30:00 EDT').getTime();
+
+    setInterval(() => {
+        const now = new Date().getTime();
+        const distance = teeTime - now;
+
+        if (distance < 0) {
+            const timerEl = document.getElementById('countdown-timer');
+            if(timerEl) timerEl.innerHTML = "<h3>It's Tee Time!</h3>";
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if(document.getElementById('days')) {
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        }
+    }, 1000);
+}
+
+// --- Intro Video Splash Screen Logic ---
+document.addEventListener("DOMContentLoaded", () => {
+    const introVideo = document.getElementById('intro-video');
+    const splashScreen = document.getElementById('splash-screen');
+
+    if (introVideo && splashScreen) {
+        introVideo.addEventListener('ended', () => {
+            splashScreen.classList.add('splash-fade-zoom');
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 800);
+        });
+    }
+    initCountdown();
 });
