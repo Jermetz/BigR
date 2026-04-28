@@ -18,11 +18,9 @@
 
         html, body {
             width: 100%;
-            /* Removed height: 100% so native window scrolling works again */
         }
 
         body {
-            /* 100dvh is the modern fix for mobile address bars */
             min-height: 100vh;
             min-height: 100dvh; 
             color: #f8fafc; 
@@ -596,8 +594,9 @@
 
         <section id="signup" class="content-section">
             <div id="signup-form-container">
+                <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
                 <h2>Golf Outing Sign Up</h2>
-                <p style="margin-bottom: 25px;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
+                <p style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
                 <form id="golf-signup-form">
                     <div id="players-container">
@@ -689,7 +688,6 @@
             });
         });
 
-        // --- UPDATED SCROLL LOGIC ---
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
@@ -697,10 +695,9 @@
             const activeSection = document.getElementById(sectionId);
             activeSection.classList.add('active');
             
-            // Bulletproof scroll-to-top that forces the browser to the literal top of the document
             window.scrollTo({ top: 0, behavior: 'instant' });
-            document.body.scrollTop = 0; // For Safari
-            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+            document.body.scrollTop = 0; 
+            document.documentElement.scrollTop = 0; 
         }
 
         // --- Pricing Logic ---
