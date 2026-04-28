@@ -742,8 +742,10 @@
             <p>Thank you to our generous sponsors who make this event possible.</p>
         </section>
     </main>
+const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
+        const FUNDRAISING_GOAL = 10000;
 
-    <script>
+        // --- Navigation Logic ---
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('expanded');
@@ -773,8 +775,34 @@
             document.documentElement.scrollTop = 0; 
         }
 
-        // --- Fundraiser Meter & Secret Admin Logic ---
-        const FUNDRAISING_GOAL = 10000; 
+        // --- Global Fundraiser Meter Logic ---
+        function fetchGlobalTotal() {
+            fetch(GOOGLE_APP_SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if(data && data.total !== undefined) {
+                        updateMeterUI(data.total);
+                    }
+                })
+                .catch(error => console.error("Error fetching global total:", error));
+        }
+
+        function updateMeterUI(currentTotal) {
+            let percentage = (currentTotal / FUNDRAISING_GOAL) * 100;
+            if (percentage > 100) percentage = 100; 
+
+            const fillBar = document.getElementById('meter-fill');
+            const textDisplay = document.getElementById('meter-text');
+            const ballIcon = document.getElementById('meter-ball');
+
+            if (fillBar && textDisplay && ballIcon) {
+                fillBar.style.width = percentage + '%';
+                textDisplay.innerText = `$${currentTotal.toLocaleString()} Raised / $${FUNDRAISING_GOAL.toLocaleString()} Goal`;
+                ballIcon.style.left = percentage + '%'; 
+            }
+        }
+
+        // --- Secret Admin Override Logic ---
         let secretClickCount = 0;
         let secretClickTimer;
 
@@ -791,11 +819,24 @@
                 let password = prompt("Admin Override: Enter Password");
                 
                 if (password === "Ryan2026") { 
-                    let newAmount = prompt("Enter the new Total Raised amount (numbers only, no commas or $):");
+                    let newAmount = prompt("Enter the new Total Raised amount (numbers only):");
                     if (newAmount && !isNaN(newAmount)) {
-                        localStorage.setItem('bigRFundTotal', newAmount);
-                        updateMeterDisplay();
-                        alert("Meter successfully updated!");
+                        
+                        // Push new total to Google securely
+                        fetch(GOOGLE_APP_SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: "override", password: password, newTotal: parseInt(newAmount) })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.result === 'success') {
+                                updateMeterUI(data.newTotal);
+                                alert("Global meter successfully updated!");
+                            } else {
+                                alert("Failed to update meter. Check password.");
+                            }
+                        });
+                        
                     } else {
                         alert("Invalid amount entered.");
                     }
@@ -805,29 +846,7 @@
             }
         }
 
-        function updateMeterDisplay(additionalAmount = 0) {
-            let baseTotal = parseInt(localStorage.getItem('bigRFundTotal')) || 0;
-            let currentTotal = baseTotal + additionalAmount;
-            
-            if (additionalAmount > 0) {
-                localStorage.setItem('bigRFundTotal', currentTotal);
-            }
-
-            let percentage = (currentTotal / FUNDRAISING_GOAL) * 100;
-            if (percentage > 100) percentage = 100; 
-
-            const fillBar = document.getElementById('meter-fill');
-            const textDisplay = document.getElementById('meter-text');
-            const ballIcon = document.getElementById('meter-ball');
-
-            if (fillBar && textDisplay && ballIcon) {
-                fillBar.style.width = percentage + '%';
-                textDisplay.innerText = `$${currentTotal.toLocaleString()} Raised / $${FUNDRAISING_GOAL.toLocaleString()} Goal`;
-                ballIcon.style.left = percentage + '%'; 
-            }
-        }
-
-        // --- Pricing Logic ---
+        // --- Pricing & Form Logic ---
         const COST_PER_PERSON = 175;
         let playerCount = 1;
 
@@ -853,9 +872,7 @@
                 </div>
             `;
             container.appendChild(playerCard);
-            
             updateCostDisplay(); 
-
             if (playerCount === 4) document.getElementById('add-player-btn').style.display = 'none';
             document.getElementById('remove-player-btn').style.display = 'block';
         }
@@ -865,9 +882,7 @@
                 const container = document.getElementById('players-container');
                 container.removeChild(container.lastElementChild);
                 playerCount--;
-                
                 updateCostDisplay(); 
-
                 document.getElementById('add-player-btn').style.display = 'block';
                 if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
             }
@@ -903,16 +918,17 @@
                 });
             }
 
-            const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
-
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ players: players })
+                // Explicitly send action: "signup" to trigger the correct backend logic
+                body: JSON.stringify({ action: "signup", players: players })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    updateMeterDisplay(finalTotal); // Moves the golf ball forward by the sign-up cost!
+                    // Force the meter to refresh globally from Google
+                    fetchGlobalTotal(); 
+                    
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
@@ -936,6 +952,7 @@
             showSection('home');
         }
 
+        // --- Splash Screen & Countdown Logic ---
         function initCountdown() {
             const teeTime = new Date('October 9, 2026 09:30:00 EDT').getTime();
             setInterval(() => {
@@ -980,11 +997,12 @@
             }
         }
 
+        // Initialize App On Load
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
             showSection('home'); 
-            updateMeterDisplay();
+            fetchGlobalTotal(); // Pings Google immediately when the site loads
         });
-    </script>
+
 </body>
 </html>
