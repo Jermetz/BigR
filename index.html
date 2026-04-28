@@ -1078,27 +1078,27 @@
             <h2>Our Sponsors</h2>
             <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>
 
-            <div class="sponsor-tier tier-platinum">
+                      <div class="sponsor-tier tier-platinum">
                 <div class="tier-title">Platinum Sponsors</div>
                 <div class="sponsor-logos">
-                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('5000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
                 </div>
             </div>
 
             <div class="sponsor-tier tier-gold">
                 <div class="tier-title">Gold Sponsors</div>
                 <div class="sponsor-logos">
-                    <div class="sponsor-placeholder">Logo Here</div>
-                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
                 </div>
             </div>
 
             <div class="sponsor-tier tier-silver">
                 <div class="tier-title">Silver Sponsors</div>
                 <div class="sponsor-logos">
-                    <div class="sponsor-placeholder">Logo Here</div>
-                    <div class="sponsor-placeholder">Logo Here</div>
-                    <div class="sponsor-placeholder">Logo Here</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
                 </div>
             </div>
 
@@ -1108,10 +1108,10 @@
                     <div class="hole-number">Hole 1</div>
                     <div class="hole-status">Available</div>
                 </div>
-                              <script>
+                                <script>
                     for(let i=1; i<=18; i++) {
                         document.write(`
-                        <div class="hole-card">
+                        <div class="hole-card" onclick="selectSponsorship('250')" style="cursor: pointer;">
                             <div class="hole-number">Hole ${i}</div>
                             <div class="hole-status">Available</div>
                         </div>
@@ -1147,7 +1147,15 @@
                 section.classList.remove('active');
                 section.style.display = 'none'; 
             });
-            
+                    function selectSponsorship(levelValue) {
+            const sponsorDropdown = document.getElementById('sponsorship-level');
+            if (sponsorDropdown) {
+                sponsorDropdown.value = levelValue;
+                updateCostDisplay();
+            }
+            showSection('signup');
+        }
+
             const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
