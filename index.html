@@ -103,9 +103,9 @@
 
         /* The Ultimate Video Crop Fix */
         #intro-video {
-            width: 100vmin; /* Uses the smallest screen dimension to make a perfect square */
+            width: 100vmin;
             height: 100vmin; 
-            object-fit: cover; /* Forces the video to fill the square, chopping the top/bottom white bars! */
+            object-fit: cover; 
             background-color: #000;
             z-index: 1; 
         }
@@ -324,7 +324,7 @@
             margin-bottom: 10px;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 14px;
             border: 2px solid transparent;
@@ -334,12 +334,24 @@
             font-size: 15px;
             transition: all 0.3s ease;
         }
+        
+        select {
+            cursor: pointer;
+        }
 
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #3498db;
             background-color: #ffffff;
             box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+        }
+
+        .payment-note {
+            color: #f1c40f; /* Yellow pop for visibility */
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 8px;
+            min-height: 20px;
         }
 
         button {
@@ -366,12 +378,28 @@
 
         .primary-btn:hover { background-color: #2ecc71; }
 
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            flex: 1; /* Makes the add and remove buttons share width equally */
+        }
+
         .secondary-btn {
             background-color: #3498db;
             color: white;
         }
 
         .secondary-btn:hover { background-color: #2980b9; }
+
+        .danger-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .danger-btn:hover { background-color: #c0392b; }
 
         .form-actions {
             display: flex;
@@ -458,6 +486,9 @@
             .form-group {
                 flex-direction: column;
             }
+            .action-buttons {
+                flex-direction: column; /* Stack add/remove buttons on mobile */
+            }
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
         }
@@ -525,7 +556,8 @@
 
         <section id="signup" class="content-section">
             <h2>Golf Outing Sign Up</h2>
-            <p>Register up to 4 players for your team. The primary player must provide an email.</p>
+            <p style="margin-bottom: 25px;">Register up to 4 players for your team. The primary player must provide an email.</p>
+            
             <form id="golf-signup-form">
                 <div id="players-container">
                     <div class="player-card">
@@ -539,8 +571,25 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="player-card">
+                    <h3>Payment Information</h3>
+                    <div class="form-group" style="flex-direction: column; margin-top: 10px;">
+                        <select id="payment-type" required onchange="updatePaymentNote()">
+                            <option value="" disabled selected>Select Payment Type *</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                            <option value="Venmo">Venmo</option>
+                        </select>
+                        <p id="payment-note" class="payment-note"></p>
+                    </div>
+                </div>
+
                 <div class="form-actions">
-                    <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
+                    <div class="action-buttons">
+                        <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
+                        <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
+                    </div>
                     <button type="submit" class="primary-btn">Submit Registration</button>
                 </div>
                 <p id="form-message"></p>
@@ -621,7 +670,7 @@
             }, 3000);
         }
 
-        // Form Logic - Add up to 4 players
+        // Form Logic - Add and Remove Players
         let playerCount = 1;
 
         function addPlayer() {
@@ -647,8 +696,41 @@
             `;
             container.appendChild(playerCard);
 
+            // Hide the add button if we hit the limit
             if (playerCount === 4) {
                 document.getElementById('add-player-btn').style.display = 'none';
+            }
+            // Always show the remove button if there's more than 1 player
+            document.getElementById('remove-player-btn').style.display = 'block';
+        }
+
+        function removePlayer() {
+            if (playerCount > 1) {
+                const container = document.getElementById('players-container');
+                container.removeChild(container.lastElementChild);
+                playerCount--;
+                
+                // Bring back the add button
+                document.getElementById('add-player-btn').style.display = 'block';
+                
+                // Hide the remove button if we are back down to just 1 player
+                if (playerCount === 1) {
+                    document.getElementById('remove-player-btn').style.display = 'none';
+                }
+            }
+        }
+
+        // Logic for Payment Note Display
+        function updatePaymentNote() {
+            const paymentType = document.getElementById('payment-type').value;
+            const noteArea = document.getElementById('payment-note');
+            
+            if (paymentType === 'Check') {
+                noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
+            } else if (paymentType === 'Cash') {
+                noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
+            } else {
+                noteArea.innerText = "";
             }
         }
 
@@ -658,13 +740,17 @@
             
             showToast("Submitting registration... please wait.", "success");
 
+            // Grab the payment type so we can attach it to the data
+            const selectedPaymentType = document.getElementById('payment-type').value;
+
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
                 players.push({
                     firstName: document.getElementById(`p${i}-first`).value,
                     lastName: document.getElementById(`p${i}-last`).value,
                     email: document.getElementById(`p${i}-email`).value || "N/A",
-                    isPrimary: i === 1
+                    isPrimary: i === 1,
+                    paymentType: selectedPaymentType // Binds the payment selection
                 });
             }
 
@@ -679,6 +765,8 @@
                 if (data.result === 'success') {
                     showToast("Registration successful! Thank you.", "success");
                     document.getElementById('golf-signup-form').reset();
+                    
+                    // Reset the form layout perfectly back to Player 1
                     document.getElementById('players-container').innerHTML = `
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
@@ -693,6 +781,8 @@
                     `;
                     playerCount = 1;
                     document.getElementById('add-player-btn').style.display = 'block';
+                    document.getElementById('remove-player-btn').style.display = 'none';
+                    document.getElementById('payment-note').innerText = ''; // Clear note
                 } else {
                     throw new Error('Script returned an error');
                 }
