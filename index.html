@@ -18,14 +18,13 @@
 
         html, body {
             width: 100%;
-            height: 100%; /* Fixes the mobile address bar scroll-jump bug */
+            height: 100%;
         }
 
         body {
-            /* Removed display: flex; to prevent layout shifting on scroll */
             color: #f8fafc; 
             background-color: #111;
-            overflow-x: hidden; /* Prevents side-to-side scrolling */
+            overflow-x: hidden;
         }
 
         /* --- Intro Splash Screen Gate --- */
@@ -85,7 +84,6 @@
             box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
         }
 
-        /* Mute Button Styles */
         #mute-btn {
             position: absolute;
             top: 20px;
@@ -107,7 +105,6 @@
             color: black;
         }
 
-        /* The Ultimate Video Crop Fix */
         #intro-video {
             width: 100vmin;
             height: 100vmin; 
@@ -134,7 +131,7 @@
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0; /* Prevents height recalculation jumping */
+            bottom: 0; 
             z-index: -1;
             overflow: hidden;
         }
@@ -373,6 +370,13 @@
 
         button:active { transform: scale(0.98); }
 
+        /* Disable button style */
+        button:disabled {
+            background-color: #94a3b8 !important;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         .primary-btn {
             background-color: #27ae60;
             color: white;
@@ -408,12 +412,41 @@
 
         .danger-btn:hover { background-color: #c0392b; }
 
-        .form-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
+        /* --- Success Message Overlay --- */
+        #success-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
+
+        .success-card {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid #27ae60;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-card h2 { color: #2ecc71; margin-bottom: 10px; }
+        .success-card p { margin-bottom: 25px; line-height: 1.5; color: #cbd5e1; }
 
         /* Countdown Timer */
         #countdown-timer {
@@ -443,38 +476,6 @@
             letter-spacing: 1px;
         }
 
-        /* Toast Notification */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            background: rgba(15, 23, 42, 0.9);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border-left: 4px solid #3498db;
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInRight 0.3s forwards;
-        }
-        .toast.error { border-left-color: #e74c3c; }
-        .toast.success { border-left-color: #27ae60; }
-        .toast.fade-out { animation: fadeOutRight 0.3s forwards; }
-
-        @keyframes slideInRight {
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeOutRight {
-            to { opacity: 0; transform: translateX(100%); }
-        }
-
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             #main-content {
@@ -502,6 +503,14 @@
     </style>
 </head>
 <body>
+    <div id="success-overlay">
+        <div class="success-card">
+            <h2>⛳ Registration Success!</h2>
+            <p>Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
+            <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
+        </div>
+    </div>
+
     <div id="splash-screen">
         <button id="mute-btn" onclick="toggleMute()">🔊 Unmuted</button>
         
@@ -513,8 +522,6 @@
             <source src="intro-animation.mp4" type="video/mp4">
         </video>
     </div>
-
-    <div id="toast-container"></div>
 
     <div class="video-background">
         <div class="video-overlay"></div>
@@ -562,45 +569,46 @@
         </section>
 
         <section id="signup" class="content-section">
-            <h2>Golf Outing Sign Up</h2>
-            <p style="margin-bottom: 25px;">Register up to 4 players for your team. The primary player must provide an email.</p>
-            
-            <form id="golf-signup-form">
-                <div id="players-container">
+            <div id="signup-form-container">
+                <h2>Golf Outing Sign Up</h2>
+                <p style="margin-bottom: 25px;">Register up to 4 players for your team. The primary player must provide an email.</p>
+                
+                <form id="golf-signup-form">
+                    <div id="players-container">
+                        <div class="player-card">
+                            <h3>Player 1 (Primary Contact)</h3>
+                            <div class="form-group">
+                                <input type="text" id="p1-first" placeholder="First Name *" required>
+                                <input type="text" id="p1-last" placeholder="Last Name *" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="p1-email" placeholder="Email Address *" required>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="player-card">
-                        <h3>Player 1 (Primary Contact)</h3>
-                        <div class="form-group">
-                            <input type="text" id="p1-first" placeholder="First Name *" required>
-                            <input type="text" id="p1-last" placeholder="Last Name *" required>
+                        <h3>Payment Information</h3>
+                        <div class="form-group" style="flex-direction: column; margin-top: 10px;">
+                            <select id="payment-type" required onchange="updatePaymentNote()">
+                                <option value="" disabled selected>Select Payment Type *</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                                <option value="Venmo">Venmo</option>
+                            </select>
+                            <p id="payment-note" class="payment-note"></p>
                         </div>
-                        <div class="form-group">
-                            <input type="email" id="p1-email" placeholder="Email Address *" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <div class="action-buttons">
+                            <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
+                            <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
                         </div>
+                        <button type="submit" id="submit-btn" class="primary-btn">Submit Registration</button>
                     </div>
-                </div>
-
-                <div class="player-card">
-                    <h3>Payment Information</h3>
-                    <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                        <select id="payment-type" required onchange="updatePaymentNote()">
-                            <option value="" disabled selected>Select Payment Type *</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Venmo">Venmo</option>
-                        </select>
-                        <p id="payment-note" class="payment-note"></p>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <div class="action-buttons">
-                        <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
-                        <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
-                    </div>
-                    <button type="submit" class="primary-btn">Submit Registration</button>
-                </div>
-                <p id="form-message"></p>
-            </form>
+                </form>
+            </div>
         </section>
 
         <section id="donate" class="content-section">
@@ -636,13 +644,11 @@
     </main>
 
     <script>
-        // Sidebar Toggle Logic
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('expanded');
         }
 
-        // Ensure clicking a link doesn't instantly close before navigating
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -652,43 +658,20 @@
             });
         });
 
-        // Navigation Logic
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(sectionId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- Toast Notification Logic ---
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            if(!container) return;
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerText = message;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('fade-out');
-                toast.addEventListener('animationend', () => toast.remove());
-            }, 3000);
-        }
-
-        // Form Logic - Add and Remove Players
         let playerCount = 1;
 
         function addPlayer() {
-            if (playerCount >= 4) {
-                showToast("You can only register up to 4 players at a time.", "error");
-                return;
-            }
-            
+            if (playerCount >= 4) return;
             playerCount++;
             const container = document.getElementById('players-container');
-            
             const playerCard = document.createElement('div');
             playerCard.className = 'player-card';
             playerCard.innerHTML = `
@@ -702,10 +685,7 @@
                 </div>
             `;
             container.appendChild(playerCard);
-
-            if (playerCount === 4) {
-                document.getElementById('add-player-btn').style.display = 'none';
-            }
+            if (playerCount === 4) document.getElementById('add-player-btn').style.display = 'none';
             document.getElementById('remove-player-btn').style.display = 'block';
         }
 
@@ -714,37 +694,30 @@
                 const container = document.getElementById('players-container');
                 container.removeChild(container.lastElementChild);
                 playerCount--;
-                
                 document.getElementById('add-player-btn').style.display = 'block';
-                
-                if (playerCount === 1) {
-                    document.getElementById('remove-player-btn').style.display = 'none';
-                }
+                if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
             }
         }
 
-        // Logic for Payment Note Display
         function updatePaymentNote() {
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
-            
-            if (paymentType === 'Check') {
-                noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
-            } else if (paymentType === 'Cash') {
-                noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
-            } else {
-                noteArea.innerText = "";
-            }
+            if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
+            else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
+            else noteArea.innerText = "";
         }
 
-        // Form Submission to Google Sheets
+        // --- SUBMISSION LOGIC ---
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            showToast("Submitting registration... please wait.", "success");
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // 1. DISABLE BUTTON IMMEDIATELY
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting Registration...";
 
             const selectedPaymentType = document.getElementById('payment-type').value;
-
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
                 players.push({
@@ -765,54 +738,42 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    showToast("Registration successful! Thank you.", "success");
-                    document.getElementById('golf-signup-form').reset();
+                    // 2. HIDE THE FORM
+                    document.getElementById('signup-form-container').style.display = 'none';
                     
-                    document.getElementById('players-container').innerHTML = `
-                        <div class="player-card">
-                            <h3>Player 1 (Primary Contact)</h3>
-                            <div class="form-group">
-                                <input type="text" id="p1-first" placeholder="First Name *" required>
-                                <input type="text" id="p1-last" placeholder="Last Name *" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" id="p1-email" placeholder="Email Address *" required>
-                            </div>
-                        </div>
-                    `;
-                    playerCount = 1;
-                    document.getElementById('add-player-btn').style.display = 'block';
-                    document.getElementById('remove-player-btn').style.display = 'none';
-                    document.getElementById('payment-note').innerText = ''; 
+                    // 3. SHOW SUCCESS MODAL
+                    document.getElementById('success-overlay').style.display = 'flex';
+                    
+                    // Reset internal form state for next time if they reload
+                    document.getElementById('golf-signup-form').reset();
                 } else {
-                    throw new Error('Script returned an error');
+                    throw new Error('Script error');
                 }
             })
             .catch(error => {
-                showToast("There was an error submitting your form. Please try again.", "error");
-                console.error(error);
+                alert("There was an error. Please try again or contact us.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
             });
         });
 
-        // --- Countdown Timer Logic ---
+        function closeSuccessAndGoHome() {
+            document.getElementById('success-overlay').style.display = 'none';
+            showSection('home');
+            // Refresh page after a brief moment to reset the form container visibility for future use
+            setTimeout(() => { location.reload(); }, 500);
+        }
+
         function initCountdown() {
             const teeTime = new Date('October 9, 2026 09:30:00 EDT').getTime();
-
             setInterval(() => {
                 const now = new Date().getTime();
                 const distance = teeTime - now;
-
-                if (distance < 0) {
-                    const timerEl = document.getElementById('countdown-timer');
-                    if(timerEl) timerEl.innerHTML = "<h3>It's Tee Time!</h3>";
-                    return;
-                }
-
+                if (distance < 0) return;
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
                 if(document.getElementById('days')) {
                     document.getElementById('days').innerText = days.toString().padStart(2, '0');
                     document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
@@ -822,49 +783,31 @@
             }, 1000);
         }
 
-        // --- Global state to track mute preference ---
         let videoIsMuted = false;
-
-        // --- Mute Toggle Logic ---
         function toggleMute() {
             const introVideo = document.getElementById('intro-video');
             const muteBtn = document.getElementById('mute-btn');
-            
             videoIsMuted = !videoIsMuted; 
-            
-            if (introVideo) {
-                introVideo.muted = videoIsMuted; 
-            }
-            
-            if (muteBtn) {
-                muteBtn.innerHTML = videoIsMuted ? "🔇 Muted" : "🔊 Unmuted";
-            }
+            if (introVideo) introVideo.muted = videoIsMuted; 
+            if (muteBtn) muteBtn.innerHTML = videoIsMuted ? "🔇 Muted" : "🔊 Unmuted";
         }
 
-        // --- Intro Video Splash Screen Logic ---
         function startExperience() {
             const introVideo = document.getElementById('intro-video');
             const splashScreen = document.getElementById('splash-screen');
             const gateContent = document.getElementById('gate-content');
-
             if (introVideo && splashScreen) {
                 gateContent.style.display = 'none';
-                
                 introVideo.style.display = 'block';
                 introVideo.muted = videoIsMuted; 
                 introVideo.play();
-
                 introVideo.addEventListener('ended', () => {
                     splashScreen.classList.add('splash-fade-zoom');
-                    
-                    setTimeout(() => {
-                        splashScreen.style.display = 'none';
-                    }, 1000);
+                    setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
                 });
             }
         }
 
-        // Ensure scripts load normally
         document.addEventListener("DOMContentLoaded", () => {
             initCountdown();
         });
