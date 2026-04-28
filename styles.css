@@ -71,8 +71,11 @@ body {
     width: 100%;
     max-width: 500px; /* Keeps the square proportionate on large screens */
     aspect-ratio: 1 / 1; /* Forces the video into a perfect square */
-    object-fit: cover; /* Automatically slices off the vertical top and bottom! */
+    object-fit: cover; /* Slices off the top and bottom of the vertical video */
     background-color: #000;
+    /* --- NEW UPDATES --- */
+    border: 1px solid #000; /* Adds a clean 1px solid black border to cover the side artifacts */
+    object-position: top center; /* Shifts the video upward within the frame to un-cut the top */
 }
 
 .splash-fade-zoom {
@@ -82,7 +85,7 @@ body {
 }
 @keyframes fadeIn {
     from { opacity: 0; transform: translate(-50%, -40%); } /* Keeps it centered while sliding up */
-    to { opacity: 1; transform: translate(-50%, -50%); }   /* Locks perfectly into the center */
+    to { opacity: 1; transform: translate(-50%, -50%); }   /* Locks perfectly into the center and fixes the snap-back jump */
 }
 
 /* Video Background */
