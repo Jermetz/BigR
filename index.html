@@ -101,12 +101,11 @@
             color: black;
         }
 
+        /* The Ultimate Video Crop Fix */
         #intro-video {
-            width: 100%;
-            height: 100%;
-            max-width: 100vw;
-            max-height: 100vh;
-            object-fit: contain;
+            width: 100vmin; /* Uses the smallest screen dimension to make a perfect square */
+            height: 100vmin; 
+            object-fit: cover; /* Forces the video to fill the square, chopping the top/bottom white bars! */
             background-color: #000;
             z-index: 1; 
         }
