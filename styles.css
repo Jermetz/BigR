@@ -68,14 +68,10 @@ body {
 }
 
 #intro-video {
-    width: 100%;
-    max-width: 500px; /* Keeps the square proportionate on large screens */
-    aspect-ratio: 1 / 1; /* Forces the video into a perfect square */
-    object-fit: cover; /* Slices off the top and bottom of the vertical video */
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain; /* Shows 100% of the video, adding black bars automatically where needed */
     background-color: #000;
-    /* --- NEW UPDATES --- */
-    border: 1px solid #000; /* Adds a clean 1px solid black border to cover the side artifacts */
-    object-position: top center; /* Shifts the video upward within the frame to un-cut the top */
 }
 
 .splash-fade-zoom {
