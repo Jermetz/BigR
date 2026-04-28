@@ -370,7 +370,6 @@
 
         button:active { transform: scale(0.98); }
 
-        /* Disable button style */
         button:disabled {
             background-color: #94a3b8 !important;
             cursor: not-allowed;
@@ -414,7 +413,7 @@
 
         /* --- Success Message Overlay --- */
         #success-overlay {
-            display: none; /* Hidden by default */
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
@@ -707,13 +706,10 @@
             else noteArea.innerText = "";
         }
 
-        // --- SUBMISSION LOGIC ---
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const submitBtn = document.getElementById('submit-btn');
-            
-            // 1. DISABLE BUTTON IMMEDIATELY
             submitBtn.disabled = true;
             submitBtn.innerText = "Submitting Registration...";
 
@@ -738,13 +734,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // 2. HIDE THE FORM
+                    // Hide form and show modal
                     document.getElementById('signup-form-container').style.display = 'none';
-                    
-                    // 3. SHOW SUCCESS MODAL
                     document.getElementById('success-overlay').style.display = 'flex';
                     
-                    // Reset internal form state for next time if they reload
+                    // Reset form fields
                     document.getElementById('golf-signup-form').reset();
                 } else {
                     throw new Error('Script error');
@@ -757,11 +751,19 @@
             });
         });
 
+        // FIXED: Now bypasses the splash page entirely
         function closeSuccessAndGoHome() {
+            // Hide the modal
             document.getElementById('success-overlay').style.display = 'none';
+            
+            // Re-show the form container and reset buttons so it's ready for future use
+            document.getElementById('signup-form-container').style.display = 'block';
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Registration";
+            
+            // Go back to Home section
             showSection('home');
-            // Refresh page after a brief moment to reset the form container visibility for future use
-            setTimeout(() => { location.reload(); }, 500);
         }
 
         function initCountdown() {
