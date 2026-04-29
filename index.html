@@ -1036,6 +1036,8 @@
                                 <option value="Cash">Cash</option>
                                 <option value="Check">Check</option>
                                 <option value="PayPal">PayPal</option>
+                                <option value="PayPalTest">PayPal (Test - $1)</option>
+
                             </select>
                             <p id="payment-note" class="payment-note"></p>
                         </div>
@@ -1326,14 +1328,18 @@
         const COST_PER_PERSON = 175;
         let playerCount = 1;
 
-        function updateCostDisplay() {
+               function updateCostDisplay() {
             const playerTotal = playerCount * COST_PER_PERSON;
             const sponsorLevel = document.getElementById('sponsorship-level');
             const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
+            const paymentType = document.getElementById('payment-type') ? document.getElementById('payment-type').value : '';
             
-            const finalTotal = playerTotal + sponsorTotal;
+            let finalTotal = playerTotal + sponsorTotal;
+            if (paymentType === 'PayPalTest') finalTotal = 1;
+            
             document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString()}`;
         }
+
 
         function addPlayer() {
             if (playerCount >= 4) return;
@@ -1368,7 +1374,7 @@
             }
         }
 
-                function updatePaymentNote() {
+                     function updatePaymentNote() {
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
             const submitBtn = document.getElementById('submit-btn');
@@ -1376,16 +1382,20 @@
 
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
+            else if (paymentType === 'PayPalTest') noteArea.innerText = "* TEST MODE: You will only be charged $1.00.";
             else noteArea.innerText = "";
 
-            if (paymentType === 'PayPal') {
+            if (paymentType === 'PayPal' || paymentType === 'PayPalTest') {
                 submitBtn.style.display = 'none';
                 paypalContainer.style.display = 'block';
             } else {
                 submitBtn.style.display = 'block';
                 paypalContainer.style.display = 'none';
             }
+            
+            updateCostDisplay(); 
         }
+
 
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1507,7 +1517,7 @@
                 });
             }
         }
-        paypal.Buttons({
+                paypal.Buttons({
             onClick: function(data, actions) {
                 // Check required fields before opening PayPal
                 const form = document.getElementById('golf-signup-form');
@@ -1520,7 +1530,10 @@
             createOrder: function(data, actions) {
                 const sponsorLevelSelect = document.getElementById('sponsorship-level');
                 const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
-                const finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
+                let finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
+                
+                const selectedPaymentType = document.getElementById('payment-type').value;
+                if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
                 
                 return actions.order.create({
                     purchase_units: [{ amount: { value: finalTotal.toString() } }]
@@ -1537,7 +1550,10 @@
                     const sponsorLevelSelect = document.getElementById('sponsorship-level');
                     const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
                     const sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
-                    const finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
+                    let finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
+                    
+                    const selectedPaymentType = document.getElementById('payment-type').value;
+                    if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
                     
                     let players = [];
                     for (let i = 1; i <= playerCount; i++) {
@@ -1546,7 +1562,7 @@
                             lastName: document.getElementById(`p${i}-last`).value,
                             email: document.getElementById(`p${i}-email`).value || "N/A",
                             isPrimary: i === 1,
-                            paymentType: "PayPal",
+                            paymentType: selectedPaymentType,
                             totalCost: finalTotal 
                         });
                     }
