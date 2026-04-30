@@ -994,6 +994,10 @@
             <div id="signup-form-container">
                 <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
                 <h2>Golf Outing Sign Up</h2>
+                <div id="sold-out-banner" style="display: none; background: rgba(231, 76, 60, 0.2); border: 2px solid #e74c3c; color: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                    <strong style="color: #e74c3c; display: block; margin-bottom: 5px;">🚨 The tournament is currently SOLD OUT.</strong> 
+                    You may still submit this form to join the official waitlist. No payment is required today.
+                </div>
                 <p style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
                 <form id="golf-signup-form">
@@ -1181,6 +1185,14 @@
                 .then(data => {
                     if (data && data.total !== undefined) {
                         updateMeterUI(data.total);
+                    }
+                    if (data && data.isSoldOut) {
+                        document.getElementById('sold-out-banner').style.display = 'block';
+                        const submitBtn = document.getElementById('submit-btn');
+                        if(submitBtn) {
+                            submitBtn.innerText = "Join Waitlist";
+                            submitBtn.style.backgroundColor = "#f39c12"; // Change button to orange
+                        }
                     }
                     if (data && data.sponsors && data.sponsors.length > 0) {
                         updateMarqueeUI(data.sponsors);
@@ -1423,7 +1435,8 @@
                     players: players,
                     sponsorship: sponsorName,
                     sponsorshipAmount: sponsorCost,
-                    grandTotal: finalTotal
+                    grandTotal: finalTotal,
+                    isWaitlist: document.getElementById('sold-out-banner').style.display === 'block'
                 })
             })
             .then(response => response.json())
@@ -1431,7 +1444,7 @@
                 if (data.result === 'success') {
                                         const paymentDiv = document.getElementById('success-payment-instructions');
                     if (selectedPaymentType === 'Venmo') {
-                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
+                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/@Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
                     } else {
                         paymentDiv.innerHTML = "";
                     }
