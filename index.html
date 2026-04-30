@@ -818,10 +818,10 @@
             color: #cbd5e1;
         }
         .hole-sold {
-            border-color: #27ae60;
-            background: rgba(39, 174, 96, 0.1);
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
         }
-        .hole-sold .hole-status { color: #2ecc71; }
+        .hole-sold .hole-status { color: #e74c3c; }
 
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
@@ -1121,21 +1121,16 @@
 
             <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
             <div class="hole-grid">
-                <div class="hole-card">
-                    <div class="hole-number">Hole 1</div>
-                    <div class="hole-status">Available</div>
-                </div>
-                                <script>
+                <script>
                     for(let i=1; i<=18; i++) {
                         document.write(`
-                        <div class="hole-card" onclick="selectSponsorship('250')" style="cursor: pointer;">
+                        <div class="hole-card" id="hole-card-${i}" onclick="selectSponsorship('250')" style="cursor: pointer;">
                             <div class="hole-number">Hole ${i}</div>
-                            <div class="hole-status">Available</div>
+                            <div class="hole-status" id="hole-status-${i}">Available</div>
                         </div>
                         `);
                     }
                 </script>
-
             </div>
         </section>
     </main>
@@ -1213,6 +1208,9 @@
                     if (data && data.sponsors && data.sponsors.length > 0) {
                         updateMarqueeUI(data.sponsors);
                     }
+                    if (data && data.soldHoles && data.soldHoles.length > 0) {
+                        updateHoleSponsorsUI(data.soldHoles);
+                    }
                 })
                 .catch(error => console.error("Error fetching global data:", error));
         }
@@ -1240,6 +1238,19 @@
 
             document.getElementById('marquee-set-1').innerHTML = html;
             document.getElementById('marquee-set-2').innerHTML = html;
+        }
+
+        function updateHoleSponsorsUI(soldHoles) {
+            soldHoles.forEach(holeNum => {
+                const card = document.getElementById(`hole-card-${holeNum}`);
+                const status = document.getElementById(`hole-status-${holeNum}`);
+                if (card && status) {
+                    card.classList.add('hole-sold');
+                    card.style.cursor = 'not-allowed';
+                    card.onclick = null; // Remove the click event
+                    status.innerText = 'Sold';
+                }
+            });
         }
 
         // --- Secret Admin Dashboard Logic ---
