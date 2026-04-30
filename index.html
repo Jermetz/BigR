@@ -1031,6 +1031,7 @@
                                 <option value="5000">Platinum Sponsor — $5,000</option>
                             </select>
                         </div>
+                        <p id="selected-hole-display" style="color: #3498db; font-size: 14px; margin-top: 5px; font-weight: bold; display: none;"></p>
                         <div class="form-group" style="margin-top: 10px;">
                             <label style="color: #f8fafc; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                                 <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="width: 18px; height: 18px;">
@@ -1085,7 +1086,7 @@
             <div class="story-text">
                 <p>What is a hero? I know a hero as a soldier, a fireman or a surgeon. The Ancient Romans came to identify a hero as one in the face of danger and adversity, or from a position of weakness, displays courage and a will for self-sacrifice, that is heroism. Ryan to me not only makes my list, but is in every sense of the word, a hero according to the ancient Greeks.</p>
                 <p>For those who have not had the pleasure to meet Ryan Thomas yet, I will tell you a little bit about this brave young man. Ryan’s story starts on July 15th 1990, born a healthy, perfect little boy. Years later in 1997 and as Ryan enters into 2nd grade, his parents start their long journey into what no parent should have to do, they take their little boy to see a neurologist for what were his first symptoms - hand tremors. They are told it is nothing. In 1999, now a fourth grader and full of life and trouble as all young boys are, Ryan symptoms are now progressively getting worse. His tremors are the same, but is now experiencing a bit of unbalanceness in his walk. At this point, he is taken to Children’s Hospital of Pennsylvania (CHOP) every 6 months for blood work. All result of which came up negative for every common and rare disease. In the year 2000, Ryan is now having difficulty walking which results in him tripping and falling. His body is showing signs of fatigue and tiredness, which resulted in frequent seizures. At this point Ryan is no longer able to walk and required a badass scooter to get around. The following years only are filled with testing, poking, prodding and trips to several doctors and specialists with only dead ends and no answers. In 2004, CHOP called and requested to see Bob and Leigh (Ryan’s parents) without Ryan. They are told they have a diagnosis, it is a mitochondrial disease known as Myoclonic Epilepsy with Ragged Red Fibers, aka MERRF. The disease is extremely rare, believed to affect only 1/400,000, but CHOP is not able to give any more details about the disease or what Ryan’s future would be.</p>
-                <p>What is Mitochondrial Disease? Mitochondrial Organelles are found in every cell of the body which are responsible for the body’s energy production. Imagine a major city with half of its power plants shut down. At best such conditions would produce a brown out with large sections of the city working far below optimum efficiency. Now imagine your body working with one half of its energy producing facility shut down. The brain would be impaired, vision would be dim at best, muscles would twitch spastically or would be too weak to allow your body to walk or write, your heart would be weakened, and you would not be able to eat and digest your food. Mitochondrial disease compromises their lives and can be fatal. In 2005, Ryan was hospitalized at CHOP as a result of a simple cold. One of the results of this cold was back to back seizures. He was placed on anti-seizure medication, but the cold would not go away and Ryan grew weaker and weaker. The seizures continued and were becoming more violent, eventually causing Optic Atrophy. As a result Ryan can only see from a small part of his right eye. In 2007, Ryan is plagued with another cold which turns life threatening. He enters CHOP in January and is not released until May. During his stay he developed many complications, was intubated 4 times and also developed pancreatitis. The only way to get Ryan home would be to have a tracheotomy to assist in his breathing, and a gastric tube put in place for eating, forever changing Ryan’s life. Ryan is now home surrounded by his loving family and friends and is always willing to give a smile to anyone. But for me, his Uncle, he makes me work for it.</p>
+                <p>What is Mitochondrial Disease? Mitochondrial Organelles are found in every cell of the body which are responsible for the body’s energy production. Imagine a major city with half of its power plants shut down. At best such conditions would produce a brown out with large sections of the city working far below optimum efficiency. Now imagine your body working with one half of its energy producing facility shut down. The brain would be impaired, vision would be dim at best, muscles would twitch spastically or would be too weak to allow your body to walk or write, your heart weakened, and you would not be able to eat and digest your food. Mitochondrial disease compromises their lives and can be fatal. In 2005, Ryan was hospitalized at CHOP as a result of a simple cold. One of the results of this cold was back to back seizures. He was placed on anti-seizure medication, but the cold would not go away and Ryan grew weaker and weaker. The seizures continued and were becoming more violent, eventually causing Optic Atrophy. As a result Ryan can only see from a small part of his right eye. In 2007, Ryan is plagued with another cold which turns life threatening. He enters CHOP in January and is not released until May. During his stay he developed many complications, was intubated 4 times and also developed pancreatitis. The only way to get Ryan home would be to have a tracheotomy to assist in his breathing, and a gastric tube put in place for eating, forever changing Ryan’s life. Ryan is now home surrounded by his loving family and friends and is always willing to give a smile to anyone. But for me, his Uncle, he makes me work for it.</p>
                 <p>With every life’s struggle there are challenges. For the Thomas’, it’s just their way of life - it is just what they do, and there isn’t anything they wouldn’t do for Ryan. What you won’t find are excuses, pity or selfishness, they don’t ask for help, they just do what needs to be done. That is why I am asking for your help in raising money for a great cause and hopefully one day our contribution will provide the ultimate relief, a cure for all mitochondrial diseases. Thank you!</p>
                 <p><em>Written by Mike Mignogna (Uncle Mike)</em></p>
             </div>
@@ -1124,7 +1125,7 @@
                 <script>
                     for(let i=1; i<=18; i++) {
                         document.write(`
-                        <div class="hole-card" id="hole-card-${i}" onclick="selectSponsorship('250')" style="cursor: pointer;">
+                        <div class="hole-card" id="hole-card-${i}" onclick="selectSponsorship('250', ${i})" style="cursor: pointer;">
                             <div class="hole-number">Hole ${i}</div>
                             <div class="hole-status" id="hole-status-${i}">Available</div>
                         </div>
@@ -1138,6 +1139,10 @@
     <script>
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
         const FUNDRAISING_GOAL = 30000;
+        
+        // --- State Tracking for Holes ---
+        let globalSoldHoles = [];
+        let selectedHoleNumber = null;
 
         // --- Navigation Logic ---
         function toggleMenu() {
@@ -1169,12 +1174,22 @@
             document.documentElement.scrollTop = 0; 
         }
 
-        function selectSponsorship(levelValue) {
+        function selectSponsorship(levelValue, holeNum = null) {
             const sponsorDropdown = document.getElementById('sponsorship-level');
             const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            const holeDisplay = document.getElementById('selected-hole-display');
             
+            selectedHoleNumber = holeNum;
+
             if (sponsorDropdown) {
                 sponsorDropdown.value = levelValue;
+            }
+
+            if (holeNum && holeDisplay) {
+                holeDisplay.innerText = "⛳ Targeting Hole #" + holeNum;
+                holeDisplay.style.display = "block";
+            } else if (holeDisplay) {
+                holeDisplay.style.display = "none";
             }
             
             // Auto-check the sponsor only box and trigger the UI update
@@ -1209,7 +1224,8 @@
                         updateMarqueeUI(data.sponsors);
                     }
                     if (data && data.soldHoles && data.soldHoles.length > 0) {
-                        updateHoleSponsorsUI(data.soldHoles);
+                        globalSoldHoles = data.soldHoles;
+                        updateHoleSponsorsUI(globalSoldHoles);
                     }
                 })
                 .catch(error => console.error("Error fetching global data:", error));
@@ -1370,11 +1386,18 @@
         function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
-            
+                        
             const sponsorLevel = document.getElementById('sponsorship-level');
             const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
             const paymentType = document.getElementById('payment-type') ? document.getElementById('payment-type').value : '';
             
+            // Clear manual hole selection if they drop their tier below $250
+            if (sponsorTotal < 250) {
+                selectedHoleNumber = null;
+                const holeDisplay = document.getElementById('selected-hole-display');
+                if (holeDisplay) holeDisplay.style.display = 'none';
+            }
+
             let finalTotal = playerTotal + sponsorTotal;
             if (paymentType === 'PayPalTest') finalTotal = 1;
             
@@ -1462,7 +1485,7 @@
             
             const sponsorLevelSelect = document.getElementById('sponsorship-level');
             const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
-            const sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
+            let sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
             
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
 
@@ -1472,6 +1495,28 @@
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
                 return; 
+            }
+            // -----------------------------
+
+            // --- SMART HOLE ASSIGNMENT ---
+            let assignedHole = null;
+            if (sponsorCost >= 250) {
+                assignedHole = selectedHoleNumber; // Use targeted hole if they clicked one
+                
+                // If they didn't click a hole, auto-assign the lowest available
+                if (!assignedHole) {
+                    for (let i = 1; i <= 18; i++) {
+                        if (!globalSoldHoles.includes(i)) {
+                            assignedHole = i;
+                            break;
+                        }
+                    }
+                }
+                
+                if (assignedHole) {
+                    sponsorName = sponsorName + ` (Assigned Hole #${assignedHole})`;
+                    globalSoldHoles.push(assignedHole); // Reserve locally immediately
+                }
             }
             // -----------------------------
 
@@ -1499,7 +1544,8 @@
                     sponsorshipAmount: sponsorCost,
                     grandTotal: finalTotal,
                     isWaitlist: document.getElementById('sold-out-banner').style.display === 'block',
-                    isSponsorOnly: isSponsorOnly
+                    isSponsorOnly: isSponsorOnly,
+                    holeNumber: assignedHole // Passing the raw number to the backend just in case
                 })
             })
             .then(response => response.json())
@@ -1520,11 +1566,17 @@
                         }, 3000);
                     }
                     
-                    fetchGlobalData(); 
+                    fetchGlobalData(); // This will pull fresh soldHoles data to update the UI
                     
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
+                    
+                    // Reset targeting text
+                    selectedHoleNumber = null;
+                    const holeDisplay = document.getElementById('selected-hole-display');
+                    if (holeDisplay) holeDisplay.style.display = 'none';
+                    
                 } else {
                     throw new Error('Script error');
                 }
