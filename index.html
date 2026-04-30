@@ -1031,6 +1031,12 @@
                                 <option value="5000">Platinum Sponsor — $5,000</option>
                             </select>
                         </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label style="color: #f8fafc; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="width: 18px; height: 18px;">
+                                I am only sponsoring (Not playing golf)
+                            </label>
+                        </div>
                     </div>
 
                     <div class="player-card">
@@ -1170,10 +1176,20 @@
 
         function selectSponsorship(levelValue) {
             const sponsorDropdown = document.getElementById('sponsorship-level');
+            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            
             if (sponsorDropdown) {
                 sponsorDropdown.value = levelValue;
+            }
+            
+            // Auto-check the sponsor only box and trigger the UI update
+            if (sponsorCheckbox && !sponsorCheckbox.checked) {
+                sponsorCheckbox.checked = true;
+                toggleSponsorOnly(); 
+            } else {
                 updateCostDisplay();
             }
+            
             showSection('signup');
         }
 
@@ -1340,8 +1356,10 @@
         const COST_PER_PERSON = 175;
         let playerCount = 1;
 
-               function updateCostDisplay() {
-            const playerTotal = playerCount * COST_PER_PERSON;
+        function updateCostDisplay() {
+            const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+            const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
+            
             const sponsorLevel = document.getElementById('sponsorship-level');
             const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
             const paymentType = document.getElementById('payment-type') ? document.getElementById('payment-type').value : '';
@@ -1350,8 +1368,29 @@
             if (paymentType === 'PayPalTest') finalTotal = 1;
             
             document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString()}`;
+            return finalTotal; 
         }
 
+        function toggleSponsorOnly() {
+            const isSponsorOnly = document.getElementById('sponsor-only-checkbox').checked;
+            const addBtn = document.getElementById('add-player-btn');
+            const removeBtn = document.getElementById('remove-player-btn');
+            const p1Header = document.querySelector('#players-container .player-card h3');
+            
+            if (isSponsorOnly) {
+                // Strip extra players if they checked the box late
+                while(playerCount > 1) {
+                    removePlayer();
+                }
+                if (addBtn) addBtn.style.display = 'none';
+                if (removeBtn) removeBtn.style.display = 'none';
+                if (p1Header) p1Header.innerText = "Sponsor Contact Info";
+            } else {
+                if (addBtn) addBtn.style.display = 'block';
+                if (p1Header) p1Header.innerText = "Player 1 (Primary Contact)";
+            }
+            updateCostDisplay();
+        }
 
         function addPlayer() {
             if (playerCount >= 4) return;
@@ -1386,7 +1425,7 @@
             }
         }
 
-                            function updatePaymentNote() {
+        function updatePaymentNote() {
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
 
@@ -1414,7 +1453,9 @@
             const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
             const sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
             
-            const finalTotal = (playerCount * COST_PER_PERSON) + sponsorCost;
+            const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+            let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
+            if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
 
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
@@ -1436,7 +1477,8 @@
                     sponsorship: sponsorName,
                     sponsorshipAmount: sponsorCost,
                     grandTotal: finalTotal,
-                    isWaitlist: document.getElementById('sold-out-banner').style.display === 'block'
+                    isWaitlist: document.getElementById('sold-out-banner').style.display === 'block',
+                    isSponsorOnly: isSponsorOnly
                 })
             })
             .then(response => response.json())
