@@ -1010,12 +1010,6 @@
                 
                 <form id="golf-signup-form">
 
-                    <div id="team-size-selectors" class="action-buttons" style="margin-bottom: 20px;">
-                        <button type="button" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
-                        <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
-                        <button type="button" class="primary-btn" onclick="setPlayerCount(1)" style="background-color: #94a3b8;">Select Individual</button>
-                    </div>
-
                     <div id="players-container">
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
@@ -1029,6 +1023,19 @@
                             <div class="form-group">
                                 <input type="email" id="p1-email" placeholder="Email Address *" required>
                             </div>
+                        </div>
+                    </div>
+
+                    <div id="player-management-actions" style="margin-bottom: 20px;">
+                        <div class="action-buttons" style="margin-bottom: 10px;">
+                            <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
+                            <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
+                        </div>
+                        
+                        <div id="team-size-selectors" class="action-buttons">
+                            <button type="button" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
+                            <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
+                            <button type="button" class="primary-btn" onclick="setPlayerCount(1)" style="background-color: #94a3b8;">Select Individual</button>
                         </div>
                     </div>
 
@@ -1072,12 +1079,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <div class="action-buttons">
-                            <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
-                            <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
-                        </div>
-                                <button type="submit" id="submit-btn" class="primary-btn">Submit Registration</button>
-                                
+                        <button type="submit" id="submit-btn" class="primary-btn">Submit Registration</button>
                     </div>
                 </form>
             </div>
