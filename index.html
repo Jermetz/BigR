@@ -1431,7 +1431,7 @@
                 if (data.result === 'success') {
                                         const paymentDiv = document.getElementById('success-payment-instructions');
                     if (selectedPaymentType === 'Venmo') {
-                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/@Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
+                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
                     } else {
                         paymentDiv.innerHTML = "";
                     }
