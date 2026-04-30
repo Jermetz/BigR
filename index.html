@@ -850,7 +850,7 @@
             .time-box { min-width: 65px; padding: 10px; }
         }
     </style>
-        <script src="https://www.paypal.com/sdk/js?client-id=Aa_cFA55xR_Zzjdiru41h-qVj8tPGktwkANJKB9S2dufPi1KtcPm_sL2av7qz6wNAPmVT_Jy0ygEfKMj&currency=USD"></script>
+     
 </head>
 <body>
     
@@ -858,6 +858,7 @@
         <div class="overlay-card success-card">
             <h2>⛳ Registration Success!</h2>
             <p>Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
+                        <div id="success-payment-instructions" style="margin-bottom: 25px; font-weight: bold; color: #f1c40f;"></div>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
     </div>
@@ -1031,14 +1032,13 @@
                     <div class="player-card">
                         <h3>Payment Information</h3>
                         <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                            <select id="payment-type" required onchange="updatePaymentNote()">
+                                                     <select id="payment-type" required onchange="updatePaymentNote()">
                                 <option value="" disabled selected>Select Payment Type *</option>
                                 <option value="Cash">Cash</option>
                                 <option value="Check">Check</option>
-                                <option value="PayPal">PayPal</option>
-                                <option value="PayPalTest">PayPal (Test - $1)</option>
-
+                                <option value="Venmo">Venmo</option>
                             </select>
+
                             <p id="payment-note" class="payment-note"></p>
                         </div>
                     </div>
@@ -1374,27 +1374,16 @@
             }
         }
 
-                     function updatePaymentNote() {
+                            function updatePaymentNote() {
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
-            const submitBtn = document.getElementById('submit-btn');
-            const paypalContainer = document.getElementById('paypal-button-container');
 
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
-            else if (paymentType === 'PayPalTest') noteArea.innerText = "* TEST MODE: You will only be charged $1.00.";
+            else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else noteArea.innerText = "";
-
-            if (paymentType === 'PayPal' || paymentType === 'PayPalTest') {
-                submitBtn.style.display = 'none';
-                paypalContainer.style.display = 'block';
-            } else {
-                submitBtn.style.display = 'block';
-                paypalContainer.style.display = 'none';
-            }
-            
-            updateCostDisplay(); 
         }
+
 
 
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
@@ -1440,6 +1429,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
+                                        const paymentDiv = document.getElementById('success-payment-instructions');
+                    if (selectedPaymentType === 'Venmo') {
+                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/@Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
+                    } else {
+                        paymentDiv.innerHTML = "";
+                    }
+
                     if (window.clapAudio) {
                         window.clapAudio.play().catch(err => console.log('Playback failed:', err));
                         setTimeout(() => {
