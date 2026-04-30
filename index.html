@@ -1370,6 +1370,13 @@
         function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
+                        if (isSponsorOnly && sponsorCost === 0) {
+                alert("Please select a Sponsorship Level. You cannot choose 'No Sponsorship' if you are only sponsoring.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
+                return; // Stop the submission
+            }
+
             
             const sponsorLevel = document.getElementById('sponsorship-level');
             const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
