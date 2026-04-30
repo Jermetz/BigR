@@ -1009,6 +1009,13 @@
                 <p style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
                 <form id="golf-signup-form">
+
+                    <div id="team-size-selectors" class="action-buttons" style="margin-bottom: 20px;">
+                        <button type="button" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
+                        <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
+                        <button type="button" class="primary-btn" onclick="setPlayerCount(1)" style="background-color: #94a3b8;">Select Individual</button>
+                    </div>
+
                     <div id="players-container">
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
@@ -1179,7 +1186,7 @@
             showSection('signup');
         }
 
-        function goToSignup(numPlayers) {
+        function setPlayerCount(numPlayers) {
             // 1. Reset to a single player to clear previous selections
             while(playerCount > 1) {
                 removePlayer();
@@ -1196,8 +1203,10 @@
             for(let i = 1; i < numPlayers; i++) {
                 addPlayer();
             }
-            
-            // 4. Navigate to the form
+        }
+
+        function goToSignup(numPlayers) {
+            setPlayerCount(numPlayers);
             showSection('signup');
         }
 
@@ -1463,6 +1472,7 @@
             const p1Header = document.querySelector('#players-container .player-card h3');
             const teamNameContainer = document.getElementById('team-name-container');
             const formMainTitle = document.getElementById('form-main-title');
+            const sizeSelectors = document.getElementById('team-size-selectors');
             
             if (isSponsorOnly) {
                 // Strip extra players if they checked the box late
@@ -1472,11 +1482,13 @@
                 if (addBtn) addBtn.style.display = 'none';
                 if (removeBtn) removeBtn.style.display = 'none';
                 if (teamNameContainer) teamNameContainer.style.display = 'none';
+                if (sizeSelectors) sizeSelectors.style.display = 'none';
                 if (p1Header) p1Header.innerText = "Sponsor Contact Info";
                 if (formMainTitle) formMainTitle.innerText = "Sponsor Registration";
             } else {
                 if (addBtn) addBtn.style.display = 'block';
                 if (teamNameContainer) teamNameContainer.style.display = 'flex';
+                if (sizeSelectors) sizeSelectors.style.display = 'flex';
                 if (p1Header) p1Header.innerText = "Player 1 (Primary Contact)";
                 if (formMainTitle) formMainTitle.innerText = "Golf Outing Sign Up";
             }
