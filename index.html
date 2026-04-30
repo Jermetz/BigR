@@ -980,6 +980,9 @@
                 <button class="primary-btn" onclick="goToSignup(2)" style="background-color: #2980b9;">Sign up Twosome</button>
                 <button class="primary-btn" onclick="goToSignup(1)" style="background-color: #94a3b8;">Sign up Individual</button>
             </div>
+            <div style="margin-top: 10px;">
+                <button class="primary-btn" onclick="goToSponsorOnly()" style="background-color: #f1c40f; color: #111;">Sponsor Us</button>
+            </div>
 
             <div class="sponsor-marquee-container">
                 <p class="marquee-title">Thank You To Our Premium Sponsors</p>
@@ -998,7 +1001,7 @@
         <section id="section-signup" class="content-section">
             <div id="signup-form-container">
                 <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
-                <h2>Golf Outing Sign Up</h2>
+                <h2 id="form-main-title">Golf Outing Sign Up</h2>
                 <div id="sold-out-banner" style="display: none; background: rgba(231, 76, 60, 0.2); border: 2px solid #e74c3c; color: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
                     <strong style="color: #e74c3c; display: block; margin-bottom: 5px;">🚨 The tournament is currently SOLD OUT.</strong> 
                     You may still submit this form to join the official waitlist. No payment is required today.
@@ -1009,7 +1012,7 @@
                     <div id="players-container">
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
-                            <div class="form-group">
+                            <div class="form-group" id="team-name-container">
                                 <input type="text" id="team-name" placeholder="Team Name (Optional)">
                             </div>
                             <div class="form-group">
@@ -1161,6 +1164,20 @@
                 }
             });
         });
+
+        function goToSponsorOnly() {
+            // Remove extra players
+            while(playerCount > 1) {
+                removePlayer();
+            }
+            // Check sponsor box to force the form into sponsor mode
+            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            if (sponsorCheckbox) {
+                sponsorCheckbox.checked = true;
+                toggleSponsorOnly();
+            }
+            showSection('signup');
+        }
 
         function goToSignup(numPlayers) {
             // 1. Reset to a single player to clear previous selections
@@ -1444,7 +1461,8 @@
             const addBtn = document.getElementById('add-player-btn');
             const removeBtn = document.getElementById('remove-player-btn');
             const p1Header = document.querySelector('#players-container .player-card h3');
-            const teamNameInput = document.getElementById('team-name');
+            const teamNameContainer = document.getElementById('team-name-container');
+            const formMainTitle = document.getElementById('form-main-title');
             
             if (isSponsorOnly) {
                 // Strip extra players if they checked the box late
@@ -1453,12 +1471,14 @@
                 }
                 if (addBtn) addBtn.style.display = 'none';
                 if (removeBtn) removeBtn.style.display = 'none';
-                if (teamNameInput) teamNameInput.style.display = 'none';
+                if (teamNameContainer) teamNameContainer.style.display = 'none';
                 if (p1Header) p1Header.innerText = "Sponsor Contact Info";
+                if (formMainTitle) formMainTitle.innerText = "Sponsor Registration";
             } else {
                 if (addBtn) addBtn.style.display = 'block';
-                if (teamNameInput) teamNameInput.style.display = 'block';
+                if (teamNameContainer) teamNameContainer.style.display = 'flex';
                 if (p1Header) p1Header.innerText = "Player 1 (Primary Contact)";
+                if (formMainTitle) formMainTitle.innerText = "Golf Outing Sign Up";
             }
             updateCostDisplay();
         }
