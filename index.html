@@ -974,7 +974,12 @@
                 <a href="https://www.google.com/maps/search/?api=1&query=The+Bucks+Club,+2600+York+Rd,+Jamison,+PA+18929" target="_blank" class="secondary-btn maps-btn">🗺️ Get Directions</a>
                 <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
             </div>
-            <button class="primary-btn" onclick="showSection('signup')">Sign Up Now</button>
+            
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button class="primary-btn" onclick="goToSignup(4)">Sign up Foursome</button>
+                <button class="primary-btn" onclick="goToSignup(2)" style="background-color: #2980b9;">Sign up Twosome</button>
+                <button class="primary-btn" onclick="goToSignup(1)" style="background-color: #94a3b8;">Sign up Individual</button>
+            </div>
 
             <div class="sponsor-marquee-container">
                 <p class="marquee-title">Thank You To Our Premium Sponsors</p>
@@ -1004,6 +1009,9 @@
                     <div id="players-container">
                         <div class="player-card">
                             <h3>Player 1 (Primary Contact)</h3>
+                            <div class="form-group">
+                                <input type="text" id="team-name" placeholder="Team Name (Optional)">
+                            </div>
                             <div class="form-group">
                                 <input type="text" id="p1-first" placeholder="First Name *" required>
                                 <input type="text" id="p1-last" placeholder="Last Name *" required>
@@ -1154,7 +1162,29 @@
             });
         });
 
-                function showSection(sectionId) {
+        function goToSignup(numPlayers) {
+            // 1. Reset to a single player to clear previous selections
+            while(playerCount > 1) {
+                removePlayer();
+            }
+            
+            // 2. Uncheck 'Sponsor Only' if it was previously selected
+            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            if(sponsorCheckbox && sponsorCheckbox.checked) {
+                sponsorCheckbox.checked = false;
+                toggleSponsorOnly();
+            }
+            
+            // 3. Add the requested number of players
+            for(let i = 1; i < numPlayers; i++) {
+                addPlayer();
+            }
+            
+            // 4. Navigate to the form
+            showSection('signup');
+        }
+
+        function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none'; 
@@ -1387,6 +1417,7 @@
             const addBtn = document.getElementById('add-player-btn');
             const removeBtn = document.getElementById('remove-player-btn');
             const p1Header = document.querySelector('#players-container .player-card h3');
+            const teamNameInput = document.getElementById('team-name');
             
             if (isSponsorOnly) {
                 // Strip extra players if they checked the box late
@@ -1395,9 +1426,11 @@
                 }
                 if (addBtn) addBtn.style.display = 'none';
                 if (removeBtn) removeBtn.style.display = 'none';
+                if (teamNameInput) teamNameInput.style.display = 'none';
                 if (p1Header) p1Header.innerText = "Sponsor Contact Info";
             } else {
                 if (addBtn) addBtn.style.display = 'block';
+                if (teamNameInput) teamNameInput.style.display = 'block';
                 if (p1Header) p1Header.innerText = "Player 1 (Primary Contact)";
             }
             updateCostDisplay();
@@ -1468,6 +1501,8 @@
             let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
             if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
 
+            const teamName = document.getElementById('team-name') ? document.getElementById('team-name').value : "";
+
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
                 players.push({
@@ -1484,6 +1519,7 @@
                 method: 'POST',
                 body: JSON.stringify({ 
                     action: "signup", 
+                    teamName: teamName,
                     players: players,
                     sponsorship: sponsorName,
                     sponsorshipAmount: sponsorCost,
