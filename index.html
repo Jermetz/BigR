@@ -1006,7 +1006,7 @@
                     <strong style="color: #e74c3c; display: block; margin-bottom: 5px;">🚨 The tournament is currently SOLD OUT.</strong> 
                     You may still submit this form to join the official waitlist. No payment is required today.
                 </div>
-                <p style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
+                <p id="form-subtitle" style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
                 <form id="golf-signup-form">
 
@@ -1475,6 +1475,7 @@
             const teamNameContainer = document.getElementById('team-name-container');
             const formMainTitle = document.getElementById('form-main-title');
             const sizeSelectors = document.getElementById('team-size-selectors');
+            const formSubtitle = document.getElementById('form-subtitle');
             
             if (isSponsorOnly) {
                 // Strip extra players if they checked the box late
@@ -1487,12 +1488,14 @@
                 if (sizeSelectors) sizeSelectors.style.display = 'none';
                 if (p1Header) p1Header.innerText = "Sponsor Contact Info";
                 if (formMainTitle) formMainTitle.innerText = "Sponsor Registration";
+                if (formSubtitle) formSubtitle.style.display = 'none';
             } else {
                 if (addBtn) addBtn.style.display = 'block';
                 if (teamNameContainer) teamNameContainer.style.display = 'flex';
                 if (sizeSelectors) sizeSelectors.style.display = 'flex';
                 if (p1Header) p1Header.innerText = "Player 1 (Primary Contact)";
                 if (formMainTitle) formMainTitle.innerText = "Golf Outing Sign Up";
+                if (formSubtitle) formSubtitle.style.display = 'block';
             }
             updateCostDisplay();
         }
