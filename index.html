@@ -1049,7 +1049,8 @@
                         <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">Boost your impact by adding a sponsorship to your registration.</p>
                         <div class="form-group">
                             <select id="sponsorship-level" onchange="updateCostDisplay()">
-                                <option value="0" selected>No Sponsorship (Golf Only)</option>
+                                <option value="" disabled selected>&lt;Choose a Sponsorship&gt;</option>
+                                <option value="0">No Sponsorship (Golf Only)</option>
                                 <option value="250">Hole Sponsor — $250</option>
                                 <option value="1000">Silver Sponsor — $1,000</option>
                                 <option value="2500">Gold Sponsor — $2,500</option>
@@ -1457,7 +1458,7 @@
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
             
             const sponsorLevel = document.getElementById('sponsorship-level');
-            const sponsorTotal = sponsorLevel ? parseInt(sponsorLevel.value) : 0;
+            const sponsorTotal = sponsorLevel ? (parseInt(sponsorLevel.value) || 0) : 0;
             const paymentType = document.getElementById('payment-type') ? document.getElementById('payment-type').value : '';
             
             let finalTotal = playerTotal + sponsorTotal;
@@ -1558,8 +1559,8 @@
             const selectedPaymentType = document.getElementById('payment-type').value;
             
             const sponsorLevelSelect = document.getElementById('sponsorship-level');
-            const sponsorCost = sponsorLevelSelect ? parseInt(sponsorLevelSelect.value) : 0;
-            let sponsorName = sponsorLevelSelect ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
+            const sponsorCost = sponsorLevelSelect ? (parseInt(sponsorLevelSelect.value) || 0) : 0;
+            let sponsorName = (sponsorLevelSelect && sponsorLevelSelect.value) ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
             
             // Append the specific hole number so the Google Script catches it
             if (sponsorCost === 250 && selectedHoleNum) {
