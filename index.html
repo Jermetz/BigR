@@ -1567,6 +1567,15 @@
             }
             
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+            
+            // Validation: Ensure a sponsorship level is selected if "Sponsor Only" is checked
+            if (isSponsorOnly && sponsorCost === 0) {
+                alert("Please select a sponsorship level before submitting.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
+                return;
+            }
+
             let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
             if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
 
