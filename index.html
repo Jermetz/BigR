@@ -856,8 +856,8 @@
     
     <div id="success-overlay" class="fullscreen-overlay">
         <div class="overlay-card success-card">
-            <h2>⛳ Registration Success!</h2>
-            <p>Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
+            <h2 id="success-header">⛳ Registration Success!</h2>
+            <p id="success-body">Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
                         <div id="success-payment-instructions" style="margin-bottom: 25px; font-weight: bold; color: #f1c40f;"></div>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
@@ -1614,6 +1614,21 @@
                         paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
                     } else {
                         paymentDiv.innerHTML = "";
+                    }
+
+                    // --- Dynamic Success Message Update ---
+                    const successHeader = document.getElementById('success-header');
+                    const successBody = document.getElementById('success-body');
+
+                    if (isSponsorOnly) {
+                        successHeader.innerHTML = '🤝 Sponsorship Confirmed!';
+                        successBody.innerHTML = "Thank you so much for your generous sponsorship! Your support means the world to us. We'll be in touch soon regarding your logo and sponsorship details.";
+                    } else if (sponsorCost > 0) {
+                        successHeader.innerHTML = '⛳ Registration & Sponsorship Success!';
+                        successBody.innerHTML = "Thank you for registering to play AND for your generous sponsorship! We've recorded your details and look forward to seeing you on October 9th. We will be in touch soon regarding your sponsorship details.";
+                    } else {
+                        successHeader.innerHTML = '⛳ Registration Success!';
+                        successBody.innerHTML = "Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!";
                     }
 
                     if (window.clapAudio) {
