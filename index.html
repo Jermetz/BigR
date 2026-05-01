@@ -1048,8 +1048,8 @@
                         <h3>Sponsorship Opportunities</h3>
                         <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">Boost your impact by adding a sponsorship to your registration.</p>
                         <div class="form-group">
-                            <select id="sponsorship-level" onchange="updateCostDisplay()">
-                                <option value="" disabled selected>&lt;Choose a Sponsorship&gt;</option>
+                            <select id="sponsorship-level" onchange="handleSponsorshipChange()">
+                                <option value="" disabled selected><Choose a Sponsorship></option>
                                 <option value="0">No Sponsorship (Golf Only)</option>
                                 <option value="250">Hole Sponsor — $250</option>
                                 <option value="1000">Silver Sponsor — $1,000</option>
@@ -1452,6 +1452,22 @@
         // --- Pricing & Form Logic ---
         const COST_PER_PERSON = 175;
         let playerCount = 1;
+
+        function handleSponsorshipChange() {
+            const sponsorDropdown = document.getElementById('sponsorship-level');
+            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            
+            // If they manually select "No Sponsorship" (Golf Only), uncheck the box and update UI
+            if (sponsorDropdown && sponsorDropdown.value === "0") {
+                if (sponsorCheckbox && sponsorCheckbox.checked) {
+                    sponsorCheckbox.checked = false;
+                    toggleSponsorOnly(); // This naturally calls updateCostDisplay()
+                    return; 
+                }
+            }
+            
+            updateCostDisplay();
+        }
 
         function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
