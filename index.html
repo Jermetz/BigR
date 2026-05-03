@@ -572,6 +572,33 @@
             box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
         }
 
+        /* Segmented Intent Buttons */
+        .intent-btn {
+            flex: 1;
+            padding: 12px 5px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            color: #94a3b8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .intent-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.02);
+        }
+        .intent-btn:active {
+            transform: scale(0.98);
+        }
+        .intent-btn.active {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border-color: #3498db;
+        }
+
         .payment-note {
             color: #f1c40f; 
             font-size: 14px;
@@ -1046,7 +1073,16 @@
 
                     <div class="player-card">
                         <h3>Sponsorship Opportunities</h3>
-                        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">Boost your impact by adding a sponsorship to your registration.</p>
+                        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
+                        
+                        <div id="sponsor-intent-container" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
+                            <label style="display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Registration Type</label>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" id="intent-golf-btn" class="intent-btn active" onclick="setSponsorIntent(false)">🏌️‍♂️ Playing Golf</button>
+                                <button type="button" id="intent-sponsor-btn" class="intent-btn" onclick="setSponsorIntent(true)">🤝 Sponsoring Only</button>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <select id="sponsorship-level" onchange="handleSponsorshipChange()">
                                 <option value="" disabled selected>&lt;Select a Sponsorship&gt;</option>
@@ -1057,12 +1093,8 @@
                                 <option value="5000">Platinum Sponsor — $5,000</option>
                             </select>
                         </div>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label style="color: #f8fafc; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="width: 18px; height: 18px;">
-                                I am only sponsoring (Not playing golf)
-                            </label>
-                        </div>
+
+                        <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
                     </div>
 
                     <div class="player-card">
@@ -1175,17 +1207,35 @@
             });
         });
 
+        // --- Sponsorship Segmented Control Logic ---
+        function setSponsorIntent(isSponsorOnly) {
+            const checkbox = document.getElementById('sponsor-only-checkbox');
+            const golfBtn = document.getElementById('intent-golf-btn');
+            const sponsorBtn = document.getElementById('intent-sponsor-btn');
+            const sponsorDropdown = document.getElementById('sponsorship-level');
+            
+            if (isSponsorOnly) {
+                // If they switch to Sponsoring Only, but have "No Sponsorship" selected, reset dropdown
+                if (sponsorDropdown && sponsorDropdown.value === "0") {
+                    sponsorDropdown.value = "";
+                }
+                if (golfBtn) golfBtn.classList.remove('active');
+                if (sponsorBtn) sponsorBtn.classList.add('active');
+                if (checkbox) checkbox.checked = true;
+            } else {
+                if (sponsorBtn) sponsorBtn.classList.remove('active');
+                if (golfBtn) golfBtn.classList.add('active');
+                if (checkbox) checkbox.checked = false;
+            }
+            toggleSponsorOnly(); 
+        }
+
         function goToSponsorOnly() {
             // Remove extra players
             while(playerCount > 1) {
                 removePlayer();
             }
-            // Check sponsor box to force the form into sponsor mode
-            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
-            if (sponsorCheckbox) {
-                sponsorCheckbox.checked = true;
-                toggleSponsorOnly();
-            }
+            setSponsorIntent(true);
             showSection('signup');
         }
 
@@ -1195,12 +1245,8 @@
                 removePlayer();
             }
             
-            // 2. Uncheck 'Sponsor Only' if it was previously selected
-            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
-            if(sponsorCheckbox && sponsorCheckbox.checked) {
-                sponsorCheckbox.checked = false;
-                toggleSponsorOnly();
-            }
+            // 2. Switch intent back to playing golf
+            setSponsorIntent(false);
             
             // 3. Add the requested number of players
             for(let i = 1; i < numPlayers; i++) {
@@ -1232,16 +1278,15 @@
         function selectSponsorship(levelValue, holeNum = null) {
             selectedHoleNum = holeNum;
             const sponsorDropdown = document.getElementById('sponsorship-level');
-            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            const checkbox = document.getElementById('sponsor-only-checkbox');
             
             if (sponsorDropdown) {
                 sponsorDropdown.value = levelValue;
             }
             
-            // Auto-check the sponsor only box and trigger the UI update
-            if (sponsorCheckbox && !sponsorCheckbox.checked) {
-                sponsorCheckbox.checked = true;
-                toggleSponsorOnly(); 
+            // Auto-switch to sponsor only mode when clicking from the sponsor marquee
+            if (checkbox && !checkbox.checked) {
+                setSponsorIntent(true); 
             } else {
                 updateCostDisplay();
             }
@@ -1455,13 +1500,12 @@
 
         function handleSponsorshipChange() {
             const sponsorDropdown = document.getElementById('sponsorship-level');
-            const sponsorCheckbox = document.getElementById('sponsor-only-checkbox');
+            const checkbox = document.getElementById('sponsor-only-checkbox');
             
-            // If they manually select "No Sponsorship" (Golf Only), uncheck the box and update UI
+            // If they manually select "No Sponsorship" (Golf Only), auto-switch to Golf Mode
             if (sponsorDropdown && sponsorDropdown.value === "0") {
-                if (sponsorCheckbox && sponsorCheckbox.checked) {
-                    sponsorCheckbox.checked = false;
-                    toggleSponsorOnly(); // This naturally calls updateCostDisplay()
+                if (checkbox && checkbox.checked) {
+                    setSponsorIntent(false); 
                     return; 
                 }
             }
