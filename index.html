@@ -785,7 +785,25 @@
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .tier-platinum { border-top: 4px solid #e5e4e2; }
+        .tier-platinum {
+    border-top: 4px solid #e5e4e2;
+    position: relative;
+    overflow: hidden;
+}
+.tier-platinum::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: shine 4s infinite;
+}
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
         .tier-gold { border-top: 4px solid #ffd700; }
         .tier-silver { border-top: 4px solid #c0c0c0; }
         .tier-title {
@@ -852,6 +870,7 @@
 
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
+            #mobile-cta { display: block !important; }
             #main-content {
                 margin-left: 0;
                 width: 100%; 
@@ -886,6 +905,10 @@
             <h2 id="success-header">⛳ Registration Success!</h2>
             <p id="success-body">Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
                         <div id="success-payment-instructions" style="margin-bottom: 25px; font-weight: bold; color: #f1c40f;"></div>
+            <div style="margin-bottom: 20px;">
+    <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Tell your foursome:</p>
+    <a href="sms:?body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20www.bigrgolf.com" class="secondary-btn" style="text-decoration: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; display: inline-block;">📱 Text Them The Link</a>
+</div>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
     </div>
@@ -1187,7 +1210,9 @@
             </div>
         </section>
     </main>
+    <button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
         const FUNDRAISING_GOAL = 30000;
@@ -1269,7 +1294,7 @@
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
             
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
         }
@@ -1692,6 +1717,9 @@
                         successBody.innerHTML = "Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!";
                     }
 
+                    if (typeof confetti === 'function') {
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+}
                     if (window.clapAudio) {
                         window.clapAudio.play().catch(err => console.log('Playback failed:', err));
                         setTimeout(() => {
