@@ -1872,12 +1872,12 @@ body: JSON.stringify({
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
-                } else {
-                    throw new Error('Script error');
+             } else {
+                    throw new Error(data.error || 'Unknown Server Error');
                 }
             })
             .catch(error => {
-                alert("There was an error. Please try again or contact us.");
+                alert("Backend Error: " + error.message);
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
             });
@@ -1993,45 +1993,49 @@ async function submitDonation() {
             })
             .then(response => response.json())
             .then(data => {
-                // Hide the form section
-                document.getElementById('section-donate').style.display = 'none';
-                
-                // Populate the payment link/instructions
-                const paymentDiv = document.getElementById('donate-payment-instructions');
-                if (paymentType === 'Venmo') {
-                    paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
-                } else if (paymentType === 'Check') {
-                    paymentDiv.innerHTML = `Please make your $${amount} check payable to the order of Shawn Thomas.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
-                } else if (paymentType === 'Cash') {
-                    paymentDiv.innerHTML = `Please bring your $${amount} cash donation to the golf outing on 10/9.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
-                }
-                
-                // Reveal success modal
-                document.getElementById('donate-success-overlay').style.display = 'flex';
+                if (data.result === 'success') {
+                    // Hide the form section
+                    document.getElementById('section-donate').style.display = 'none';
+                    
+                    // Populate the payment link/instructions
+                    const paymentDiv = document.getElementById('donate-payment-instructions');
+                    if (paymentType === 'Venmo') {
+                        paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
+                    } else if (paymentType === 'Check') {
+                        paymentDiv.innerHTML = `Please make your $${amount} check payable to the order of Shawn Thomas.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
+                    } else if (paymentType === 'Cash') {
+                        paymentDiv.innerHTML = `Please bring your $${amount} cash donation to the golf outing on 10/9.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
+                    }
+                    
+                    // Reveal success modal
+                    document.getElementById('donate-success-overlay').style.display = 'flex';
 
-                // Trigger Confetti
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
-                }
+                    // Trigger Confetti
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
+                    }
 
-                // Reset form for next use
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Donation";
-                document.getElementById('donation-amount').value = '';
-                document.getElementById('donate-first').value = '';
-                document.getElementById('donate-last').value = '';
-                document.getElementById('donate-email').value = '';
-                const anonCheck = document.getElementById('anon-donation-checkbox');
-                if(anonCheck) { anonCheck.checked = false; toggleAnonymous(); }
-                if (paymentTypeDropdown) paymentTypeDropdown.value = '';
-                document.getElementById('donate-payment-note').innerText = '';
-                updateDonationDisplay();
-                
-                // Refresh the global meter data!
-                fetchGlobalData();
+                    // Reset form for next use
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Donation";
+                    document.getElementById('donation-amount').value = '';
+                    document.getElementById('donate-first').value = '';
+                    document.getElementById('donate-last').value = '';
+                    document.getElementById('donate-email').value = '';
+                    const anonCheck = document.getElementById('anon-donation-checkbox');
+                    if(anonCheck) { anonCheck.checked = false; toggleAnonymous(); }
+                    if (paymentTypeDropdown) paymentTypeDropdown.value = '';
+                    document.getElementById('donate-payment-note').innerText = '';
+                    updateDonationDisplay();
+                    
+                    // Refresh the global meter data!
+                    fetchGlobalData();
+                } else {
+                    throw new Error(data.error || 'Unknown Server Error');
+                }
             })
             .catch(error => {
-                alert("There was an error processing your donation. Please try again.");
+                alert("Backend Error: " + error.message);
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Donation";
             });
