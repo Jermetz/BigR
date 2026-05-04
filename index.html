@@ -1148,18 +1148,6 @@
                 </form>
             </div>
         </section>
-<div class="player-card">
-                    <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
-                    <div class="form-group" style="flex-direction: column;">
-                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote()">
-                            <option value="" disabled selected>Select Payment Type *</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Venmo">Venmo</option>
-                        </select>
-                        <p id="donate-payment-note" class="payment-note"></p>
-                    </div>
-                </div>
 <section id="section-donate" class="content-section">
             <div id="donate-form-container">
                 <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
@@ -1172,6 +1160,20 @@
                         <span style="font-size: 20px; font-weight: bold; color: #1e293b;">$</span>
                         <input type="number" id="donation-amount" placeholder="0.00" min="1" step="1" oninput="updateDonationDisplay()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px; width: 100%;">
                     </div>
+                </div>
+
+                <div class="player-card">
+                    <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
+                    <div class="form-group" style="flex-direction: column;">
+                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote()">
+                            <option value="" disabled selected>Select Payment Type *</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                            <option value="Venmo">Venmo</option>
+                        </select>
+                        <p id="donate-payment-note" class="payment-note"></p>
+                    </div>
+                </div>
 
                 <div class="total-display">
                     <h3>Total Donation Value</h3>
@@ -1867,33 +1869,6 @@ function submitDonation() {
             document.getElementById('donate-payment-note').innerText = '';
             updateDonationDisplay();
         }
-
-            const submitBtn = document.getElementById('submit-donate-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Processing...";
-
-            // Hide the form section
-            document.getElementById('section-donate').style.display = 'none';
-            
-            // Populate the payment link utilizing your standard Venmo path
-            const paymentDiv = document.getElementById('donate-payment-instructions');
-            paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a>`;
-            
-            // Reveal success modal
-            document.getElementById('donate-success-overlay').style.display = 'flex';
-
-            // Trigger Confetti
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
-            }
-
-            // Reset form for next use
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Submit Donation";
-            document.getElementById('donation-amount').value = '';
-            updateDonationDisplay();
-        }
-
         function closeDonateSuccess() {
             document.getElementById('donate-success-overlay').style.display = 'none';
             document.getElementById('section-donate').style.display = 'block';
