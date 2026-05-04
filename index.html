@@ -1045,7 +1045,7 @@
                     </div>
                 </div>
             </div>
-<button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
+
         </section>
 
         <section id="section-signup" class="content-section">
@@ -1284,7 +1284,7 @@
             showSection('signup');
         }
 
-        function showSection(sectionId) {
+ function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none'; 
@@ -1293,6 +1293,19 @@
             const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
+            
+            // --- NEW: Mobile CTA Visibility Toggle ---
+            const mobileCta = document.getElementById('mobile-cta');
+            if (mobileCta) {
+                if (sectionId === 'signup') {
+                    // Force hide the button when on the signup form
+                    mobileCta.style.setProperty('display', 'none', 'important');
+                } else {
+                    // Restore inline style so the CSS media query can display it on mobile
+                    mobileCta.style.display = 'none'; 
+                }
+            }
+            // -----------------------------------------
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
@@ -1805,5 +1818,6 @@
             fetchGlobalData(); 
         });
     </script>
+    <button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
 </body>
 </html>
