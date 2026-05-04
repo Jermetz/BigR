@@ -1913,6 +1913,11 @@ function submitDonation() {
                 submitBtn.innerText = "Submit Donation";
             });
         }
+        function closeDonateSuccess() {
+            document.getElementById('donate-success-overlay').style.display = 'none';
+            document.getElementById('section-donate').style.display = 'block';
+            showSection('home');
+        }
         let videoIsMuted = false;
         function toggleMute() {
             const introVideo = document.getElementById('intro-video');
