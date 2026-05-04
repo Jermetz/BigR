@@ -1148,7 +1148,18 @@
                 </form>
             </div>
         </section>
-
+<div class="player-card">
+                    <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
+                    <div class="form-group" style="flex-direction: column;">
+                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote()">
+                            <option value="" disabled selected>Select Payment Type *</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                            <option value="Venmo">Venmo</option>
+                        </select>
+                        <p id="donate-payment-note" class="payment-note"></p>
+                    </div>
+                </div>
 <section id="section-donate" class="content-section">
             <div id="donate-form-container">
                 <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
@@ -1666,7 +1677,15 @@
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else noteArea.innerText = "";
         }
+        function updateDonatePaymentNote() {
+            const paymentType = document.getElementById('donate-payment-type').value;
+            const noteArea = document.getElementById('donate-payment-note');
 
+            if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
+            else if (paymentType === 'Cash') noteArea.innerText = "* Cash can be brought to the golf outing on 10/9.";
+            else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
+            else noteArea.innerText = "";
+        }
 
 
         document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
@@ -1799,14 +1818,55 @@
             totalDisplay.innerText = `$${amount.toLocaleString()}`;
         }
 
-        function submitDonation() {
+function submitDonation() {
             const amountInput = document.getElementById('donation-amount').value;
             const amount = parseFloat(amountInput);
+            const paymentTypeDropdown = document.getElementById('donate-payment-type');
+            const paymentType = paymentTypeDropdown ? paymentTypeDropdown.value : '';
             
             if (!amount || amount <= 0) {
                 alert("Please enter a valid donation amount.");
                 return;
             }
+
+            if (!paymentType) {
+                alert("Please select a payment type.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-donate-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+
+            // Hide the form section
+            document.getElementById('section-donate').style.display = 'none';
+            
+            // Populate the payment link/instructions based on the selected type
+            const paymentDiv = document.getElementById('donate-payment-instructions');
+            if (paymentType === 'Venmo') {
+                paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a>`;
+            } else if (paymentType === 'Check') {
+                paymentDiv.innerHTML = `Please make your $${amount} check payable to the order of Shawn Thomas.`;
+            } else if (paymentType === 'Cash') {
+                paymentDiv.innerHTML = `Please bring your $${amount} cash donation to the golf outing on 10/9.`;
+            }
+            
+            // Reveal success modal
+            document.getElementById('donate-success-overlay').style.display = 'flex';
+
+            // Trigger Confetti
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
+            }
+
+            // Reset form for next use
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Donation";
+            document.getElementById('donation-amount').value = '';
+            if (paymentTypeDropdown) paymentTypeDropdown.value = '';
+            document.getElementById('donate-payment-note').innerText = '';
+            updateDonationDisplay();
+        }
 
             const submitBtn = document.getElementById('submit-donate-btn');
             submitBtn.disabled = true;
