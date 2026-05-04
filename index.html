@@ -912,7 +912,14 @@
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
     </div>
-
+<div id="donate-success-overlay" class="fullscreen-overlay">
+        <div class="overlay-card success-card" style="border-color: #e74c3c;">
+            <h2 style="color: #e74c3c; margin-bottom: 10px;">❤️ Donation Success!</h2>
+            <p style="margin-bottom: 25px; line-height: 1.5; color: #cbd5e1;">Thank you for your generous contribution. Your support is instrumental in funding mitochondrial disease research and honoring Ryan's legacy.</p>
+            <div id="donate-payment-instructions" style="margin-bottom: 25px; font-weight: bold; color: #f1c40f;"></div>
+            <button class="primary-btn" style="background-color: #e74c3c;" onclick="closeDonateSuccess()">Back to Home</button>
+        </div>
+    </div>
     <div id="admin-overlay" class="fullscreen-overlay">
         <div class="overlay-card admin-card">
             <h2 style="color: #3498db; margin-bottom: 5px;">Admin Dashboard</h2>
@@ -1030,8 +1037,9 @@
                 <button class="primary-btn" onclick="goToSignup(2)" style="background-color: #2980b9; margin-top: 0;">Sign up Twosome</button>
                 <button class="primary-btn" onclick="goToSignup(1)" style="background-color: #94a3b8; margin-top: 0;">Sign up Individual</button>
             </div>
-            <div style="margin-top: 10px;">
+    <div style="margin-top: 10px;">
                 <button class="primary-btn" onclick="goToSponsorOnly()" style="background-color: #f1c40f; color: #111; margin-top: 0;">Sponsor Us</button>
+                <button class="primary-btn" onclick="showSection('donate')" style="background-color: #e74c3c; margin-top: 10px;">Donate</button>
             </div>
 
             <div class="sponsor-marquee-container">
@@ -1141,12 +1149,30 @@
             </div>
         </section>
 
-        <section id="section-donate" class="content-section">
-            <h2>Donate</h2>
-            <p>Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
-            <a href="#" class="primary-btn">Click here to Donate</a>
-        </section>
+<section id="section-donate" class="content-section">
+            <div id="donate-form-container">
+                <img src="Big R Big Logo.png" alt="Big R Invitational Logo" class="main-logo">
+                <h2>Make a Donation</h2>
+                <p style="margin-bottom: 25px; text-align: center;">Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
+                
+                <div class="player-card">
+                    <h3 style="margin-bottom: 15px; color: #cbd5e1;">Donation Amount</h3>
+                    <div class="form-group" style="align-items: center; background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding-left: 15px;">
+                        <span style="font-size: 20px; font-weight: bold; color: #1e293b;">$</span>
+                        <input type="number" id="donation-amount" placeholder="0.00" min="1" step="1" oninput="updateDonationDisplay()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px;">
+                    </div>
+                </div>
 
+                <div class="total-display">
+                    <h3>Total Donation Value</h3>
+                    <div id="donate-total-amount" class="total-amount">$0</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="submit-donate-btn" class="primary-btn" style="background-color: #e74c3c;" onclick="submitDonation()">Submit Donation</button>
+                </div>
+            </div>
+        </section>
         <section id="section-photos" class="content-section">
             <h2>Photos</h2>
             <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
@@ -1766,7 +1792,54 @@
             submitBtn.innerText = "Submit Registration";
             showSection('home');
         }
+// --- Donation Logic ---
+        function updateDonationDisplay() {
+            const amountInput = document.getElementById('donation-amount').value;
+            const totalDisplay = document.getElementById('donate-total-amount');
+            const amount = parseFloat(amountInput) || 0;
+            totalDisplay.innerText = `$${amount.toLocaleString()}`;
+        }
 
+        function submitDonation() {
+            const amountInput = document.getElementById('donation-amount').value;
+            const amount = parseFloat(amountInput);
+            
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid donation amount.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-donate-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+
+            // Hide the form section
+            document.getElementById('section-donate').style.display = 'none';
+            
+            // Populate the payment link utilizing your standard Venmo path
+            const paymentDiv = document.getElementById('donate-payment-instructions');
+            paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a>`;
+            
+            // Reveal success modal
+            document.getElementById('donate-success-overlay').style.display = 'flex';
+
+            // Trigger Confetti
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
+            }
+
+            // Reset form for next use
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Donation";
+            document.getElementById('donation-amount').value = '';
+            updateDonationDisplay();
+        }
+
+        function closeDonateSuccess() {
+            document.getElementById('donate-success-overlay').style.display = 'none';
+            document.getElementById('section-donate').style.display = 'block';
+            showSection('home');
+        }
         // --- Splash Screen & Countdown Logic ---
         function initCountdown() {
             const teeTime = new Date('October 9, 2026 09:30:00 EDT').getTime();
