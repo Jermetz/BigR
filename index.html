@@ -952,6 +952,7 @@
         <div id="gate-content">
             <img src="Big R Big Logo.png" alt="Logo" class="gate-logo">
             <button id="enter-btn" onclick="startExperience()">Enter</button>
+            <p onclick="skipIntro()" style="color: #94a3b8; font-size: 14px; margin-top: 20px; cursor: pointer; text-decoration: underline; transition: color 0.3s ease;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Skip Intro</p>
         </div>
         <video id="intro-video" muted playsinline style="display: none;">
             <source src="intro-animation.mp4" type="video/mp4">
@@ -1155,12 +1156,19 @@
                 <p style="margin-bottom: 25px; text-align: center;">Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Donor Information</h3>
-                    <div class="form-group">
-                        <input type="text" id="donate-first" placeholder="First Name *" required>
-                        <input type="text" id="donate-last" placeholder="Last Name *" required>
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #f8fafc; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="anon-donation-checkbox" onchange="toggleAnonymous()"> Make this donation anonymous
+                        </label>
                     </div>
-                    <div class="form-group">
-                        <input type="email" id="donate-email" placeholder="Email Address *" required>
+                    <div id="donor-fields-container">
+                        <div class="form-group">
+                            <input type="text" id="donate-first" placeholder="First Name *" required>
+                            <input type="text" id="donate-last" placeholder="Last Name *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="donate-email" placeholder="Email Address *" required>
+                        </div>
                     </div>
                 </div>
                 <div class="player-card">
@@ -1822,6 +1830,25 @@
             showSection('home');
         }
 // --- Donation Logic ---
+        function toggleAnonymous() {
+            const isAnon = document.getElementById('anon-donation-checkbox').checked;
+            const container = document.getElementById('donor-fields-container');
+            const first = document.getElementById('donate-first');
+            const last = document.getElementById('donate-last');
+            const email = document.getElementById('donate-email');
+            
+            if (isAnon) {
+                container.style.display = 'none';
+                first.value = 'Anonymous';
+                last.value = 'Donor';
+                email.value = 'anonymous@bigrgolf.com'; 
+            } else {
+                container.style.display = 'block';
+                first.value = '';
+                last.value = '';
+                email.value = '';
+            }
+        }
         function updateDonationDisplay() {
             const amountInput = document.getElementById('donation-amount').value;
             const totalDisplay = document.getElementById('donate-total-amount');
@@ -1900,6 +1927,8 @@ function submitDonation() {
                 document.getElementById('donate-first').value = '';
                 document.getElementById('donate-last').value = '';
                 document.getElementById('donate-email').value = '';
+                const anonCheck = document.getElementById('anon-donation-checkbox');
+                if(anonCheck) { anonCheck.checked = false; toggleAnonymous(); }
                 if (paymentTypeDropdown) paymentTypeDropdown.value = '';
                 document.getElementById('donate-payment-note').innerText = '';
                 updateDonationDisplay();
@@ -1937,10 +1966,20 @@ function submitDonation() {
                 introVideo.muted = videoIsMuted; 
                 introVideo.play();
                 introVideo.addEventListener('ended', () => {
+                    localStorage.setItem('introPlayed', 'true'); // Save state
                     splashScreen.classList.add('splash-fade-zoom');
                     setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
                 });
             }
+        }
+
+        function skipIntro() {
+            localStorage.setItem('introPlayed', 'true'); // Save state
+            const splashScreen = document.getElementById('splash-screen');
+            const introVideo = document.getElementById('intro-video');
+            if (introVideo) introVideo.pause();
+            splashScreen.style.opacity = '0';
+            setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
         }
              
 
@@ -1948,6 +1987,12 @@ function submitDonation() {
             initCountdown();
             showSection('home'); 
             fetchGlobalData(); 
+            
+            // Check if the user already watched or skipped the intro
+            if (localStorage.getItem('introPlayed') === 'true') {
+                const splashScreen = document.getElementById('splash-screen');
+                if (splashScreen) splashScreen.style.display = 'none';
+            }
         });
     </script>
     <button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
