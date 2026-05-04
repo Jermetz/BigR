@@ -1731,7 +1731,9 @@
                     }
 
                     if (typeof confetti === 'function') {
-    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
+}
+
 }
                     if (window.clapAudio) {
                         window.clapAudio.play().catch(err => console.log('Playback failed:', err));
