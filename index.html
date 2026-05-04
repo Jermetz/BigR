@@ -1092,7 +1092,7 @@
                         </div>
                         
                         <div id="team-size-selectors" class="action-buttons">
-                         <button type="button" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
+                         <button type="button" id="select-foursome-btn" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
                          <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
                      </div>
 
@@ -1676,7 +1676,12 @@
             `;
             container.appendChild(playerCard);
             updateCostDisplay(); 
-            if (playerCount === 4) document.getElementById('add-player-btn').style.display = 'none';
+            
+            // Hide the Add buttons if we hit 4 players
+            if (playerCount === 4) {
+                document.getElementById('add-player-btn').style.display = 'none';
+                if (document.getElementById('select-foursome-btn')) document.getElementById('select-foursome-btn').style.display = 'none';
+            }
             document.getElementById('remove-player-btn').style.display = 'block';
         }
 
@@ -1686,7 +1691,11 @@
                 container.removeChild(container.lastElementChild);
                 playerCount--;
                 updateCostDisplay(); 
+                
+                // Show the Add buttons since we are below 4 players
                 document.getElementById('add-player-btn').style.display = 'block';
+                if (document.getElementById('select-foursome-btn')) document.getElementById('select-foursome-btn').style.display = 'block';
+                
                 if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
             }
         }
