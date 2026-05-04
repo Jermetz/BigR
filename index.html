@@ -896,7 +896,7 @@
             .time-box { min-width: 65px; padding: 10px; }
         }
     </style>
-     
+<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>    
 </head>
 <body>
     
@@ -1140,6 +1140,7 @@
                                 <option value="Venmo">Venmo</option>
                             </select>
                             <p id="payment-note" class="payment-note"></p>
+                            <div id="sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                         </div>
                     </div>
 
@@ -1193,6 +1194,7 @@
                             <option value="Venmo">Venmo</option>
                         </select>
                         <p id="donate-payment-note" class="payment-note"></p>
+                        <div id="donate-sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                     </div>
                 </div>
 
@@ -1277,6 +1279,10 @@
     <script>
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo-Ni83GNw5nrnpb9Cs79X4IXymmRjyRKxBbfGka73M1z2J7GgASccHLbK50znr-DA0A/exec';
         const FUNDRAISING_GOAL = 30000;
+        const SQUARE_APP_ID = 'sandbox-sq0idb-gYbw0FQVr4JjNM0FMVRD4Q';
+        const SQUARE_LOCATION_ID = 'LJSKDTFSMA0CY';
+        let signupCard;
+        let donateCard;
 
         // --- Navigation Logic ---
         function toggleMenu() {
@@ -1731,6 +1737,7 @@
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";    
             else noteArea.innerText = "";
+            document.getElementById('sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
         }
         function updateDonatePaymentNote() {
             const paymentType = document.getElementById('donate-payment-type').value;
@@ -1741,10 +1748,11 @@
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";
             else noteArea.innerText = "";
+            document.getElementById('donate-sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
         }
 
 
-        document.getElementById('golf-signup-form').addEventListener('submit', function(e) {
+       document.getElementById('golf-signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const clapAudio = new Audio('golf-clap.mp3');
@@ -1782,7 +1790,18 @@
 
             // Generate a unique Transaction ID (e.g., TX-LMAO123-ABCD)
             const transactionId = 'TX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-
+let squareToken = "";
+            if (selectedPaymentType === 'Credit/Debit Card') {
+                const result = await signupCard.tokenize();
+                if (result.status === 'OK') {
+                    squareToken = result.token;
+                } else {
+                    alert("Card processing failed. Please check your details.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Registration";
+                    return; // Stop form submission
+                }
+            }
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
                 players.push({
@@ -1807,7 +1826,8 @@ body: JSON.stringify({
                     grandTotal: finalTotal,
                     isWaitlist: document.getElementById('sold-out-banner').style.display === 'block',
                     isSponsorOnly: isSponsorOnly,
-                    transactionId: transactionId
+                    transactionId: transactionId,
+                    squareToken: squareToken
                 })
             })
             .then(response => response.json())
@@ -1917,7 +1937,7 @@ body: JSON.stringify({
             }
         }
 
-function submitDonation() {
+async function submitDonation() {
             const amountInput = document.getElementById('donation-amount').value;
             const amount = parseFloat(amountInput);
             const paymentTypeDropdown = document.getElementById('donate-payment-type');
@@ -1945,6 +1965,18 @@ function submitDonation() {
             const submitBtn = document.getElementById('submit-donate-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Processing...";
+    let squareToken = "";
+            if (paymentType === 'Credit/Debit Card') {
+                const result = await donateCard.tokenize();
+                if (result.status === 'OK') {
+                    squareToken = result.token;
+                } else {
+                    alert("Card processing failed. Please check your details.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Donation";
+                    return;
+                }
+            }
 
             // Send data to Google Apps Script
             fetch(GOOGLE_APP_SCRIPT_URL, {
@@ -1955,7 +1987,8 @@ function submitDonation() {
                     lastName: lastName,
                     email: email,
                     amount: amount,
-                    paymentType: paymentType
+                    paymentType: paymentType,
+                    squareToken: squareToken
                 })
             })
             .then(response => response.json())
@@ -2075,6 +2108,18 @@ function submitDonation() {
              
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Initialize Square Forms
+            if (window.Square) {
+                const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+                payments.card().then(card => {
+                    signupCard = card;
+                    signupCard.attach('#sq-card-container');
+                });
+                payments.card().then(card => {
+                    donateCard = card;
+                    donateCard.attach('#donate-sq-card-container');
+                });
+            }
             initCountdown();
             showSection('home'); 
             fetchGlobalData(); 
