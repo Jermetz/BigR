@@ -1102,7 +1102,7 @@
                         <h3>Registration Total</h3>
                         <div id="total-amount" class="total-amount">$175</div>
                     </div>
-
+<div id="fee-breakdown" style="font-size: 13px; color: #cbd5e1; margin-top: 5px; height: 15px;"></div>
                     <div class="player-card">
                         <h3>Sponsorship Opportunities</h3>
                         <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
@@ -1132,13 +1132,13 @@
                     <div class="player-card">
                         <h3>Payment Information</h3>
                         <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                                                     <select id="payment-type" required onchange="updatePaymentNote()">
+                                                   <select id="payment-type" required onchange="updatePaymentNote(); updateCostDisplay();">
                                 <option value="" disabled selected>Select Payment Type *</option>
+                                <option value="Credit/Debit Card">Credit/Debit Card</option>
                                 <option value="Cash">Cash</option>
                                 <option value="Check">Check</option>
                                 <option value="Venmo">Venmo</option>
                             </select>
-
                             <p id="payment-note" class="payment-note"></p>
                         </div>
                     </div>
@@ -1185,8 +1185,9 @@
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
                     <div class="form-group" style="flex-direction: column;">
-                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote()">
+                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote(); updateDonationDisplay();">
                             <option value="" disabled selected>Select Payment Type *</option>
+                            <option value="Credit/Debit Card">Credit/Debit Card</option>
                             <option value="Cash">Cash</option>
                             <option value="Check">Check</option>
                             <option value="Venmo">Venmo</option>
@@ -1199,6 +1200,7 @@
                     <h3>Total Donation Value</h3>
                     <div id="donate-total-amount" class="total-amount">$0</div>
                 </div>
+                <div id="donate-fee-breakdown" style="font-size: 13px; color: #cbd5e1; margin-top: 5px; height: 15px;"></div>
 
                 <div class="form-actions">
                     <button type="button" id="submit-donate-btn" class="primary-btn" style="background-color: #e74c3c;" onclick="submitDonation()">Submit Donation</button>
@@ -1610,7 +1612,7 @@
             updateCostDisplay();
         }
 
-        function updateCostDisplay() {
+       function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
             
@@ -1618,10 +1620,30 @@
             const sponsorTotal = sponsorLevel ? (parseInt(sponsorLevel.value) || 0) : 0;
             const paymentType = document.getElementById('payment-type') ? document.getElementById('payment-type').value : '';
             
-            let finalTotal = playerTotal + sponsorTotal;
+            let subtotal = playerTotal + sponsorTotal;
+            let finalTotal = subtotal;
+            let feeAmount = 0;
+
+            if (paymentType === 'Credit/Debit Card') {
+                feeAmount = subtotal * 0.03;
+                finalTotal = subtotal + feeAmount;
+            }
+
             if (paymentType === 'PayPalTest') finalTotal = 1;
             
-            document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString()}`;
+            // Updates total, preserving cents if needed
+            document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}`;
+
+            // Pushes the text to the breakdown div
+            const feeBreakdown = document.getElementById('fee-breakdown');
+            if (feeBreakdown) {
+                if (feeAmount > 0) {
+                    feeBreakdown.innerText = `Includes $${feeAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} processing fee`;
+                } else {
+                    feeBreakdown.innerText = "";
+                }
+            }
+
             return finalTotal; 
         }
 
@@ -1707,6 +1729,7 @@
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
+            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";    
             else noteArea.innerText = "";
         }
         function updateDonatePaymentNote() {
@@ -1716,6 +1739,7 @@
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash can be brought to the golf outing on 10/9.";
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
+            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";
             else noteArea.innerText = "";
         }
 
@@ -1870,8 +1894,27 @@ body: JSON.stringify({
         function updateDonationDisplay() {
             const amountInput = document.getElementById('donation-amount').value;
             const totalDisplay = document.getElementById('donate-total-amount');
-            const amount = parseFloat(amountInput) || 0;
-            totalDisplay.innerText = `$${amount.toLocaleString()}`;
+            const paymentType = document.getElementById('donate-payment-type') ? document.getElementById('donate-payment-type').value : '';
+            
+            const subtotal = parseFloat(amountInput) || 0;
+            let finalTotal = subtotal;
+            let feeAmount = 0;
+
+            if (paymentType === 'Credit/Debit Card' && subtotal > 0) {
+                feeAmount = subtotal * 0.03;
+                finalTotal = subtotal + feeAmount;
+            }
+
+            totalDisplay.innerText = `$${finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}`;
+
+            const feeBreakdown = document.getElementById('donate-fee-breakdown');
+            if (feeBreakdown) {
+                if (feeAmount > 0) {
+                    feeBreakdown.innerText = `Includes $${feeAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} processing fee`;
+                } else {
+                    feeBreakdown.innerText = "";
+                }
+            }
         }
 
 function submitDonation() {
