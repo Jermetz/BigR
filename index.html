@@ -945,6 +945,10 @@
                 <label>Email Blast to All Players</label>
                 <input type="text" id="admin-email-subject" placeholder="Subject (e.g., Rain Delay, Rules)" style="width: 100%; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; background-color: rgba(255, 255, 255, 0.9);">
                 <textarea id="admin-email-body" placeholder="Type your message here..." style="width: 100%; height: 80px; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; resize: vertical; background-color: rgba(255, 255, 255, 0.9); font-family: 'Inter', sans-serif;"></textarea>
+                    <textarea id="admin-custom-emails" placeholder="Paste past emails here (comma separated)..." style="width: 100%; height: 60px; margin-bottom: 10px; padding: 10px; font-size: 13px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background-color: rgba(0, 0, 0, 0.4); color: white;"></textarea>
+                <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px; font-size: 13px; text-transform: none; color: #f8fafc;">
+                    <input type="checkbox" id="admin-include-current" checked style="width: 16px; height: 16px;"> Include current registered players in this blast
+                </label>
                 <button class="primary-btn" onclick="sendEmailBlast()" style="background-color: #f39c12; color: #111;">Broadcast Email</button>
                 <p id="admin-email-loader" class="admin-loader">✉️ Sending to all players...</p>
             </div>
@@ -1638,11 +1642,14 @@
             let password = document.getElementById('admin-pass').value;
             let subject = document.getElementById('admin-email-subject').value;
             let body = document.getElementById('admin-email-body').value;
+            let customEmails = document.getElementById('admin-custom-emails').value;
+            let includeCurrent = document.getElementById('admin-include-current').checked;
 
             if (!password) { alert("Please enter the Admin Password."); return; }
             if (!subject || !body) { alert("Please enter both a subject and a message."); return; }
+            if (!customEmails.trim() && !includeCurrent) { alert("You must either paste emails or select 'Include current players'."); return; }
             
-            if (!confirm("Are you sure you want to blast this email to ALL registered players?")) return;
+            if (!confirm("Are you sure you want to blast this email out?")) return;
 
             document.getElementById('admin-email-loader').style.display = 'block';
 
@@ -1652,16 +1659,23 @@
                     action: "email_blast", 
                     password: password, 
                     subject: subject,
-                    body: body
+                    body: body,
+                    customEmails: customEmails,
+                    includeCurrent: includeCurrent
                 })
             })
             .then(res => res.json())
             .then(data => {
                 document.getElementById('admin-email-loader').style.display = 'none';
                 if(data.result === 'success') {
-                    alert("Email broadcast sent successfully to " + data.count + " players!");
-                    document.getElementById('admin-email-subject').value = '';
-                    document.getElementById('admin-email-body').value = '';
+                    if (data.count === 0) {
+                        alert("Warning: No valid emails found. 0 emails were sent.");
+                    } else {
+                        alert("Email broadcast sent successfully to " + data.count + " recipients!");
+                        document.getElementById('admin-email-subject').value = '';
+                        document.getElementById('admin-email-body').value = '';
+                        document.getElementById('admin-custom-emails').value = '';
+                    }
                 } else { 
                     alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
                 }
