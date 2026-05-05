@@ -2004,6 +2004,8 @@ async function submitDonation() {
                 alert("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
                 return;
             }
+    // Generate a unique Transaction ID for donations
+            const transactionId = 'TX-D' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
             const submitBtn = document.getElementById('submit-donate-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Processing...";
@@ -2030,7 +2032,8 @@ async function submitDonation() {
                     email: email,
                     amount: amount,
                     paymentType: paymentType,
-                    squareToken: squareToken
+                    squareToken: squareToken,
+                    transactionId: transactionId
                 })
             })
             .then(response => response.json())
