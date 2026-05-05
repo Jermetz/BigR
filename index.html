@@ -941,7 +941,13 @@
                 <button class="primary-btn" onclick="submitAdminSponsor()">Upload & Sync</button>
                 <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
             </div>
-
+                <div class="admin-section">
+                <label>Email Blast to All Players</label>
+                <input type="text" id="admin-email-subject" placeholder="Subject (e.g., Rain Delay, Rules)" style="width: 100%; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; background-color: rgba(255, 255, 255, 0.9);">
+                <textarea id="admin-email-body" placeholder="Type your message here..." style="width: 100%; height: 80px; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; resize: vertical; background-color: rgba(255, 255, 255, 0.9); font-family: 'Inter', sans-serif;"></textarea>
+                <button class="primary-btn" onclick="sendEmailBlast()" style="background-color: #f39c12; color: #111;">Broadcast Email</button>
+                <p id="admin-email-loader" class="admin-loader">✉️ Sending to all players...</p>
+            </div>
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
@@ -1628,6 +1634,43 @@
             });
         }
 
+        function sendEmailBlast() {
+            let password = document.getElementById('admin-pass').value;
+            let subject = document.getElementById('admin-email-subject').value;
+            let body = document.getElementById('admin-email-body').value;
+
+            if (!password) { alert("Please enter the Admin Password."); return; }
+            if (!subject || !body) { alert("Please enter both a subject and a message."); return; }
+            
+            if (!confirm("Are you sure you want to blast this email to ALL registered players?")) return;
+
+            document.getElementById('admin-email-loader').style.display = 'block';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: "email_blast", 
+                    password: password, 
+                    subject: subject,
+                    body: body
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('admin-email-loader').style.display = 'none';
+                if(data.result === 'success') {
+                    alert("Email broadcast sent successfully to " + data.count + " players!");
+                    document.getElementById('admin-email-subject').value = '';
+                    document.getElementById('admin-email-body').value = '';
+                } else { 
+                    alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
+                }
+            })
+            .catch(error => {
+                document.getElementById('admin-email-loader').style.display = 'none';
+                alert("Network Error: Could not connect to Google Script. Check Deployment.");
+            });
+        }
         // --- Pricing & Form Logic ---
         const COST_PER_PERSON = 175;
         let playerCount = 1;
