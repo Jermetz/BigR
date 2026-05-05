@@ -1630,8 +1630,8 @@
             let finalTotal = subtotal;
             let feeAmount = 0;
 
-            if (paymentType === 'Credit/Debit Card') {
-                feeAmount = subtotal * 0.03;
+            if (paymentType === 'Credit/Debit Card' && subtotal > 0) {
+                feeAmount = (subtotal * 0.03) + 0.30;
                 finalTotal = subtotal + feeAmount;
             }
 
@@ -1735,7 +1735,7 @@
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
-            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";    
+            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% + $0.30 processing fee is applied to card payments.";
             else noteArea.innerText = "";
             document.getElementById('sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
         }
@@ -1746,7 +1746,7 @@
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash can be brought to the golf outing on 10/9.";
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
-            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% processing fee is applied to card payments.";
+            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% + $0.30 processing fee is applied to card payments.";
             else noteArea.innerText = "";
             document.getElementById('donate-sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
         }
@@ -1783,7 +1783,12 @@
                 return;
             }
 
-            let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
+         let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
+            
+            if (selectedPaymentType === 'Credit/Debit Card' && finalTotal > 0) {
+                finalTotal = finalTotal + (finalTotal * 0.03) + 0.30;
+            }
+
             if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
 
         const teamName = document.getElementById('team-name') ? document.getElementById('team-name').value : "";
@@ -1920,8 +1925,8 @@ body: JSON.stringify({
             let finalTotal = subtotal;
             let feeAmount = 0;
 
-            if (paymentType === 'Credit/Debit Card' && subtotal > 0) {
-                feeAmount = subtotal * 0.03;
+           if (paymentType === 'Credit/Debit Card' && subtotal > 0) {
+                feeAmount = (subtotal * 0.03) + 0.30;
                 finalTotal = subtotal + feeAmount;
             }
 
@@ -1939,9 +1944,13 @@ body: JSON.stringify({
 
 async function submitDonation() {
             const amountInput = document.getElementById('donation-amount').value;
-            const amount = parseFloat(amountInput);
+            let amount = parseFloat(amountInput);
             const paymentTypeDropdown = document.getElementById('donate-payment-type');
             const paymentType = paymentTypeDropdown ? paymentTypeDropdown.value : '';
+            
+            if (paymentType === 'Credit/Debit Card' && amount > 0) {
+                amount = amount + (amount * 0.03) + 0.30;
+            }
             
             // Capture new contact fields
             const firstName = document.getElementById('donate-first').value.trim();
