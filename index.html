@@ -952,6 +952,13 @@
                 <button class="primary-btn" onclick="sendEmailBlast()" style="background-color: #f39c12; color: #111;">Broadcast Email</button>
                 <p id="admin-email-loader" class="admin-loader">✉️ Sending to all players...</p>
             </div>
+            <div class="admin-section">
+                <label>SMS Text Blast</label>
+                <textarea id="admin-sms-numbers" placeholder="Paste phone numbers here (comma separated)..." style="width: 100%; height: 60px; margin-bottom: 10px; padding: 10px; font-size: 13px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background-color: rgba(0, 0, 0, 0.4); color: white;"></textarea>
+                <textarea id="admin-sms-body" placeholder="Type your text message here (keep it short!)..." style="width: 100%; height: 60px; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; resize: vertical; background-color: rgba(255, 255, 255, 0.9); font-family: 'Inter', sans-serif;"></textarea>
+                <button class="primary-btn" onclick="sendSmsBlast()" style="background-color: #9b59b6; color: white;">Blast Text Message</button>
+                <p id="admin-sms-loader" class="admin-loader" style="color: #9b59b6;">📱 Sending text messages...</p>
+            </div>
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
@@ -1640,6 +1647,47 @@
             });
         }
 
+        function sendSmsBlast() {
+            let password = document.getElementById('admin-pass').value;
+            let phoneNumbers = document.getElementById('admin-sms-numbers').value;
+            let body = document.getElementById('admin-sms-body').value;
+
+            if (!password) { alert("Please enter the Admin Password."); return; }
+            if (!phoneNumbers.trim() || !body.trim()) { alert("Please enter both phone numbers and a message."); return; }
+            
+            if (!confirm("Are you sure you want to blast this text message? Standard SMS rates may apply via Twilio.")) return;
+
+            document.getElementById('admin-sms-loader').style.display = 'block';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: "sms_blast", 
+                    password: password, 
+                    phoneNumbers: phoneNumbers,
+                    body: body
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('admin-sms-loader').style.display = 'none';
+                if(data.result === 'success') {
+                    if (data.count === 0) {
+                        alert("Warning: No valid phone numbers found. 0 texts were sent.");
+                    } else {
+                        alert("SMS broadcast sent successfully to " + data.count + " numbers!");
+                        document.getElementById('admin-sms-numbers').value = '';
+                        document.getElementById('admin-sms-body').value = '';
+                    }
+                } else { 
+                    alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
+                }
+            })
+            .catch(error => {
+                document.getElementById('admin-sms-loader').style.display = 'none';
+                alert("Network Error: Could not connect to Google Script. Check Deployment.");
+            });
+        }
         function sendEmailBlast() {
             let password = document.getElementById('admin-pass').value;
             let subject = document.getElementById('admin-email-subject').value;
