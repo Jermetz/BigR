@@ -978,6 +978,7 @@
             <li><a href="javascript:void(0);" onclick="showSection('photos')">📷 <span class="menu-text">Photos</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('terms')">📝 <span class="menu-text">Terms & Privacy</span></a></li>
         </ul>
         <div class="sidebar-contact">
             <div class="contact-title">Tournament Contact</div>
@@ -1143,7 +1144,12 @@
                             <div id="sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                         </div>
                     </div>
-
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="terms-checkbox-golf" required style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;"> 
+                              <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
+                        </label>
+                    </div>
                     <div class="form-actions">
                         <button type="submit" id="submit-btn" class="primary-btn">Submit Registration</button>
                     </div>
@@ -1203,7 +1209,12 @@
                     <div id="donate-total-amount" class="total-amount">$0</div>
                 </div>
                 <div id="donate-fee-breakdown" style="font-size: 13px; color: #cbd5e1; margin-top: 5px; height: 15px;"></div>
-
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="terms-checkbox-donate" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;"> 
+                        <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
+                    </label>
+                </div>
                 <div class="form-actions">
                     <button type="button" id="submit-donate-btn" class="primary-btn" style="background-color: #e74c3c;" onclick="submitDonation()">Submit Donation</button>
                 </div>
@@ -1270,6 +1281,24 @@
                         `);
                     }
                 </script>
+            </div>
+        </section>
+        <section id="section-terms" class="content-section">
+            <h2>Terms & Privacy Policy</h2>
+            <div class="story-text" style="font-size: 14px; color: #cbd5e1;">
+                <h3 style="color: #f8fafc; margin-top: 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Terms and Conditions</h3>
+                <p><strong>1. Acceptance of Terms:</strong> By registering for or donating to the Big R Invitational, you agree to these terms.</p>
+                <p><strong>2. Event Policy:</strong> The tournament is held rain or shine. In the event of severe weather, the course management makes the final decision on playability. No refunds will be issued for weather-related cancellations, as this is a charity fundraising event.</p>
+                <p><strong>3. Liability Waiver:</strong> By participating, you agree to assume all risks associated with the game of golf and hold harmless the Big R Invitational organizers, The Bucks Club, and their affiliates from any liability, injury, or property damage.</p>
+                <p><strong>4. Refunds:</strong> All registrations and donations are final and non-refundable.</p>
+
+                <h3 style="color: #f8fafc; margin-top: 30px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Privacy Policy</h3>
+                <p><strong>1. Information Collection:</strong> We collect your name, email address, and payment information solely for the purpose of organizing the event, updating the fundraising tracker, and processing your transaction.</p>
+                <p><strong>2. Payment Processing:</strong> All credit card and electronic payments are securely processed and tokenized by Square. We do not store or have access to your full credit card numbers.</p>
+                <p><strong>3. Data Usage:</strong> We will not sell, rent, or distribute your personal information to third parties. Your email will only be used for event-related communications and digital receipts.</p>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="secondary-btn" onclick="showSection('home')">Back to Home</button>
             </div>
         </section>
     </main>
@@ -1970,7 +1999,11 @@ async function submitDonation() {
                 alert("Please select a payment type.");
                 return;
             }
-
+    const termsBox = document.getElementById('terms-checkbox-donate');
+            if (termsBox && !termsBox.checked) {
+                alert("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                return;
+            }
             const submitBtn = document.getElementById('submit-donate-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Processing...";
