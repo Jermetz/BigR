@@ -1092,6 +1092,7 @@
                             </div>
                             <div class="form-group">
                                 <input type="email" id="p1-email" placeholder="Email Address *" required>
+                                <input type="tel" id="p1-phone" placeholder="Mobile Number (Optional)">
                             </div>
                         </div>
                     </div>
@@ -1896,10 +1897,12 @@ let squareToken = "";
             }
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
+                let phoneNumber = (i === 1 && document.getElementById('p1-phone')) ? document.getElementById('p1-phone').value : "";
                 players.push({
                     firstName: document.getElementById(`p${i}-first`).value,
                     lastName: document.getElementById(`p${i}-last`).value,
                     email: document.getElementById(`p${i}-email`).value || "N/A",
+                    phone: phoneNumber,
                     isPrimary: i === 1,
                     paymentType: selectedPaymentType,
                     totalCost: finalTotal,
