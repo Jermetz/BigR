@@ -834,39 +834,98 @@
             font-size: 12px;
             color: #94a3b8;
         }
-        .hole-grid {
+/* --- Abstract Node Map --- */
+        .abstract-course-map {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
             justify-content: center;
-            margin-top: 20px;
-        }
-        .hole-card {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            width: 100px;
+            gap: 25px;
+            max-width: 650px;
+            margin: 30px auto 0 auto;
+            position: relative;
             padding: 10px;
-            text-align: center;
-            transition: transform 0.2s;
         }
-        .hole-card:hover { transform: scale(1.05); }
-        .hole-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 5px;
+
+        .map-node {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #2ecc71;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+            z-index: 2;
+            text-decoration: none;
         }
-        .hole-status {
-            font-size: 10px;
+
+        .map-node:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.6);
+            background: rgba(46, 204, 113, 0.15);
+            z-index: 3;
+        }
+
+        .map-node .hole-num {
+            font-size: 22px;
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .map-node .hole-label {
+            font-size: 9px;
+            color: #2ecc71;
             text-transform: uppercase;
-            color: #cbd5e1;
+            letter-spacing: 1px;
+            font-weight: bold;
         }
-        .hole-sold {
+
+        /* Subtle connecting lines between nodes */
+        .map-node::after {
+            content: '';
+            position: absolute;
+            right: -27px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+        }
+
+        /* Remove connector lines on the edges for responsiveness */
+        @media (min-width: 769px) {
+            .map-node:nth-child(6n)::after { display: none; }
+        }
+        @media (max-width: 768px) {
+            .map-node:nth-child(4n)::after { display: none; }
+        }
+        .map-node:last-child::after { display: none; }
+
+        /* Sold State */
+        .map-node.hole-sold {
             border-color: #e74c3c;
-            background: rgba(231, 76, 60, 0.1);
+            background: rgba(231, 76, 60, 0.05);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
         }
-        .hole-sold .hole-status { color: #e74c3c; }
+
+        .map-node.hole-sold .hole-num {
+            color: #94a3b8;
+            opacity: 0.5;
+        }
+
+        .map-node.hole-sold .hole-label {
+            color: #e74c3c;
+        }
         
                 /* --- Timeline for Ryan's Story --- */
         .timeline {
@@ -1425,10 +1484,7 @@
                 <script>
                     for(let i=1; i<=18; i++) {
                         document.write(`
-                        <div class="hole-card" id="hole-card-${i}" onclick="selectSponsorship('250', ${i})" style="cursor: pointer;">
-                            <div class="hole-number">Hole ${i}</div>
-                            <div class="hole-status" id="hole-status-${i}">Available</div>
-                        </div>
+<div id="abstract-course-map" class="abstract-course-map"></div>
                         `);
                     }
                 </script>
@@ -2459,6 +2515,22 @@ async function submitDonation() {
                 setInterval(triggerRandomToast, Math.floor(Math.random() * 15000) + 15000);
             }, 5000);
         }
+        // --- Abstract Course Map Generation ---
+        function renderCourseMap() {
+            const mapContainer = document.getElementById('abstract-course-map');
+            if (!mapContainer) return;
+            
+            let html = '';
+            for (let i = 1; i <= 18; i++) {
+                html += `
+                <div class="map-node" id="hole-card-${i}" onclick="selectSponsorship('250', ${i})">
+                    <div class="hole-num">${i}</div>
+                    <div class="hole-label" id="hole-status-${i}">Open</div>
+                </div>
+                `;
+            }
+            mapContainer.innerHTML = html;
+        }
         document.addEventListener("DOMContentLoaded", () => {
             // Initialize Square Forms
             if (window.Square) {
@@ -2473,7 +2545,8 @@ async function submitDonation() {
                 });
             }
             initCountdown();
-            showSection('home'); 
+            showSection('home');
+            renderCourseMap();
             fetchGlobalData(); 
             initTimelineObserver();
             startToastEngine();
