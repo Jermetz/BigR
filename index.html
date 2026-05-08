@@ -1035,6 +1035,37 @@
                 right: 15px;
             }
         }
+        /* --- Photo Lightbox --- */
+        #photo-lightbox {
+            display: none;
+            z-index: 100000; /* Keeps it above the intro splash screen */
+            cursor: zoom-out;
+        }
+        
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            animation: zoomIn 0.3s ease;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        @keyframes zoomIn {
+            from {transform: scale(0.8); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             #mobile-cta { display: block !important; }
@@ -1130,7 +1161,10 @@
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
-
+<div id="photo-lightbox" class="fullscreen-overlay" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
     <div id="splash-screen">
         <button id="mute-btn" onclick="toggleMute()">🔊 Unmuted</button>
         
@@ -1411,7 +1445,7 @@
             <h2>Photos</h2>
             <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
             <div class="photo-grid" style="text-align: center;">
-                <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
             </div>
         </section>
 
@@ -1747,6 +1781,17 @@
 
         function closeAdminDashboard() {
             document.getElementById('admin-overlay').style.display = 'none';
+        }
+        // --- Photo Lightbox Logic ---
+        function openLightbox(imageSrc) {
+            const lightbox = document.getElementById('photo-lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = imageSrc;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('photo-lightbox').style.display = 'none';
         }
 
         function submitAdminTotal() {
