@@ -699,7 +699,7 @@
             padding: 20px;
         }
 
-        .overlay-card {
+       .overlay-card {
             background: #1e293b;
             padding: 40px;
             border-radius: 16px;
@@ -710,6 +710,8 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: white;
+            max-height: 90vh; /* Limits height to 90% of the viewport */
+            overflow-y: auto; /* Enables vertical scrolling */
         }
 
         .overlay-card.admin-card {
@@ -1776,11 +1778,13 @@
                 secretClickCount = 0; 
                 document.getElementById('admin-overlay').style.display = 'flex';
                 document.getElementById('admin-pass').value = '';
+                document.body.style.overflow = 'hidden'; /* Locks background scroll */
             }
         }
 
         function closeAdminDashboard() {
             document.getElementById('admin-overlay').style.display = 'none';
+            document.body.style.overflow = ''; /* Restores background scroll */
         }
         // --- Photo Lightbox Logic ---
         function openLightbox(imageSrc) {
