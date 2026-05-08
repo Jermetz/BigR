@@ -433,13 +433,15 @@
             font-size: 15px;
         }
 
-        /* --- Sponsor Marquee --- */
+     /* --- Sponsor Marquee --- */
         .sponsor-marquee-container {
             width: 100%;
+            max-width: 800px;
+            margin: 40px auto 0 auto;
             overflow: hidden;
-            margin-top: 40px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
         .marquee-title {
             font-size: 12px;
@@ -451,26 +453,26 @@
         }
         .marquee-track {
             display: flex;
-            width: fit-content;
-            animation: scroll-marquee 25s linear infinite;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            width: 100%;
         }
-        .marquee-content {
+        .sponsor-block {
+            min-width: 100%;
             display: flex;
-            gap: 30px;
-            padding-right: 30px;
+            justify-content: center;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 0 10px;
         }
         .marquee-logo-img {
             height: 50px;
+            max-width: 120px;
             object-fit: contain;
             background: rgba(255,255,255,0.9);
-            padding: 5px 15px;
+            padding: 5px 10px;
             border-radius: 6px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        @keyframes scroll-marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } 
         }
 
         /* --- Drive to the Green Meter --- */
@@ -1266,14 +1268,9 @@
             </div>
 
             <div class="sponsor-marquee-container">
-                <p class="marquee-title">Thank You To Our Premium Sponsors</p>
-                <div class="marquee-track">
-                    <div class="marquee-content" id="marquee-set-1">
-                        <div class="marquee-logo">Sponsors Loading...</div>
-                    </div>
-                    <div class="marquee-content" id="marquee-set-2">
-                        <div class="marquee-logo">Sponsors Loading...</div>
-                    </div>
+                <p class="marquee-title">Thank You To Our Sponsors</p>
+                <div class="marquee-track" id="marquee-track">
+                    <div class="marquee-logo" style="text-align: center; width: 100%;">Sponsors Loading...</div>
                 </div>
             </div>
 
@@ -1717,14 +1714,43 @@
             }
         }
 
-        function updateMarqueeUI(sponsorsArray) {
-            let html = '';
-            sponsorsArray.forEach(url => {
-                html += `<img src="${url}" class="marquee-logo-img" alt="Sponsor">`;
-            });
+       let marqueeInterval;
 
-            document.getElementById('marquee-set-1').innerHTML = html;
-            document.getElementById('marquee-set-2').innerHTML = html;
+        function updateMarqueeUI(sponsorsArray) {
+            const track = document.getElementById('marquee-track');
+            if (!track || sponsorsArray.length === 0) return;
+
+            let html = '';
+            const chunkSize = 5;
+            let totalBlocks = 0;
+
+            // Group sponsors into blocks of 5
+            for (let i = 0; i < sponsorsArray.length; i += chunkSize) {
+                const chunk = sponsorsArray.slice(i, i + chunkSize);
+                html += `<div class="sponsor-block">`;
+                chunk.forEach(url => {
+                    html += `<img src="${url}" class="marquee-logo-img" alt="Sponsor">`;
+                });
+                html += `</div>`;
+                totalBlocks++;
+            }
+
+            track.innerHTML = html;
+
+            // Clear any old intervals before setting a new one (prevents speeding up on re-fetch)
+            clearInterval(marqueeInterval);
+            let currentBlock = 0;
+
+            // Only run the slider if there is more than 1 block of sponsors
+            if (totalBlocks > 1) {
+                marqueeInterval = setInterval(() => {
+                    currentBlock++;
+                    if (currentBlock >= totalBlocks) {
+                        currentBlock = 0; // Loop back to the first block
+                    }
+                    track.style.transform = `translateX(-${currentBlock * 100}%)`;
+                }, 5000);
+            }
         }
 
         function updateHoleSponsorsUI(soldHoles) {
