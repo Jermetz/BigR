@@ -919,7 +919,63 @@
         .timeline-content p {
             margin-bottom: 0; 
         }
+/* --- Live Social Proof Toasts --- */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none; /* Lets clicks pass through to the site below */
+        }
 
+        .social-toast {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid #2ecc71;
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: #f8fafc;
+            font-size: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(-150%);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .social-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            background: rgba(46, 204, 113, 0.2);
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .toast-text strong {
+            display: block;
+            color: #3498db;
+            margin-bottom: 3px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            #toast-container {
+                bottom: 80px; /* Above mobile CTA */
+                left: 15px;
+                right: 15px;
+            }
+        }
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             #mobile-cta { display: block !important; }
@@ -973,6 +1029,7 @@
         </div>
     </div>
     <div id="admin-overlay" class="fullscreen-overlay">
+        <div id="toast-container"></div>
         <div class="overlay-card admin-card">
             <h2 style="color: #3498db; margin-bottom: 5px;">Admin Dashboard</h2>
             <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Secure Access Required</p>
@@ -2356,7 +2413,52 @@ async function submitDonation() {
             });
         }
 
+// --- Social Proof Toast System ---
+        const toastMessages = [
+            { title: "New Registration", body: "A Foursome just registered!", icon: "🏌️‍♂️", color: "#3498db" },
+            { title: "Sponsorship Sold", body: "Someone just sponsored a Hole!", icon: "⛳", color: "#f1c40f" },
+            { title: "Donation Received", body: "A generous $100 donation was just made!", icon: "❤️", color: "#e74c3c" },
+            { title: "Tournament Update", body: "We are 85% to our fundraising goal!", icon: "📈", color: "#2ecc71" },
+            { title: "New Registration", body: "A Twosome just registered!", icon: "🏌️‍♀️", color: "#3498db" }
+        ];
 
+        function triggerRandomToast() {
+            // Pick a random message
+            const msg = toastMessages[Math.floor(Math.random() * toastMessages.length)];
+            
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'social-toast';
+            toast.style.borderLeftColor = msg.color;
+            
+            toast.innerHTML = `
+                <div class="toast-icon" style="background: ${msg.color}20;">${msg.icon}</div>
+                <div class="toast-text">
+                    <strong style="color: ${msg.color};">${msg.title}</strong>
+                    <span>${msg.body}</span>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation in
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500); // Wait for transition to finish
+            }, 5000);
+        }
+
+        function startToastEngine() {
+            // Wait 5 seconds before the first toast
+            setTimeout(() => {
+                triggerRandomToast();
+                // Then trigger a new one randomly every 15 to 30 seconds
+                setInterval(triggerRandomToast, Math.floor(Math.random() * 15000) + 15000);
+            }, 5000);
+        }
         document.addEventListener("DOMContentLoaded", () => {
             // Initialize Square Forms
             if (window.Square) {
@@ -2373,8 +2475,8 @@ async function submitDonation() {
             initCountdown();
             showSection('home'); 
             fetchGlobalData(); 
-                        initTimelineObserver();
-
+            initTimelineObserver();
+            startToastEngine();
             
             // Check if the user already watched or skipped the intro
             if (localStorage.getItem('introPlayed') === 'true') {
