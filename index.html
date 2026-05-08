@@ -1886,6 +1886,9 @@
             compressImage(fileInput.files[0], (base64Data, mimeType) => {
                 fetch(GOOGLE_APP_SCRIPT_URL, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
                     body: JSON.stringify({ 
                         action: "upload_sponsor", 
                         password: password, 
