@@ -1704,9 +1704,11 @@
                             submitBtn.style.backgroundColor = "#f39c12"; // Change button to orange
                         }
                     }
-                    if (data && data.sponsors && data.sponsors.length > 0) {
+                                        if (data && data.sponsors && data.sponsors.length > 0) {
+                        console.log("Sponsor Data from Script:", data.sponsors);
                         updateMarqueeUI(data.sponsors);
                     }
+
                     if (data && data.soldHoles && data.soldHoles.length > 0) {
                         updateHoleSponsorsUI(data.soldHoles);
                     }
