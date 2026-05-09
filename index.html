@@ -1150,7 +1150,10 @@
                 <label>Upload Sponsor Logo to Marquee</label>
                 <input type="file" id="admin-sponsor-file" accept="image/*" style="padding: 10px; font-size: 12px; margin-bottom: 10px;">
                 <button class="primary-btn" onclick="submitAdminSponsor()">Upload & Sync</button>
-                <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
+               <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
+            <!-- NEW: Manage Sponsors UI -->
+            <label style="margin-top: 20px;">Manage Active Logos</label>
+            <div id="admin-sponsor-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 50px;"></div>
             </div>
                 <div class="admin-section">
                 <label>Email Blast to All Players</label>
@@ -1787,6 +1790,90 @@
 
 
             track.innerHTML = html;
+            // --- NEW: Populate Admin Dashboard Logo List ---
+                const adminList = document.getElementById('admin-sponsor-list');
+                if (adminList) {
+                    adminList.innerHTML = '';
+                    validSponsors.forEach(url => {
+                        let previewSrc = url.toString().trim();
+                        if (previewSrc.includes('drive.google.com')) {
+                            const fileIdMatch = previewSrc.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (fileIdMatch && fileIdMatch[1]) previewSrc = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
+                        } else if (!previewSrc.startsWith('http') && !previewSrc.startsWith('data:')) {
+                            previewSrc = 'data:image/jpeg;base64,' + previewSrc;
+                        }
+                        adminList.innerHTML += `
+                            <div style="position: relative; display: inline-block;">
+                                <img src="${previewSrc}" style="height: 40px; border-radius: 4px; border: 1px solid #fff; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
+                                <span onclick="deleteSponsor('${url}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
+                            </div>
+                        `;
+                    });
+                }
+                // -----------------------------------------------
+    ```
+
+### Step 3: Add the Delete Function (Frontend)
+*   **Best way to find this:** Search for `function submitAdminSponsor() {` (Around line 872).
+*   **Where to place your cursor:** Place your cursor directly **above** that line and hit Enter to create an empty space.
+*   **The exact code to insert:**
+    ```javascript
+        function deleteSponsor(urlToDelete) {
+            let password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password to delete logos."); return; }
+            if (!confirm("Are you sure you want to remove this logo from the marquee?")) return;
+
+            document.getElementById('admin-loader').style.display = 'block';
+            document.getElementById('admin-loader').innerText = '🗑️ Deleting logo...';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "delete_sponsor", password: password, sponsorUrl: urlToDelete })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('admin-loader').style.display = 'none';
+                document.getElementById('admin-loader').innerText = '⚙️ Compressing & Uploading...'; // Reset loader text
+                if(data.result === 'success') {
+                    updateMarqueeUI(data.sponsors);
+                } else { 
+                    alert("Backend Error: " + (data.error ? data.error : "Check password.")); 
+                }
+            })
+            .catch(error => {
+                document.getElementById('admin-loader').style.display = 'none';
+                alert("Network Error: Could not connect to Google Script.");
+            });
+        }
+    ```
+
+### Step 4: Add the Delete Logic to Google App Script (Backend)
+Finally, we need to teach your App Script what `delete_sponsor` actually means. 
+
+*   **Best way to find this:** Open your `Code.gs` in Google App Script and search for `// 3. DONATION LOGIC`
+*   **Where to place your cursor:** Place your cursor directly **above** `// 3. DONATION LOGIC` and hit Enter to create an empty space.
+*   **The exact code to insert:**
+    
+```javascript
+        // 2.5 ADMIN DELETE SPONSOR LOGO
+        if (data.action === "delete_sponsor") {
+          if (data.password === "Ryan2026") {
+            var sponsorsStr = props.getProperty('sponsorLogos');
+            var sponsors = sponsorsStr ? JSON.parse(sponsorsStr) : [];
+            
+            // Filter out the URL the user clicked to delete
+            sponsors = sponsors.filter(function(url) {
+              return url !== data.sponsorUrl;
+            });
+            
+            props.setProperty('sponsorLogos', JSON.stringify(sponsors));
+            
+            return ContentService.createTextOutput(JSON.stringify({ "result": "success", "sponsors": sponsors }))
+                                 .setMimeType(ContentService.MimeType.JSON);
+          } else {
+            throw new Error("Invalid password");
+          }
+        }
 
             // Clear any old intervals before setting a new one (prevents speeding up on re-fetch)
             clearInterval(marqueeInterval);
