@@ -2854,12 +2854,14 @@ async function submitDonation() {
 
   // NOTE: For client-side prototyping only. 
   // For production, move this API call to a serverless function to hide your key.
-  const API_KEY = "AIzaSyBy1TsGD8nKkUmxNtjTVSUMVaiopXxVq68"; 
+  const API_KEY = "AQ.Ab8RN6Ko-jBc0baCKxL-KnPTw1NNxeSLCwwPMUDFItvyyNActg"; 
   const genAI = new GoogleGenerativeAI(API_KEY);
   
-  // Initialize the free-tier eligible flash model
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  const chat = model.startChat();
+// Using the latest free-tier model (v3.1 Flash-Lite)
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-3.1-flash-lite",
+    systemInstruction: "You are a helpful, witty assistant for the 7th Annual Big R Invitational. The event is Friday, October 9, 2026, at Bucks Golf Club. Help users with registration and basic event info. If they ask a tough question, tell them to 'Ask Jeremy'."
+  });
 
   const sendBtn = document.getElementById('send-btn');
   const chatInput = document.getElementById('chat-input');
