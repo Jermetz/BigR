@@ -1742,16 +1742,27 @@
             const chunkSize = 5;
             let totalBlocks = 0;
 
-                       // Filter out empty rows/blank cells from Google Sheets
-            const validSponsors = sponsorsArray.filter(url => url && url.toString().trim() !== '');
+                                   // Aggressively filter out junk data, 'undefined', 'null', or strings too short to be a valid image
+            const validSponsors = sponsorsArray.filter(url => {
+                if (!url) return false;
+                const str = url.toString().trim();
+                // Ignore empty strings, text errors, or empty prefixes
+                if (str === '' || str === 'undefined' || str === 'null' || str === 'data:image/jpeg;base64,') return false;
+                // A valid base64 image or HTTP URL will be decently long. Ignore anything under 20 characters.
+                if (str.length < 20) return false; 
+                return true;
+            });
+
+            // If there are no valid sponsors after filtering, stop here to prevent an empty broken box
+            if (validSponsors.length === 0) return;
 
             // Group sponsors into blocks of 5
             for (let i = 0; i < validSponsors.length; i += chunkSize) {
                 const chunk = validSponsors.slice(i, i + chunkSize);
                 html += `<div class="sponsor-block">`;
               chunk.forEach(url => {
-                // Check if the URL is a raw base64 string (missing http or data prefix)
                 let imageSrc = url.toString().trim();
+                // Check if the URL is a raw base64 string (missing http or data prefix)
                 if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
                     imageSrc = 'data:image/jpeg;base64,' + imageSrc;
                 }
