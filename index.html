@@ -1101,6 +1101,14 @@
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
 <body>
+        <div id="validation-overlay" class="fullscreen-overlay" style="z-index: 100001;">
+        <div class="overlay-card success-card" style="border-color: #f39c12;">
+            <h2 style="color: #f39c12; margin-bottom: 10px;">⚠️ Action Required</h2>
+            <p id="validation-message" style="margin-bottom: 25px; line-height: 1.5; color: #cbd5e1;"></p>
+            <button class="primary-btn" style="background-color: #f39c12; color: #111;" onclick="closeValidationModal()">Got It</button>
+        </div>
+    </div>
+
     
     <div id="success-overlay" class="fullscreen-overlay">
         <div class="overlay-card success-card">
@@ -1553,6 +1561,16 @@
         const SQUARE_LOCATION_ID = 'LJSKDTFSMA0CY';
         let signupCard;
         let donateCard;
+        
+        // --- Validation Modal Logic ---
+        function showValidationModal(message) {
+            document.getElementById('validation-message').innerText = message;
+            document.getElementById('validation-overlay').style.display = 'flex';
+        }
+
+        function closeValidationModal() {
+            document.getElementById('validation-overlay').style.display = 'none';
+        }
 
         // --- Navigation Logic ---
         function toggleMenu() {
@@ -2179,8 +2197,14 @@
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
            // Validation: Ensure Terms are checked
             const termsBoxSignup = document.getElementById('terms-checkbox-signup');
+            
             if (termsBoxSignup && !termsBoxSignup.checked) {
-                alert("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
+                return;
+            }
+
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
                 return;
