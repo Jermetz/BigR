@@ -2198,17 +2198,17 @@
            // Validation: Ensure Terms are checked
             const termsBoxSignup = document.getElementById('terms-checkbox-signup');
             
-            if (termsBoxSignup && !termsBoxSignup.checked) {
-                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Registration";
-                return;
-            }
+ if (termsBoxSignup && !termsBoxSignup.checked) {
+                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
+                return;
+            }
 
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Registration";
-                return;
-            }
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Registration";
+                return;
+            }
             
             // Validation: Ensure a sponsorship level is selected if "Sponsor Only" is checked
             if (isSponsorOnly && sponsorCost === 0) {
@@ -2407,11 +2407,11 @@ async function submitDonation() {
                 alert("Please select a payment type.");
                 return;
             }
-    const termsBox = document.getElementById('terms-checkbox-donate');
-            if (termsBox && !termsBox.checked) {
-                alert("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
-                return;
-            }
+  const termsBox = document.getElementById('terms-checkbox-donate');
+            if (termsBox && !termsBox.checked) {
+                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                return;
+            }
     // Generate a unique Transaction ID for donations
             const transactionId = 'TX-D' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
             const submitBtn = document.getElementById('submit-donate-btn');
