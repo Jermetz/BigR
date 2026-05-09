@@ -2826,5 +2826,83 @@ async function submitDonation() {
     }
   }
 </style>
+    <!-- Custom Chatbot UI -->
+<div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; width: 350px; background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-family: sans-serif;">
+  <div style="background: #0056b3; color: white; padding: 10px; border-radius: 8px 8px 0 0; font-weight: bold;">
+    Site Assistant
+  </div>
+  
+  <div id="chat-window" style="height: 300px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+    <!-- Chat messages will be injected here -->
+  </div>
+  
+  <div style="padding: 10px; border-top: 1px solid #eee; display: flex;">
+    <input type="text" id="chat-input" placeholder="Ask a question..." style="flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-right: 5px;">
+    <button id="send-btn" style="padding: 8px 12px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Send</button>
+  </div>
+</div>
+    <script type="importmap">
+  {
+    "imports": {
+      "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
+  }
+</script>
+
+<script type="module">
+  import { GoogleGenerativeAI } from "@google/generative-ai";
+
+  // NOTE: For client-side prototyping only. 
+  // For production, move this API call to a serverless function to hide your key.
+  const API_KEY = "AIzaSyBy1TsGD8nKkUmxNtjTVSUMVaiopXxVq68"; 
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  
+  // Initialize the free-tier eligible flash model
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const chat = model.startChat();
+
+  const sendBtn = document.getElementById('send-btn');
+  const chatInput = document.getElementById('chat-input');
+  const chatWindow = document.getElementById('chat-window');
+
+  // Function to append messages to the UI
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.style.padding = "8px";
+    msgDiv.style.borderRadius = "4px";
+    msgDiv.style.maxWidth = "80%";
+    msgDiv.style.alignSelf = sender === 'user' ? 'flex-end' : 'flex-start';
+    msgDiv.style.background = sender === 'user' ? '#e0f7fa' : '#f1f1f1';
+    
+    msgDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Bot'}:</strong> ${text}`;
+    chatWindow.appendChild(msgDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to bottom
+  }
+
+  // Handle send click
+  sendBtn.addEventListener('click', async () => {
+    const userMessage = chatInput.value.trim();
+    if (!userMessage) return;
+
+    addMessage(userMessage, 'user');
+    chatInput.value = '';
+
+    try {
+      const result = await chat.sendMessage(userMessage);
+      const response = await result.response;
+      addMessage(response.text(), 'bot');
+    } catch (error) {
+      console.error("API Error:", error);
+      addMessage("Sorry, I encountered an error.", 'bot');
+    }
+  });
+
+  // Allow pressing "Enter" to send
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendBtn.click();
+    }
+  });
+</script>
 </body>
 </html>
