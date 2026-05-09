@@ -2195,10 +2195,10 @@
             }
             
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
-           // Validation: Ensure Terms are checked
+// Validation: Ensure Terms are checked
             const termsBoxSignup = document.getElementById('terms-checkbox-signup');
             
-if (termsBoxSignup && !termsBoxSignup.checked) {
+            if (termsBoxSignup && !termsBoxSignup.checked) {
                 showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
