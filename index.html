@@ -1808,16 +1808,25 @@
                                 <span onclick="deleteSponsor('${url}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
                             </div>
                         `;
-                    });
+                   });
                 }
-                // -----------------------------------------------
-    ```
 
-### Step 3: Add the Delete Function (Frontend)
-*   **Best way to find this:** Search for `function submitAdminSponsor() {` (Around line 872).
-*   **Where to place your cursor:** Place your cursor directly **above** that line and hit Enter to create an empty space.
-*   **The exact code to insert:**
-    ```javascript
+            // Clear any old intervals before setting a new one (prevents speeding up on re-fetch)
+            clearInterval(marqueeInterval);
+            let currentBlock = 0;
+
+            // Only run the slider if there is more than 1 block of sponsors
+            if (totalBlocks > 1) {
+                marqueeInterval = setInterval(() => {
+                    currentBlock++;
+                    if (currentBlock >= totalBlocks) {
+                        currentBlock = 0; // Loop back to the first block
+                    }
+                    track.style.transform = `translateX(-${currentBlock * 100}%)`;
+                }, 5000);
+            }
+        }
+
         function deleteSponsor(urlToDelete) {
             let password = document.getElementById('admin-pass').value;
             if (!password) { alert("Please enter the Admin Password to delete logos."); return; }
@@ -1844,51 +1853,6 @@
                 document.getElementById('admin-loader').style.display = 'none';
                 alert("Network Error: Could not connect to Google Script.");
             });
-        }
-    ```
-
-### Step 4: Add the Delete Logic to Google App Script (Backend)
-Finally, we need to teach your App Script what `delete_sponsor` actually means. 
-
-*   **Best way to find this:** Open your `Code.gs` in Google App Script and search for `// 3. DONATION LOGIC`
-*   **Where to place your cursor:** Place your cursor directly **above** `// 3. DONATION LOGIC` and hit Enter to create an empty space.
-*   **The exact code to insert:**
-    
-```javascript
-        // 2.5 ADMIN DELETE SPONSOR LOGO
-        if (data.action === "delete_sponsor") {
-          if (data.password === "Ryan2026") {
-            var sponsorsStr = props.getProperty('sponsorLogos');
-            var sponsors = sponsorsStr ? JSON.parse(sponsorsStr) : [];
-            
-            // Filter out the URL the user clicked to delete
-            sponsors = sponsors.filter(function(url) {
-              return url !== data.sponsorUrl;
-            });
-            
-            props.setProperty('sponsorLogos', JSON.stringify(sponsors));
-            
-            return ContentService.createTextOutput(JSON.stringify({ "result": "success", "sponsors": sponsors }))
-                                 .setMimeType(ContentService.MimeType.JSON);
-          } else {
-            throw new Error("Invalid password");
-          }
-        }
-
-            // Clear any old intervals before setting a new one (prevents speeding up on re-fetch)
-            clearInterval(marqueeInterval);
-            let currentBlock = 0;
-
-            // Only run the slider if there is more than 1 block of sponsors
-            if (totalBlocks > 1) {
-                marqueeInterval = setInterval(() => {
-                    currentBlock++;
-                    if (currentBlock >= totalBlocks) {
-                        currentBlock = 0; // Loop back to the first block
-                    }
-                    track.style.transform = `translateX(-${currentBlock * 100}%)`;
-                }, 5000);
-            }
         }
 
         function updateHoleSponsorsUI(soldHoles) {
