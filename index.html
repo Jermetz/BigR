@@ -1762,12 +1762,21 @@
             for (let i = 0; i < validSponsors.length; i += chunkSize) {
                 const chunk = validSponsors.slice(i, i + chunkSize);
                 html += `<div class="sponsor-block">`;
-                            chunk.forEach(url => {
+              chunk.forEach(url => {
                 let imageSrc = url.toString().trim();
+
+                // Convert standard Google Drive links to direct image embed links to bypass hotlink blocking
+                if (imageSrc.includes('drive.google.com')) {
+                    const fileIdMatch = imageSrc.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) {
+                        imageSrc = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
+                    }
+                }
                 // Check if the URL is a raw base64 string (missing http or data prefix)
-                if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
+                else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
                     imageSrc = 'data:image/jpeg;base64,' + imageSrc;
                 }
+
                 // The onerror attribute guarantees that if the browser can't render the image, it deletes the broken icon instantly.
                 html += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.remove();">`;
             });
