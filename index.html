@@ -1742,21 +1742,25 @@
             const chunkSize = 5;
             let totalBlocks = 0;
 
+                       // Filter out empty rows/blank cells from Google Sheets
+            const validSponsors = sponsorsArray.filter(url => url && url.toString().trim() !== '');
+
             // Group sponsors into blocks of 5
-            for (let i = 0; i < sponsorsArray.length; i += chunkSize) {
-                const chunk = sponsorsArray.slice(i, i + chunkSize);
+            for (let i = 0; i < validSponsors.length; i += chunkSize) {
+                const chunk = validSponsors.slice(i, i + chunkSize);
                 html += `<div class="sponsor-block">`;
               chunk.forEach(url => {
                 // Check if the URL is a raw base64 string (missing http or data prefix)
-                let imageSrc = url;
-                if (!url.startsWith('http') && !url.startsWith('data:')) {
-                    imageSrc = 'data:image/jpeg;base64,' + url;
+                let imageSrc = url.toString().trim();
+                if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
+                    imageSrc = 'data:image/jpeg;base64,' + imageSrc;
                 }
                 html += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor">`;
             });
                 html += `</div>`;
                 totalBlocks++;
             }
+
 
             track.innerHTML = html;
 
