@@ -1186,7 +1186,7 @@
         <div id="gate-content">
             <img src="Big R Big Logo.png" alt="Logo" class="gate-logo">
             <button id="enter-btn" onclick="startExperience()">Enter</button>
-            <p onclick="skipIntro()" style="color: #94a3b8; font-size: 14px; margin-top: 20px; cursor: pointer; text-decoration: underline; transition: color 0.3s ease;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Skip Intro</p>
+                      <button onclick="skipIntro()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #cbd5e1; padding: 8px 20px; font-size: 14px; border-radius: 50px; margin-top: 25px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#cbd5e1'">Skip Intro</button>
         </div>
         <video id="intro-video" muted playsinline style="display: none;">
             <source src="intro-animation.mp4" type="video/mp4">
@@ -1311,7 +1311,7 @@
                             </div>
                             <div class="form-group">
                                 <input type="email" id="p1-email" placeholder="Email Address *" required>
-                                <input type="tel" id="p1-phone" placeholder="Mobile Number (Optional)">
+                                                              <input type="tel" id="p1-phone" placeholder="Mobile Number *" required>
                             </div>
                         </div>
                     </div>
