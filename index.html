@@ -1746,9 +1746,14 @@
             for (let i = 0; i < sponsorsArray.length; i += chunkSize) {
                 const chunk = sponsorsArray.slice(i, i + chunkSize);
                 html += `<div class="sponsor-block">`;
-                chunk.forEach(url => {
-                    html += `<img src="${url}" class="marquee-logo-img" alt="Sponsor">`;
-                });
+              chunk.forEach(url => {
+                // Check if the URL is a raw base64 string (missing http or data prefix)
+                let imageSrc = url;
+                if (!url.startsWith('http') && !url.startsWith('data:')) {
+                    imageSrc = 'data:image/jpeg;base64,' + url;
+                }
+                html += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor">`;
+            });
                 html += `</div>`;
                 totalBlocks++;
             }
