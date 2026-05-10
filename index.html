@@ -579,10 +579,14 @@
             border-color: #27ae60;
             color: white;
         }
-        .wizard-step-content {
+               .wizard-step-content {
             display: none;
+            width: 100%;
+            max-width: 600px; /* Keeps the form from getting too wide on iPads */
+            margin: 0 auto; /* Centers the content */
             animation: fadeInRight 0.4s ease-out forwards;
         }
+
         .wizard-step-content.active {
             display: block;
         }
@@ -634,9 +638,9 @@
         }
 
         /* Segmented Intent Buttons */
-        .intent-btn {
+             .intent-btn {
             flex: 1;
-            padding: 12px 5px;
+            padding: 18px 10px; /* More vertical height */
             background: rgba(255,255,255,0.05);
             border: 2px solid transparent;
             color: #94a3b8;
@@ -647,6 +651,7 @@
             transition: all 0.3s ease;
             text-align: center;
         }
+
         .intent-btn:hover {
             background: rgba(255,255,255,0.1);
             transform: scale(1.02);
@@ -709,26 +714,36 @@
             transform: none !important;
         }
 
+          .action-buttons {
+            display: flex;
+            flex-direction: column; /* Stacked by default for mobile */
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 769px) {
+            .action-buttons {
+                flex-direction: row; /* Side-by-side on desktop */
+            }
+        }
+
         .primary-btn {
             background-color: #27ae60;
             color: white;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
+            min-height: 50px; /* Big touch target for thumbs */
             text-align: center;
             text-decoration: none;
-            margin-top: 10px;
+            margin-top: 0; 
+            padding: 12px 20px;
+            transition: all 0.2s ease;
         }
 
-        .primary-btn:hover { background-color: #2ecc71; }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-buttons button {
-            flex: 1; 
-        }
+       
 
         .secondary-btn {
             background-color: #3498db;
