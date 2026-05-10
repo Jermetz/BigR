@@ -1256,11 +1256,10 @@
         <div class="overlay-card success-card">
             <h2 id="success-header">⛳ Registration Success!</h2>
             <p id="success-body">Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!</p>
-                        <div id="success-payment-instructions" style="margin-bottom: 25px; font-weight: bold; color: #f1c40f;"></div>
-            <div style="margin-bottom: 20px;">
-    <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Tell your foursome:</p>
-    <a href="sms:?body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20www.bigrgolf.com" class="secondary-btn" style="text-decoration: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; display: inline-block;">📱 Text Them The Link</a>
-</div>
+                   <div id="tell-foursome-container" style="margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Tell your foursome:</p>
+                <a href="sms:?body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20www.bigrgolf.com" class="secondary-btn" style="text-decoration: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; display: inline-block;">📱 Text Them The Link</a>
+            </div>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
     </div>
@@ -2596,16 +2595,20 @@ body: JSON.stringify({
                     // --- Dynamic Success Message Update ---
                     const successHeader = document.getElementById('success-header');
                     const successBody = document.getElementById('success-body');
+                    const foursomeContainer = document.getElementById('tell-foursome-container');
 
                     if (isSponsorOnly) {
                         successHeader.innerHTML = '🤝 Sponsorship Confirmed!';
                         successBody.innerHTML = "Thank you so much for your generous sponsorship! Your support means the world to us. We'll be in touch soon regarding your logo and sponsorship details.";
+                        if (foursomeContainer) foursomeContainer.style.display = 'none';
                     } else if (sponsorCost > 0) {
                         successHeader.innerHTML = '⛳ Registration & Sponsorship Success!';
                         successBody.innerHTML = "Thank you for registering to play AND for your generous sponsorship! We've recorded your details and look forward to seeing you on October 9th. We will be in touch soon regarding your sponsorship details.";
+                        if (foursomeContainer) foursomeContainer.style.display = 'block';
                     } else {
                         successHeader.innerHTML = '⛳ Registration Success!';
                         successBody.innerHTML = "Thank you for signing up for the Big R Invitational. We've recorded your details and look forward to seeing you on October 9th!";
+                        if (foursomeContainer) foursomeContainer.style.display = 'block';
                     }
 
                     if (typeof confetti === 'function') {
