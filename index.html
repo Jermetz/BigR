@@ -2403,9 +2403,9 @@
             
             // Hide the Add buttons if we hit 4 players
             if (playerCount === 4) {
-                document.getElementById('add-player-btn').style.display = 'none';
-                if (document.getElementById('select-foursome-btn')) document.getElementById('select-foursome-btn').style.display = 'none';
-            }
+    document.getElementById('add-player-btn').style.display = 'none';
+}
+
             document.getElementById('remove-player-btn').style.display = 'block';
         }
 
@@ -2418,7 +2418,8 @@
                 
                 // Show the Add buttons since we are below 4 players
                 document.getElementById('add-player-btn').style.display = 'block';
-                if (document.getElementById('select-foursome-btn')) document.getElementById('select-foursome-btn').style.display = 'block';
+
+             
                 
                 if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
             }
