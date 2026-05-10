@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
+    
         * {
             box-sizing: border-box;
             margin: 0;
@@ -1171,6 +1172,26 @@
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
         }
+        .size-btn {
+    width: 100%;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.2);
+    color: #f8fafc;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+.size-btn:hover { background: rgba(255,255,255,0.1); }
+.size-btn.active {
+    background: rgba(39, 174, 96, 0.2);
+    border-color: #27ae60;
+    color: #2ecc71;
+}
+
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
@@ -1393,14 +1414,14 @@
                             </div>
                         </div>
                         
-                        <div class="player-card" id="team-size-selectors">
-                            <h3>Select Your Group Size</h3>
-                            <div class="action-buttons" style="margin-top: 15px;">
-                                <button type="button" id="select-foursome-btn" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
-                                <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
-                                <button type="button" class="primary-btn" onclick="setPlayerCount(1)" style="background-color: #94a3b8;">Individual</button>
-                            </div>
-                        </div>
+                      <div class="player-card" id="team-size-selectors">
+    <h3 style="margin-bottom: 15px;">Select Your Group Size</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" id="select-foursome-btn" class="size-btn" onclick="setPlayerCount(4)">⛳ Foursome (4 Players)</button>
+        <button type="button" id="select-twosome-btn" class="size-btn" onclick="setPlayerCount(2)">🏌️ Twosome (2 Players)</button>
+        <button type="button" id="select-individual-btn" class="size-btn" onclick="setPlayerCount(1)">🧍 Individual (1 Player)</button>
+    </div>
+</div>
 
                         <div class="wizard-navigation">
                             <button type="button" class="primary-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
@@ -1740,19 +1761,16 @@
         }
 
         function setPlayerCount(numPlayers) {
-            // 1. Reset to a single player to clear previous selections
-            while(playerCount > 1) {
-                removePlayer();
-            }
-            
-            // 2. Switch intent back to playing golf
-            setSponsorIntent(false);
-            
-            // 3. Add the requested number of players
-            for(let i = 1; i < numPlayers; i++) {
-                addPlayer();
-            }
-        }
+    while(playerCount > 1) { removePlayer(); }
+    setSponsorIntent(false);
+    for(let i = 1; i < numPlayers; i++) { addPlayer(); }
+
+    document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+    const map = { 4: 'select-foursome-btn', 2: 'select-twosome-btn', 1: 'select-individual-btn' };
+    const btn = document.getElementById(map[numPlayers]);
+    if (btn) btn.classList.add('active');
+}
+
 
         function goToSignup(numPlayers) {
             setPlayerCount(numPlayers);
