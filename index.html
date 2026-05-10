@@ -1423,22 +1423,24 @@
                     </div>
 
                     <!-- Step 1: Team Setup -->
-                    <div class="wizard-step-content active" id="wizard-step-1">
-                        <div class="player-card">
-                            <h3>Registration Type</h3>
+                                       <div class="wizard-step-content active" id="wizard-step-1">
+                        
+                        <div class="player-card" style="text-align: center;">
+                            <h3 style="margin-bottom: 5px;">Registration Type</h3>
                             <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Are you playing golf, or just looking to sponsor?</p>
                             <div id="sponsor-intent-container" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
-                                <div style="display: flex; gap: 10px;">
+                                <div style="display: flex; gap: 10px; width: 100%;">
                                     <button type="button" id="intent-golf-btn" class="intent-btn active" onclick="setSponsorIntent(false)">🏌️‍♂️ Playing Golf</button>
                                     <button type="button" id="intent-sponsor-btn" class="intent-btn" onclick="setSponsorIntent(true)">🤝 Sponsoring Only</button>
                                 </div>
                             </div>
                         </div>
                         
-                                             <div class="player-card" id="team-size-selectors">
-                            <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                <button type="button" id="select-foursome-btn" class="size-btn" style="grid-column: 1 / -1;" onclick="setPlayerCount(4)">
+                        <div class="player-card" id="team-size-selectors" style="text-align: center;">
+                            <h3 style="margin-bottom: 15px;">Select Your Group Size</h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;">
+                                <button type="button" id="select-foursome-btn" class="size-btn active" onclick="setPlayerCount(4)">
                                     <span style="font-size: 28px;">⛳</span>
                                     <span>Foursome (4 Players)</span>
                                 </button>
@@ -1452,6 +1454,12 @@
                                 </button>
                             </div>
                         </div>
+
+                        <div class="wizard-navigation">
+                            <button type="button" class="primary-btn" id="step1-next-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
+                        </div>
+                    </div>
+
 
 
                         <div class="wizard-navigation">
