@@ -671,19 +671,6 @@
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.3), inset 0 0 10px rgba(52, 152, 219, 0.1);
         }
 
-        .intent-btn:hover {
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.02);
-        }
-        .intent-btn:active {
-            transform: scale(0.98);
-        }
-        .intent-btn.active {
-            background: rgba(52, 152, 219, 0.2);
-            color: #3498db;
-            border-color: #3498db;
-        }
-
         .payment-note {
             color: #f1c40f; 
             font-size: 14px;
@@ -1190,24 +1177,27 @@
             #countdown-timer { gap: 10px; }
             .time-box { min-width: 65px; padding: 10px; }
         }
-             .size-btn {
+                  
+        .size-btn {
             width: 100%;
-            padding: 18px 20px;
+            padding: 15px 10px;
             background: rgba(15, 23, 42, 0.6); 
             border: 2px solid rgba(255, 255, 255, 0.1);
             color: #cbd5e1;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            text-align: left;
+            text-align: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
+            flex-direction: column; /* THIS IS THE KEY ADDITION */
             align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
+            justify-content: center;
+            gap: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
 
         .size-btn:hover { 
             background: rgba(30, 41, 59, 0.8);
@@ -1445,14 +1435,24 @@
                             </div>
                         </div>
                         
-                      <div class="player-card" id="team-size-selectors">
-    <h3 style="margin-bottom: 15px;">Select Your Group Size</h3>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button type="button" id="select-foursome-btn" class="size-btn" onclick="setPlayerCount(4)">⛳ Foursome (4 Players)</button>
-        <button type="button" id="select-twosome-btn" class="size-btn" onclick="setPlayerCount(2)">🏌️ Twosome (2 Players)</button>
-        <button type="button" id="select-individual-btn" class="size-btn" onclick="setPlayerCount(1)">🧍 Individual (1 Player)</button>
-    </div>
-</div>
+                                             <div class="player-card" id="team-size-selectors">
+                            <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <button type="button" id="select-foursome-btn" class="size-btn" style="grid-column: 1 / -1;" onclick="setPlayerCount(4)">
+                                    <span style="font-size: 28px;">⛳</span>
+                                    <span>Foursome (4 Players)</span>
+                                </button>
+                                <button type="button" id="select-twosome-btn" class="size-btn" onclick="setPlayerCount(2)">
+                                    <span style="font-size: 24px;">🏌️</span>
+                                    <span>Twosome (2 Players)</span>
+                                </button>
+                                <button type="button" id="select-individual-btn" class="size-btn" onclick="setPlayerCount(1)">
+                                    <span style="font-size: 24px;">🧍</span>
+                                    <span>Individual (1 Player)</span>
+                                </button>
+                            </div>
+                        </div>
+
 
                         <div class="wizard-navigation">
                             <button type="button" class="primary-btn" id="step1-next-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
