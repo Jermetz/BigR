@@ -1424,7 +1424,8 @@
 </div>
 
                         <div class="wizard-navigation">
-                            <button type="button" class="primary-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
+                            <button type="button" class="primary-btn" id="step1-next-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
+
                         </div>
                     </div>
 
@@ -1730,26 +1731,29 @@
 
         // --- Sponsorship Segmented Control Logic ---
         function setSponsorIntent(isSponsorOnly) {
-            const checkbox = document.getElementById('sponsor-only-checkbox');
-            const golfBtn = document.getElementById('intent-golf-btn');
-            const sponsorBtn = document.getElementById('intent-sponsor-btn');
-            const sponsorDropdown = document.getElementById('sponsorship-level');
-            
-            if (isSponsorOnly) {
-                // If they switch to Sponsoring Only, but have "No Sponsorship" selected, reset dropdown
-                if (sponsorDropdown && sponsorDropdown.value === "0") {
-                    sponsorDropdown.value = "";
-                }
-                if (golfBtn) golfBtn.classList.remove('active');
-                if (sponsorBtn) sponsorBtn.classList.add('active');
-                if (checkbox) checkbox.checked = true;
-            } else {
-                if (sponsorBtn) sponsorBtn.classList.remove('active');
-                if (golfBtn) golfBtn.classList.add('active');
-                if (checkbox) checkbox.checked = false;
-            }
-            toggleSponsorOnly(); 
+    const checkbox = document.getElementById('sponsor-only-checkbox');
+    const golfBtn = document.getElementById('intent-golf-btn');
+    const sponsorBtn = document.getElementById('intent-sponsor-btn');
+    const sponsorDropdown = document.getElementById('sponsorship-level');
+    const nextBtn = document.getElementById('step1-next-btn'); // ADD THIS
+
+    if (isSponsorOnly) {
+        if (sponsorDropdown && sponsorDropdown.value === "0") {
+            sponsorDropdown.value = "";
         }
+        if (golfBtn) golfBtn.classList.remove('active');
+        if (sponsorBtn) sponsorBtn.classList.add('active');
+        if (checkbox) checkbox.checked = true;
+        if (nextBtn) nextBtn.innerText = "Next: Sponsorship Contact ➡️"; // ADD THIS
+    } else {
+        if (sponsorBtn) sponsorBtn.classList.remove('active');
+        if (golfBtn) golfBtn.classList.add('active');
+        if (checkbox) checkbox.checked = false;
+        if (nextBtn) nextBtn.innerText = "Next: Player Details ➡️"; // ADD THIS
+    }
+    toggleSponsorOnly();
+}
+
 
         function goToSponsorOnly() {
             // Remove extra players
