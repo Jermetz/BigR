@@ -536,6 +536,65 @@
             font-size: 24px;
             z-index: 1;
         }
+        /* --- Wizard Progress Bar --- */
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .wizard-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+        .progress-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        .progress-step.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        .progress-step.completed {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
+        }
+        .wizard-step-content {
+            display: none;
+            animation: fadeInRight 0.4s ease-out forwards;
+        }
+        .wizard-step-content.active {
+            display: block;
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .wizard-navigation {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
 
         /* Forms and Buttons */
         .player-card {
@@ -1297,93 +1356,136 @@
                 </div>
                 <p id="form-subtitle" style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
-                <form id="golf-signup-form">
+                               <form id="golf-signup-form">
+                    <!-- Progress Bar -->
+                    <div class="wizard-progress">
+                        <div class="progress-step active" id="indicator-1">1</div>
+                        <div class="progress-step" id="indicator-2">2</div>
+                        <div class="progress-step" id="indicator-3">3</div>
+                        <div class="progress-step" id="indicator-4">4</div>
+                    </div>
 
-                    <div id="players-container">
+                    <!-- Step 1: Team Setup -->
+                    <div class="wizard-step-content active" id="wizard-step-1">
                         <div class="player-card">
-                            <h3>Player 1 (Primary Contact)</h3>
-                            <div class="form-group" id="team-name-container">
-                                <input type="text" id="team-name" placeholder="Team Name (Optional)">
+                            <h3>Registration Type</h3>
+                            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Are you playing golf, or just looking to sponsor?</p>
+                            <div id="sponsor-intent-container" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" id="intent-golf-btn" class="intent-btn active" onclick="setSponsorIntent(false)">🏌️‍♂️ Playing Golf</button>
+                                    <button type="button" id="intent-sponsor-btn" class="intent-btn" onclick="setSponsorIntent(true)">🤝 Sponsoring Only</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input type="text" id="p1-first" placeholder="First Name *" required>
-                                <input type="text" id="p1-last" placeholder="Last Name *" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" id="p1-email" placeholder="Email Address *" required>
-                                                              <input type="tel" id="p1-phone" placeholder="Mobile Number *" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="player-management-actions" style="margin-bottom: 20px;">
-                        <div class="action-buttons" style="margin-bottom: 10px;">
-                            <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
-                            <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
                         </div>
                         
-                        <div id="team-size-selectors" class="action-buttons">
-                         <button type="button" id="select-foursome-btn" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
-                         <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
-                     </div>
-
-                    </div>
-
-                    <div class="total-display">
-                        <h3>Registration Total</h3>
-                        <div id="total-amount" class="total-amount">$175</div>
-                    </div>
-<div id="fee-breakdown" style="font-size: 13px; color: #cbd5e1; margin-top: 5px; height: 15px;"></div>
-                    <div class="player-card">
-                        <h3>Sponsorship Opportunities</h3>
-                        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
-                        
-                        <div id="sponsor-intent-container" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
-                            <label style="display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Registration Type</label>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="button" id="intent-golf-btn" class="intent-btn active" onclick="setSponsorIntent(false)">🏌️‍♂️ Playing Golf</button>
-                                <button type="button" id="intent-sponsor-btn" class="intent-btn" onclick="setSponsorIntent(true)">🤝 Sponsoring Only</button>
+                        <div class="player-card" id="team-size-selectors">
+                            <h3>Select Your Group Size</h3>
+                            <div class="action-buttons" style="margin-top: 15px;">
+                                <button type="button" id="select-foursome-btn" class="primary-btn" onclick="setPlayerCount(4)">Select Foursome</button>
+                                <button type="button" class="primary-btn" onclick="setPlayerCount(2)" style="background-color: #2980b9;">Select Twosome</button>
+                                <button type="button" class="primary-btn" onclick="setPlayerCount(1)" style="background-color: #94a3b8;">Individual</button>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <select id="sponsorship-level" onchange="handleSponsorshipChange()">
-                                <option value="" disabled selected>- Select a Sponsorship -</option>
-                                <option value="0">No Sponsorship (Golf Only)</option>
-                                <option value="250">Hole Sponsor — $250</option>
-                                <option value="1000">Silver Sponsor — $1,000</option>
-                                <option value="2500">Gold Sponsor — $2,500</option>
-                                <option value="5000">Platinum Sponsor — $5,000</option>
-                            </select>
-                        </div>
-
-                        <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
-                    </div>
-
-                    <div class="player-card">
-                        <h3>Payment Information</h3>
-                        <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                                                   <select id="payment-type" required onchange="updatePaymentNote(); updateCostDisplay();">
-                                <option value="" disabled selected>Select Payment Type *</option>
-                                <option value="Credit/Debit Card">Credit/Debit Card</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Check">Check</option>
-                                <option value="Venmo">Venmo</option>
-                            </select>
-                            <p id="payment-note" class="payment-note"></p>
-                            <div id="sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
+                        <div class="wizard-navigation">
+                            <button type="button" class="primary-btn" onclick="nextWizardStep(2)">Next: Player Details ➡️</button>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                      <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
-                        <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages. Message and data rates may apply. Reply STOP to opt out.</span>
-                    </label>
+
+                    <!-- Step 2: Player Details -->
+                    <div class="wizard-step-content" id="wizard-step-2">
+                        <div id="players-container">
+                            <div class="player-card">
+                                <h3>Player 1 (Primary Contact)</h3>
+                                <div class="form-group" id="team-name-container">
+                                    <input type="text" id="team-name" placeholder="Team Name (Optional)">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="p1-first" placeholder="First Name *" required>
+                                    <input type="text" id="p1-last" placeholder="Last Name *" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" id="p1-email" placeholder="Email Address *" required>
+                                    <input type="tel" id="p1-phone" placeholder="Mobile Number *" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="player-management-actions" style="margin-bottom: 20px;">
+                            <div class="action-buttons">
+                                <button type="button" id="add-player-btn" class="secondary-btn" onclick="addPlayer()">+ Add Another Player</button>
+                                <button type="button" id="remove-player-btn" class="danger-btn" onclick="removePlayer()" style="display: none;">- Remove Player</button>
+                            </div>
+                        </div>
+
+                        <div class="wizard-navigation">
+                            <button type="button" class="secondary-btn" onclick="prevWizardStep(1)">⬅️ Back</button>
+                            <button type="button" class="primary-btn" onclick="validateAndNextStep(2, 3)">Next: Sponsorships ➡️</button>
+                        </div>
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" id="submit-btn" class="primary-btn">Submit Registration</button>
+
+                    <!-- Step 3: Sponsorships -->
+                    <div class="wizard-step-content" id="wizard-step-3">
+                        <div class="player-card">
+                            <h3>Sponsorship Opportunities</h3>
+                            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
+                            
+                            <div class="form-group">
+                                <select id="sponsorship-level" onchange="handleSponsorshipChange()">
+                                    <option value="" disabled selected>- Select a Sponsorship -</option>
+                                    <option value="0">No Sponsorship (Golf Only)</option>
+                                    <option value="250">Hole Sponsor — $250</option>
+                                    <option value="1000">Silver Sponsor — $1,000</option>
+                                    <option value="2500">Gold Sponsor — $2,500</option>
+                                    <option value="5000">Platinum Sponsor — $5,000</option>
+                                </select>
+                            </div>
+                            <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
+                        </div>
+
+                        <div class="wizard-navigation">
+                            <button type="button" class="secondary-btn" onclick="prevWizardStep(2)">⬅️ Back</button>
+                            <button type="button" class="primary-btn" onclick="validateAndNextStep(3, 4)">Next: Payment ➡️</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Payment & Review -->
+                    <div class="wizard-step-content" id="wizard-step-4">
+                        <div class="total-display">
+                            <h3>Registration Total</h3>
+                            <div id="total-amount" class="total-amount">$175</div>
+                        </div>
+                        <div id="fee-breakdown" style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px; height: 15px; text-align: center;"></div>
+
+                        <div class="player-card">
+                            <h3>Payment Information</h3>
+                            <div class="form-group" style="flex-direction: column; margin-top: 10px;">
+                                <select id="payment-type" required onchange="updatePaymentNote(); updateCostDisplay();">
+                                    <option value="" disabled selected>Select Payment Type *</option>
+                                    <option value="Credit/Debit Card">Credit/Debit Card</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Venmo">Venmo</option>
+                                </select>
+                                <p id="payment-note" class="payment-note"></p>
+                                <div id="sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
+                                <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages.</span>
+                            </label>
+                        </div>
+
+                        <div class="wizard-navigation">
+                            <button type="button" class="secondary-btn" onclick="prevWizardStep(3)">⬅️ Back</button>
+                            <button type="submit" id="submit-btn" class="primary-btn" style="background-color: #27ae60;">Submit Registration</button>
+                        </div>
                     </div>
                 </form>
+
             </div>
         </section>
 
@@ -1651,6 +1753,11 @@
             const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
+                        // Reset Wizard to Step 1 if opening the Signup section
+            if (sectionId === 'signup' && typeof nextWizardStep === 'function') {
+                nextWizardStep(1);
+            }
+
             
             // --- NEW: Mobile CTA Visibility Toggle ---
             const mobileCta = document.getElementById('mobile-cta');
@@ -1690,6 +1797,57 @@
             showSection('signup');
         }
 
+        // --- Wizard Logic ---
+        let currentWizardStep = 1;
+
+        function nextWizardStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step-content').forEach(el => el.classList.remove('active'));
+            // Show target step
+            document.getElementById('wizard-step-' + step).classList.add('active');
+            
+            // Update progress bar
+            document.querySelectorAll('.progress-step').forEach((el, index) => {
+                if (index + 1 < step) {
+                    el.classList.add('completed');
+                    el.classList.remove('active');
+                } else if (index + 1 === step) {
+                    el.classList.add('active');
+                    el.classList.remove('completed');
+                } else {
+                    el.classList.remove('active', 'completed');
+                }
+            });
+            currentWizardStep = step;
+            // Scroll back to the top of the form for the new step
+            window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        function prevWizardStep(step) {
+            nextWizardStep(step);
+        }
+
+        function validateAndNextStep(currentStep, nextStep) {
+            // Basic validation check before allowing user to proceed
+            let isValid = true;
+            const currentContainer = document.getElementById('wizard-step-' + currentStep);
+            const inputs = currentContainer.querySelectorAll('input[required]');
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    isValid = false;
+                    input.style.borderColor = '#e74c3c';
+                } else {
+                    input.style.borderColor = 'transparent';
+                }
+            });
+
+            if (isValid) {
+                nextWizardStep(nextStep);
+            } else {
+                showValidationModal("Please fill out all required fields before proceeding.");
+            }
+        }
 
         // --- Global Fetches & UI Updates ---
         function fetchGlobalData() {
