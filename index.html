@@ -434,47 +434,73 @@
             font-size: 15px;
         }
 
-     /* --- Sponsor Marquee --- */
+          /* --- Hybrid Sponsor Showcase --- */
         .sponsor-marquee-container {
             width: 100%;
             max-width: 800px;
             margin: 40px auto 0 auto;
-            overflow: hidden;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
+            overflow: hidden; /* Essential for the desktop slider */
         }
         .marquee-title {
             font-size: 12px;
             color: #cbd5e1;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
         .marquee-track {
             display: flex;
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            gap: 20px;
+            /* Mobile Default: Centered Grid */
+            flex-wrap: wrap;
+            justify-content: center;
             width: 100%;
         }
-        .sponsor-block {
-            min-width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 0 10px;
-        }
-       .marquee-logo-img {
-            height: 80px; /* Increased from 50px */
-            max-width: 180px; /* Increased from 120px */
+        .marquee-logo-img {
+            height: 60px;
+            max-width: 130px;
             object-fit: contain;
             background: rgba(255,255,255,0.9);
-            padding: 8px 15px; /* Slightly bumped up the padding to match the larger size */
+            padding: 6px 10px;
             border-radius: 6px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-       }
+            transition: transform 0.2s ease;
+        }
+        .marquee-logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Desktop Marquee Animation */
+        @media (min-width: 768px) {
+            .marquee-track {
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                width: max-content;
+                animation: slideMarquee 20s linear infinite;
+            }
+            .marquee-track:hover {
+                animation-play-state: paused; /* Pauses when mouse hovers! */
+            }
+            .marquee-logo-img {
+                height: 80px; 
+                max-width: 180px;
+                padding: 8px 15px;
+            }
+        }
+
+        @keyframes slideMarquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Hide the duplicated loop on mobile so it doesn't clutter the grid */
+        @media (max-width: 767px) {
+            .marquee-clone { display: none; }
+        }
+
 
         /* --- Drive to the Green Meter --- */
         .fundraiser-meter-container {
@@ -1965,93 +1991,68 @@
 
        let marqueeInterval;
 
-        function updateMarqueeUI(sponsorsArray) {
+                function updateMarqueeUI(sponsorsArray) {
             const track = document.getElementById('marquee-track');
             if (!track || sponsorsArray.length === 0) return;
 
-            let html = '';
-            const chunkSize = 5;
-            let totalBlocks = 0;
-
-                                   // Aggressively filter out junk data, 'undefined', 'null', or strings too short to be a valid image
+            // Aggressively filter out junk data
             const validSponsors = sponsorsArray.filter(url => {
                 if (!url) return false;
                 const str = url.toString().trim();
-                // Ignore empty strings, text errors, or empty prefixes
                 if (str === '' || str === 'undefined' || str === 'null' || str === 'data:image/jpeg;base64,') return false;
-                // A valid base64 image or HTTP URL will be decently long. Ignore anything under 20 characters.
                 if (str.length < 20) return false; 
                 return true;
             });
 
-            // If there are no valid sponsors after filtering, stop here to prevent an empty broken box
             if (validSponsors.length === 0) return;
 
-            // Group sponsors into blocks of 5
-            for (let i = 0; i < validSponsors.length; i += chunkSize) {
-                const chunk = validSponsors.slice(i, i + chunkSize);
-                html += `<div class="sponsor-block">`;
-              chunk.forEach(url => {
+            let logoHTML = '';
+            
+            // Build the HTML for the logos
+            validSponsors.forEach(url => {
                 let imageSrc = url.toString().trim();
 
-                // Convert standard Google Drive links to direct image embed links to bypass hotlink blocking
                 if (imageSrc.includes('drive.google.com')) {
                     const fileIdMatch = imageSrc.match(/id=([a-zA-Z0-9_-]+)/);
                     if (fileIdMatch && fileIdMatch[1]) {
-                        imageSrc = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
+                        imageSrc = `https://lh3.googleusercontent.com/d/$${fileIdMatch[1]}`;
                     }
-                }
-                // Check if the URL is a raw base64 string (missing http or data prefix)
-                else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
+                } else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
                     imageSrc = 'data:image/jpeg;base64,' + imageSrc;
                 }
 
-                // The onerror attribute guarantees that if the browser can't render the image, it deletes the broken icon instantly.
-                html += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.remove();">`;
+                logoHTML += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.remove();">`;
             });
 
-                html += `</div>`;
-                totalBlocks++;
-            }
+            // Insert original set, plus a cloned set for the seamless desktop scroll
+            track.innerHTML = logoHTML + `<div class="marquee-clone" style="display: contents;">${logoHTML}</div>`;
 
-
-            track.innerHTML = html;
-            // --- NEW: Populate Admin Dashboard Logo List ---
-                const adminList = document.getElementById('admin-sponsor-list');
-                if (adminList) {
-                    adminList.innerHTML = '';
-                    validSponsors.forEach(url => {
-                        let previewSrc = url.toString().trim();
-                        if (previewSrc.includes('drive.google.com')) {
-                            const fileIdMatch = previewSrc.match(/id=([a-zA-Z0-9_-]+)/);
-                            if (fileIdMatch && fileIdMatch[1]) previewSrc = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
-                        } else if (!previewSrc.startsWith('http') && !previewSrc.startsWith('data:')) {
-                            previewSrc = 'data:image/jpeg;base64,' + previewSrc;
-                        }
-                        adminList.innerHTML += `
-                            <div style="position: relative; display: inline-block;">
-                                <img src="${previewSrc}" style="height: 40px; border-radius: 4px; border: 1px solid #fff; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
-                                <span onclick="deleteSponsor('${url}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
-                            </div>
-                        `;
-                   });
-                }
-
-            // Clear any old intervals before setting a new one (prevents speeding up on re-fetch)
-            clearInterval(marqueeInterval);
-            let currentBlock = 0;
-
-            // Only run the slider if there is more than 1 block of sponsors
-            if (totalBlocks > 1) {
-                marqueeInterval = setInterval(() => {
-                    currentBlock++;
-                    if (currentBlock >= totalBlocks) {
-                        currentBlock = 0; // Loop back to the first block
+            // Populate Admin Dashboard Logo List
+            const adminList = document.getElementById('admin-sponsor-list');
+            if (adminList) {
+                adminList.innerHTML = '';
+                validSponsors.forEach(url => {
+                    let previewSrc = url.toString().trim();
+                    if (previewSrc.includes('drive.google.com')) {
+                        const fileIdMatch = previewSrc.match(/id=([a-zA-Z0-9_-]+)/);
+                        if (fileIdMatch && fileIdMatch[1]) previewSrc = `https://lh3.googleusercontent.com/d/$${fileIdMatch[1]}`;
+                    } else if (!previewSrc.startsWith('http') && !previewSrc.startsWith('data:')) {
+                        previewSrc = 'data:image/jpeg;base64,' + previewSrc;
                     }
-                    track.style.transform = `translateX(-${currentBlock * 100}%)`;
-                }, 5000);
+                    adminList.innerHTML += `
+                        <div style="position: relative; display: inline-block;">
+                            <img src="${previewSrc}" style="height: 40px; border-radius: 4px; border: 1px solid #fff; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
+                            <span onclick="deleteSponsor('${url}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
+                        </div>
+                    `;
+               });
             }
+
+            // Ensure JS animations are killed so pure CSS can take over
+            clearInterval(marqueeInterval);
+            track.style.transform = `none`; 
         }
+
 
         function deleteSponsor(urlToDelete) {
             let password = document.getElementById('admin-pass').value;
