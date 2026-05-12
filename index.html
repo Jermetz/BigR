@@ -497,23 +497,23 @@
 
         .spotlight-link {
             display: block;
-            background: rgba(255,255,255,0.97);
+            background: transparent;
             border-radius: 12px;
-            padding: 25px 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            padding: 10px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease;
             text-decoration: none;
             cursor: pointer;
             max-width: 90%;
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.25)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.15));
         }
 
         .spotlight-link:hover {
             transform: scale(1.08);
-            box-shadow: 0 20px 50px rgba(241, 196, 15, 0.4), 0 0 30px rgba(255,255,255,0.3);
+            filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 70px rgba(241, 196, 15, 0.3));
         }
 
         .spotlight-img {
-            max-height: 140px;
+            max-height: 180px;
             max-width: 100%;
             width: auto;
             height: auto;
@@ -525,13 +525,14 @@
         .spotlight-visit-hint {
             display: block;
             font-size: 11px;
-            color: #1e293b;
+            color: #f1c40f;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: 600;
             opacity: 0;
             transition: opacity 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .spotlight-link:hover .spotlight-visit-hint {
@@ -566,8 +567,8 @@
 
         @media (max-width: 768px) {
             .spotlight-stage { height: 180px; }
-            .spotlight-img { max-height: 110px; }
-            .spotlight-link { padding: 20px 25px; }
+            .spotlight-img { max-height: 140px; }
+            .spotlight-link { padding: 5px; }
         }
 
         /* --- Hybrid Sponsor Showcase (Marquee — kept for "all sponsors" rotation) --- */
@@ -596,21 +597,21 @@
         }
         .marquee-logo-link {
             display: block;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, filter 0.3s ease;
             text-decoration: none;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
         }
         .marquee-logo-link:hover {
             transform: scale(1.1) translateY(-3px);
-            filter: drop-shadow(0 5px 15px rgba(52, 152, 219, 0.4));
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.45)) drop-shadow(0 0 25px rgba(52, 152, 219, 0.3));
         }
         .marquee-logo-img {
             height: 60px;
             max-width: 130px;
             object-fit: contain;
-            background: rgba(255,255,255,0.95);
-            padding: 6px 10px;
-            border-radius: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
         }
 
         /* Desktop Marquee Animation */
@@ -627,7 +628,7 @@
             .marquee-logo-img {
                 height: 80px; 
                 max-width: 180px;
-                padding: 8px 15px;
+                padding: 0;
             }
         }
 
@@ -2222,23 +2223,26 @@
          * Resolves an image URL — handles Google Drive links and base64.
          * Uses Google's lh3 CDN which actually allows hotlinking
          * (the old drive.google.com/uc?id=... URLs are blocked/redirected as of 2024).
+         * BULLETPROOF: returns empty string for any malformed input.
          */
         function resolveImageSrc(rawSrc) {
-            if (!rawSrc) return '';
-            let src = rawSrc.toString().trim();
+            if (rawSrc === null || rawSrc === undefined) return '';
+            let src;
+            try {
+                src = String(rawSrc).trim();
+            } catch (e) {
+                console.warn("resolveImageSrc: could not stringify input", rawSrc);
+                return '';
+            }
+            if (!src) return '';
             
             // Extract Google Drive file ID from any Drive URL format
-            if (src.includes('drive.google.com') || src.includes('docs.google.com')) {
-                // Match against several known Drive URL patterns:
-                // - drive.google.com/uc?id=FILEID
-                // - drive.google.com/uc?export=view&id=FILEID
-                // - drive.google.com/file/d/FILEID/view
-                // - drive.google.com/open?id=FILEID
+            if (src.indexOf('drive.google.com') !== -1 || src.indexOf('docs.google.com') !== -1) {
                 let fileId = null;
                 const patterns = [
-                    /[?&]id=([a-zA-Z0-9_-]{20,})/,   // ?id= or &id=
-                    /\/file\/d\/([a-zA-Z0-9_-]{20,})/, // /file/d/
-                    /\/d\/([a-zA-Z0-9_-]{20,})/        // /d/
+                    /[?&]id=([a-zA-Z0-9_-]{20,})/,
+                    /\/file\/d\/([a-zA-Z0-9_-]{20,})/,
+                    /\/d\/([a-zA-Z0-9_-]{20,})/
                 ];
                 for (const p of patterns) {
                     const m = src.match(p);
@@ -2246,15 +2250,13 @@
                 }
                 
                 if (fileId) {
-                    // lh3 CDN supports hotlinking from third-party sites; =s800 caps long edge at 800px
                     return `https://lh3.googleusercontent.com/d/${fileId}=s800`;
                 }
-                // Fallback to original URL if we couldn't parse it
                 return src;
             } 
             
             // Already a full URL — use as-is
-            if (src.startsWith('http') || src.startsWith('data:')) {
+            if (src.indexOf('http') === 0 || src.indexOf('data:') === 0) {
                 return src;
             }
             
@@ -2315,20 +2317,32 @@
             container.style.display = 'block';
             
             console.log("🎯 Rendering spotlight with", featuredSponsorsCache.length, "sponsors");
+            console.log("   Full sponsor data:", JSON.stringify(featuredSponsorsCache, null, 2));
             
             // Build slides
             stage.innerHTML = '';
             featuredSponsorsCache.forEach((sponsor, index) => {
-                const imgSrc = resolveImageSrc(sponsor.logo);
-                const websiteUrl = sponsor.website && sponsor.website.trim() 
-                    ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website) 
-                    : null;
-                
-                console.log(`  Slide ${index}: logo="${sponsor.logo.substring(0, 80)}..." → resolved="${imgSrc.substring(0, 80)}..."`);
-                
-                const slide = document.createElement('div');
-                slide.className = 'spotlight-slide' + (index === 0 ? ' active' : '');
-                slide.dataset.index = index;
+                try {
+                    const rawLogo = sponsor && sponsor.logo ? sponsor.logo : '';
+                    const imgSrc = resolveImageSrc(rawLogo);
+                    const rawWebsite = sponsor && sponsor.website ? String(sponsor.website).trim() : '';
+                    const websiteUrl = rawWebsite 
+                        ? (rawWebsite.indexOf('http') === 0 ? rawWebsite : 'https://' + rawWebsite) 
+                        : null;
+                    
+                    console.log(`  Slide ${index}:`);
+                    console.log(`    Raw logo:`, rawLogo);
+                    console.log(`    Resolved src:`, imgSrc);
+                    console.log(`    Website:`, websiteUrl || '(none)');
+                    
+                    if (!imgSrc) {
+                        console.warn(`  ⚠️ Slide ${index} has no usable image source — skipping`);
+                        return;
+                    }
+                    
+                    const slide = document.createElement('div');
+                    slide.className = 'spotlight-slide' + (index === 0 ? ' active' : '');
+                    slide.dataset.index = index;
                 
                 if (websiteUrl) {
                     slide.innerHTML = `
@@ -2356,6 +2370,9 @@
                     `;
                 }
                 stage.appendChild(slide);
+                } catch (err) {
+                    console.error(`💥 Error building slide ${index}:`, err, 'sponsor data was:', sponsor);
+                }
             });
             
             // Build dots
