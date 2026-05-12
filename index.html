@@ -2148,7 +2148,7 @@
                         }
                     }
                                         if (data && data.sponsors && data.sponsors.length > 0) {
-                        console.log("Sponsor Data from Script:", data.sponsors);
+                        console.log("📦 Raw sponsor data from script:", data.sponsors);
                         updateSponsorShowcase(data.sponsors);
                     }
 
@@ -2220,20 +2220,46 @@
 
         /**
          * Resolves an image URL — handles Google Drive links and base64.
+         * Uses Google's lh3 CDN which actually allows hotlinking
+         * (the old drive.google.com/uc?id=... URLs are blocked/redirected as of 2024).
          */
         function resolveImageSrc(rawSrc) {
             if (!rawSrc) return '';
             let src = rawSrc.toString().trim();
             
-            if (src.includes('drive.google.com')) {
-                const fileIdMatch = src.match(/id=([a-zA-Z0-9_-]+)/);
-                if (fileIdMatch && fileIdMatch[1]) {
-                    return `https://drive.google.com/uc?id=${fileIdMatch[1]}`;
+            // Extract Google Drive file ID from any Drive URL format
+            if (src.includes('drive.google.com') || src.includes('docs.google.com')) {
+                // Match against several known Drive URL patterns:
+                // - drive.google.com/uc?id=FILEID
+                // - drive.google.com/uc?export=view&id=FILEID
+                // - drive.google.com/file/d/FILEID/view
+                // - drive.google.com/open?id=FILEID
+                let fileId = null;
+                const patterns = [
+                    /[?&]id=([a-zA-Z0-9_-]{20,})/,   // ?id= or &id=
+                    /\/file\/d\/([a-zA-Z0-9_-]{20,})/, // /file/d/
+                    /\/d\/([a-zA-Z0-9_-]{20,})/        // /d/
+                ];
+                for (const p of patterns) {
+                    const m = src.match(p);
+                    if (m && m[1]) { fileId = m[1]; break; }
                 }
-            } else if (!src.startsWith('http') && !src.startsWith('data:')) {
-                return 'data:image/jpeg;base64,' + src;
+                
+                if (fileId) {
+                    // lh3 CDN supports hotlinking from third-party sites; =s800 caps long edge at 800px
+                    return `https://lh3.googleusercontent.com/d/${fileId}=s800`;
+                }
+                // Fallback to original URL if we couldn't parse it
+                return src;
+            } 
+            
+            // Already a full URL — use as-is
+            if (src.startsWith('http') || src.startsWith('data:')) {
+                return src;
             }
-            return src;
+            
+            // Looks like raw base64 — wrap it
+            return 'data:image/jpeg;base64,' + src;
         }
 
         /**
@@ -2288,6 +2314,8 @@
             featuredSponsorsCache = featuredArray.slice(0, 4);
             container.style.display = 'block';
             
+            console.log("🎯 Rendering spotlight with", featuredSponsorsCache.length, "sponsors");
+            
             // Build slides
             stage.innerHTML = '';
             featuredSponsorsCache.forEach((sponsor, index) => {
@@ -2296,6 +2324,8 @@
                     ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website) 
                     : null;
                 
+                console.log(`  Slide ${index}: logo="${sponsor.logo.substring(0, 80)}..." → resolved="${imgSrc.substring(0, 80)}..."`);
+                
                 const slide = document.createElement('div');
                 slide.className = 'spotlight-slide' + (index === 0 ? ' active' : '');
                 slide.dataset.index = index;
@@ -2303,14 +2333,25 @@
                 if (websiteUrl) {
                     slide.innerHTML = `
                         <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="spotlight-link">
-                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor" onerror="this.parentElement.parentElement.remove();">
+                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div class="spotlight-fallback" style="display:none; padding:20px; color:#1e293b; font-weight:600; text-align:center;">
+                                <div style="font-size:32px; margin-bottom:8px;">🖼️</div>
+                                <div style="font-size:13px;">Logo unavailable</div>
+                                <div style="font-size:11px; color:#64748b; margin-top:4px;">Click to visit website</div>
+                            </div>
                             <span class="spotlight-visit-hint">↗ Visit Website</span>
                         </a>
                     `;
                 } else {
                     slide.innerHTML = `
                         <div class="spotlight-link" style="cursor: default;">
-                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor" onerror="this.parentElement.parentElement.remove();">
+                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div class="spotlight-fallback" style="display:none; padding:20px; color:#1e293b; font-weight:600; text-align:center;">
+                                <div style="font-size:32px; margin-bottom:8px;">🖼️</div>
+                                <div style="font-size:13px;">Logo unavailable</div>
+                            </div>
                         </div>
                     `;
                 }
@@ -2368,9 +2409,9 @@
                     : null;
                 
                 if (websiteUrl) {
-                    logoHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="marquee-logo-link"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.parentElement.remove();"></a>`;
+                    logoHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="marquee-logo-link"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></a>`;
                 } else {
-                    logoHTML += `<span class="marquee-logo-link" style="cursor: default;"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.parentElement.remove();"></span>`;
+                    logoHTML += `<span class="marquee-logo-link" style="cursor: default;"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></span>`;
                 }
             });
 
