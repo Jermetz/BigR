@@ -571,7 +571,7 @@
             .spotlight-link { padding: 5px; }
         }
 
-        /* --- Hybrid Sponsor Showcase (Marquee — kept for "all sponsors" rotation) --- */
+        /* --- Hybrid Sponsor Showcase (Marquee — animates on all devices now) --- */
         .sponsor-marquee-container {
             width: 100%;
             max-width: 800px;
@@ -579,6 +579,9 @@
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
+            /* Fade edges for polish */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
         }
         .marquee-title {
             font-size: 12px;
@@ -587,16 +590,31 @@
             letter-spacing: 2px;
             margin-bottom: 20px;
             text-align: center;
+            /* Title must not inherit the mask — re-paint it solid */
+            -webkit-mask-image: none;
+            mask-image: none;
         }
         .marquee-track {
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
+            gap: 30px;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: center;
+            width: max-content;
+            animation: slideMarquee 30s linear infinite;
+            /* Hardware acceleration — critical for smooth iOS rendering */
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+        }
+        .marquee-track:hover {
+            animation-play-state: paused;
         }
         .marquee-logo-link {
             display: block;
+            flex-shrink: 0; /* Prevent logos from squishing */
             transition: transform 0.3s ease, filter 0.3s ease;
             text-decoration: none;
             filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
@@ -606,40 +624,33 @@
             filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.45)) drop-shadow(0 0 25px rgba(52, 152, 219, 0.3));
         }
         .marquee-logo-img {
-            height: 60px;
-            max-width: 130px;
+            height: 80px;
+            max-width: 180px;
             object-fit: contain;
             background: transparent;
             padding: 0;
             border-radius: 0;
+            display: block;
         }
 
-        /* Desktop Marquee Animation */
-        @media (min-width: 768px) {
+        /* Mobile-only sizing — smaller logos so more fit */
+        @media (max-width: 768px) {
             .marquee-track {
-                flex-wrap: nowrap;
-                justify-content: flex-start;
-                width: max-content;
-                animation: slideMarquee 25s linear infinite;
-            }
-            .marquee-track:hover {
-                animation-play-state: paused;
+                gap: 20px;
+                animation-duration: 25s; /* A touch faster on mobile */
             }
             .marquee-logo-img {
-                height: 80px; 
-                max-width: 180px;
-                padding: 0;
+                height: 55px;
+                max-width: 120px;
             }
         }
 
         @keyframes slideMarquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
         }
 
-        @media (max-width: 767px) {
-            .marquee-clone { display: none; }
-        }
+        /* (Marquee clone is always visible now — needed for seamless scroll loop on every screen size) */
 
 
         /* --- Drive to the Green Meter --- */
@@ -2413,6 +2424,7 @@
 
         /**
          * Renders the scrolling Marquee — now clickable when website is provided.
+         * Ensures enough duplicates exist for a seamless infinite loop on any screen size.
          */
         function renderMarquee(allSponsors) {
             const track = document.getElementById('marquee-track');
@@ -2432,8 +2444,22 @@
                 }
             });
 
-            track.innerHTML = logoHTML + `<div class="marquee-clone" style="display: contents;">${logoHTML}</div>`;
-            track.style.transform = `none`;
+            // For the -50% translate loop to feel seamless, the track needs to be wider than the viewport.
+            // We need at least 2 copies always; small sponsor counts need 3-4 copies to look natural.
+            // Rule of thumb: aim for ~10 total logos minimum, then halve and duplicate so the loop math works.
+            let copies = 2;
+            if (allSponsors.length <= 3) copies = 6;
+            else if (allSponsors.length <= 5) copies = 4;
+            else if (allSponsors.length <= 8) copies = 3;
+            
+            // The CSS `translateX(-50%)` math requires the duplicated content to be in TWO halves.
+            // So we build the full set N/2 times, then mirror it once more for the loop wrap.
+            const halfRepeats = Math.ceil(copies / 2);
+            let halfHTML = '';
+            for (let i = 0; i < halfRepeats; i++) halfHTML += logoHTML;
+            
+            track.innerHTML = halfHTML + halfHTML;
+            track.style.transform = `translate3d(0, 0, 0)`;
         }
 
         /**
