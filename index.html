@@ -1279,7 +1279,136 @@
         }
         .timeline-content p {
             margin-bottom: 0; 
+ 
         }
+        /* =================================================================
+   IMPACT VISUALIZER — slide to see what your donation funds
+   ================================================================= */
+.impact-visualizer {
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto 20px auto;
+    padding: 28px 24px;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.12), rgba(243, 156, 18, 0.08));
+    border-radius: 16px;
+    border: 1px solid rgba(231, 76, 60, 0.25);
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.impact-header {
+    font-size: 13px;
+    color: #f39c12;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.impact-subtitle {
+    font-size: 12px;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+.impact-icon {
+    font-size: 56px;
+    line-height: 1;
+    display: block;
+    margin: 10px auto 8px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.impact-icon.pulse {
+    animation: impactPulse 0.6s ease;
+}
+@keyframes impactPulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.25) rotate(6deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+.impact-amount {
+    font-size: 44px;
+    font-weight: 700;
+    color: #f39c12;
+    text-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+.impact-text {
+    font-size: 16px;
+    color: #f8fafc;
+    font-weight: 500;
+    min-height: 50px;
+    line-height: 1.5;
+    padding: 0 8px;
+    transition: opacity 0.25s ease;
+}
+.impact-slider-wrap {
+    margin: 24px 8px 8px;
+}
+.impact-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+    outline: none;
+    cursor: pointer;
+}
+.impact-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #e74c3c;
+    cursor: grab;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+    transition: transform 0.2s ease;
+}
+.impact-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.impact-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.2); }
+.impact-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #e74c3c;
+    cursor: grab;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+}
+.impact-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.impact-cta-btn {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 15px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+    text-transform: uppercase;
+}
+.impact-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(231, 76, 60, 0.6);
+}
+@media (max-width: 768px) {
+    .impact-amount { font-size: 38px; }
+    .impact-icon { font-size: 48px; }
+    .impact-text { font-size: 15px; }
+}
 /* --- Live Social Proof Toasts --- */
         #toast-container {
             position: fixed;
@@ -1621,7 +1750,21 @@
                 <button class="primary-btn" onclick="goToSponsorOnly()" style="background-color: #f1c40f; color: #111; margin-top: 0;">Sponsor Us</button>
                 <button class="primary-btn" onclick="showSection('donate')" style="background-color: #e74c3c; margin-top: 10px;">Donate</button>
             </div>
-
+<!-- IMPACT VISUALIZER — drag the slider to see what your donation funds -->
+            <div class="impact-visualizer">
+                <div class="impact-header">⚡ See Your Impact</div>
+                <div class="impact-subtitle">Slide to discover how your gift fuels the fight against mito disease</div>
+                <span class="impact-icon" id="impact-icon">🔬</span>
+                <div class="impact-amount" id="impact-amount">$25</div>
+                <div class="impact-text" id="impact-text">Funds research equipment time at a leading mitochondrial disease lab.</div>
+                <div class="impact-slider-wrap">
+                    <input type="range" id="impact-slider" class="impact-slider" min="0" max="6" value="0" step="1" oninput="updateImpactDisplay()">
+                    <div class="impact-slider-labels">
+                        <span>$25</span><span>$100</span><span>$500</span><span>$2,500+</span>
+                    </div>
+                </div>
+                <button class="impact-cta-btn" onclick="donateImpactAmount()">❤️ Donate <span id="impact-cta-amount">$25</span></button>
+            </div>
             <!-- NEW: Featured Sponsor Spotlight (HD, rotating every 4s, clickable) -->
             <div class="sponsor-spotlight-container" id="sponsor-spotlight-container" style="display: none;">
                 <p class="spotlight-title">⭐ Featured Partners ⭐</p>
@@ -3383,6 +3526,73 @@ async function submitDonation() {
                 triggerRandomToast();
                 setInterval(triggerRandomToast, Math.floor(Math.random() * 15000) + 15000);
             }, 5000);
+        }
+        // =================================================================
+        // IMPACT VISUALIZER — drag-to-explore donation impact
+        // EDIT THESE TIERS to match your beneficiary charity's real numbers.
+        // Keep claims general and defensible — don't promise specifics
+        // unless you've verified them with your nonprofit partner.
+        // =================================================================
+        const impactTiers = [
+            { amount: 25,    icon: "🔬", text: "Funds research equipment time at a leading mitochondrial disease lab." },
+            { amount: 50,    icon: "📚", text: "Provides educational resources for a family newly facing a mito diagnosis." },
+            { amount: 100,   icon: "💊", text: "Helps cover specialty medication costs for a child living with mito disease." },
+            { amount: 250,   icon: "🏥", text: "Supports travel costs for a family visiting a specialist for critical care." },
+            { amount: 500,   icon: "🧬", text: "Underwrites a week of laboratory work advancing genetic research." },
+            { amount: 1000,  icon: "⚡", text: "Powers a full day of clinical research at a top mito treatment center." },
+            { amount: 2500,  icon: "🌟", text: "Sponsors a complete genetic diagnostic panel for a family seeking answers." }
+        ];
+
+        function updateImpactDisplay() {
+            const slider = document.getElementById('impact-slider');
+            if (!slider) return;
+            
+            const tier = impactTiers[parseInt(slider.value)];
+            if (!tier) return;
+            
+            const iconEl = document.getElementById('impact-icon');
+            const amountEl = document.getElementById('impact-amount');
+            const textEl = document.getElementById('impact-text');
+            const ctaEl = document.getElementById('impact-cta-amount');
+            
+            if (iconEl) {
+                iconEl.textContent = tier.icon;
+                iconEl.classList.remove('pulse');
+                void iconEl.offsetWidth; // Force reflow to restart animation
+                iconEl.classList.add('pulse');
+            }
+            if (amountEl) amountEl.textContent = '$' + tier.amount.toLocaleString();
+            if (textEl) {
+                textEl.style.opacity = '0';
+                setTimeout(() => {
+                    textEl.textContent = tier.text;
+                    textEl.style.opacity = '1';
+                }, 150);
+            }
+            if (ctaEl) ctaEl.textContent = '$' + tier.amount.toLocaleString();
+        }
+
+        function donateImpactAmount() {
+            const slider = document.getElementById('impact-slider');
+            if (!slider) return;
+            
+            const tier = impactTiers[parseInt(slider.value)];
+            if (!tier) return;
+            
+            // Jump to the donate page
+            showSection('donate');
+            
+            // Pre-fill the donation amount and highlight it briefly
+            setTimeout(() => {
+                const amountInput = document.getElementById('donation-amount');
+                if (amountInput) {
+                    amountInput.value = tier.amount;
+                    if (typeof updateDonationDisplay === 'function') updateDonationDisplay();
+                    amountInput.style.transition = 'box-shadow 0.5s ease';
+                    amountInput.style.boxShadow = '0 0 0 4px rgba(241, 196, 15, 0.5)';
+                    setTimeout(() => { amountInput.style.boxShadow = ''; }, 1800);
+                }
+            }, 400);
         }
         // --- Abstract Course Map Generation ---
         function renderCourseMap() {
