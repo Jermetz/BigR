@@ -434,14 +434,150 @@
             font-size: 15px;
         }
 
-          /* --- Hybrid Sponsor Showcase --- */
+        /* =================================================================
+           NEW: FEATURED SPONSOR SPOTLIGHT (Premium HD Showcase)
+           ================================================================= */
+        .sponsor-spotlight-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto 20px auto;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.08), rgba(52, 152, 219, 0.08));
+            border-radius: 16px;
+            border: 1px solid rgba(241, 196, 15, 0.2);
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .spotlight-title {
+            font-size: 13px;
+            color: #f1c40f;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .spotlight-subtitle {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .spotlight-stage {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .spotlight-slide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .spotlight-slide.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .spotlight-link {
+            display: block;
+            background: rgba(255,255,255,0.97);
+            border-radius: 12px;
+            padding: 25px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            text-decoration: none;
+            cursor: pointer;
+            max-width: 90%;
+        }
+
+        .spotlight-link:hover {
+            transform: scale(1.08);
+            box-shadow: 0 20px 50px rgba(241, 196, 15, 0.4), 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        .spotlight-img {
+            max-height: 140px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .spotlight-visit-hint {
+            display: block;
+            font-size: 11px;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .spotlight-link:hover .spotlight-visit-hint {
+            opacity: 1;
+        }
+
+        /* Dots indicator */
+        .spotlight-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .spotlight-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .spotlight-dot.active {
+            background: #f1c40f;
+            width: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .spotlight-stage { height: 180px; }
+            .spotlight-img { max-height: 110px; }
+            .spotlight-link { padding: 20px 25px; }
+        }
+
+        /* --- Hybrid Sponsor Showcase (Marquee — kept for "all sponsors" rotation) --- */
         .sponsor-marquee-container {
             width: 100%;
             max-width: 800px;
-            margin: 40px auto 0 auto;
+            margin: 20px auto 0 auto;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden; /* Essential for the desktop slider */
+            overflow: hidden;
         }
         .marquee-title {
             font-size: 12px;
@@ -454,23 +590,27 @@
         .marquee-track {
             display: flex;
             gap: 20px;
-            /* Mobile Default: Centered Grid */
             flex-wrap: wrap;
             justify-content: center;
             width: 100%;
+        }
+        .marquee-logo-link {
+            display: block;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+        .marquee-logo-link:hover {
+            transform: scale(1.1) translateY(-3px);
+            filter: drop-shadow(0 5px 15px rgba(52, 152, 219, 0.4));
         }
         .marquee-logo-img {
             height: 60px;
             max-width: 130px;
             object-fit: contain;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             padding: 6px 10px;
             border-radius: 6px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
-        }
-        .marquee-logo-img:hover {
-            transform: scale(1.05);
         }
 
         /* Desktop Marquee Animation */
@@ -479,10 +619,10 @@
                 flex-wrap: nowrap;
                 justify-content: flex-start;
                 width: max-content;
-                animation: slideMarquee 20s linear infinite;
+                animation: slideMarquee 25s linear infinite;
             }
             .marquee-track:hover {
-                animation-play-state: paused; /* Pauses when mouse hovers! */
+                animation-play-state: paused;
             }
             .marquee-logo-img {
                 height: 80px; 
@@ -496,7 +636,6 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* Hide the duplicated loop on mobile so it doesn't clutter the grid */
         @media (max-width: 767px) {
             .marquee-clone { display: none; }
         }
@@ -609,8 +748,8 @@
                .wizard-step-content {
             display: none;
             width: 100%;
-            max-width: 600px; /* Keeps the form from getting too wide on iPads */
-            margin: 0 auto; /* Centers the content */
+            max-width: 600px;
+            margin: 0 auto;
             animation: fadeInRight 0.4s ease-out forwards;
         }
 
@@ -748,14 +887,14 @@
 
           .action-buttons {
             display: flex;
-            flex-direction: column; /* Stacked by default for mobile */
+            flex-direction: column;
             gap: 12px;
             width: 100%;
         }
 
         @media (min-width: 769px) {
             .action-buttons {
-                flex-direction: row; /* Side-by-side on desktop */
+                flex-direction: row;
             }
         }
 
@@ -766,7 +905,7 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 50px; /* Big touch target for thumbs */
+            min-height: 50px;
             text-align: center;
             text-decoration: none;
             margin-top: 0; 
@@ -818,8 +957,8 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: white;
-            max-height: 90vh; /* Limits height to 90% of the viewport */
-            overflow-y: auto; /* Enables vertical scrolling */
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .overlay-card.admin-card {
@@ -856,6 +995,47 @@
             font-size: 14px;
             margin-top: 10px;
             text-align: center;
+        }
+
+        /* Admin sponsor preview tile */
+        .admin-sponsor-tile {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0,0,0,0.4);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .admin-sponsor-tile.featured {
+            border-color: #f1c40f;
+            box-shadow: 0 0 8px rgba(241, 196, 15, 0.3);
+        }
+        .admin-tier-badge {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .admin-tier-badge.featured {
+            background: #f1c40f;
+            color: #000;
+        }
+        .admin-tier-badge.standard {
+            background: rgba(255,255,255,0.2);
+            color: #cbd5e1;
+        }
+        .admin-tile-url {
+            font-size: 10px;
+            color: #94a3b8;
+            max-width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Countdown Timer */
@@ -1097,7 +1277,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            pointer-events: none; /* Lets clicks pass through to the site below */
+            pointer-events: none;
         }
 
         .social-toast {
@@ -1140,7 +1320,7 @@
         
         @media (max-width: 768px) {
             #toast-container {
-                bottom: 80px; /* Above mobile CTA */
+                bottom: 80px;
                 left: 15px;
                 right: 15px;
             }
@@ -1148,7 +1328,7 @@
         /* --- Photo Lightbox --- */
         #photo-lightbox {
             display: none;
-            z-index: 100000; /* Keeps it above the intro splash screen */
+            z-index: 100000;
             cursor: zoom-out;
         }
         
@@ -1217,7 +1397,7 @@
             text-align: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            flex-direction: column; /* THIS IS THE KEY ADDITION */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
@@ -1288,14 +1468,25 @@
                 </div>
             </div>
 
+            <!-- ENHANCED: Sponsor upload now requires website URL + tier selection -->
             <div class="admin-section">
-                <label>Upload Sponsor Logo to Marquee</label>
+                <label>Upload Sponsor Logo</label>
                 <input type="file" id="admin-sponsor-file" accept="image/*" style="padding: 10px; font-size: 12px; margin-bottom: 10px;">
+                
+                <input type="url" id="admin-sponsor-website" placeholder="Sponsor Website URL (e.g., https://acme.com) *" style="margin-bottom: 10px; padding: 12px; font-size: 13px;">
+                
+                <label style="font-size: 11px; margin-top: 0; margin-bottom: 6px;">Showcase Tier</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button type="button" id="tier-featured-btn" class="intent-btn active" style="padding: 10px 8px; font-size: 12px;" onclick="setSponsorTier('featured')">⭐ Featured (HD Spotlight)</button>
+                    <button type="button" id="tier-standard-btn" class="intent-btn" style="padding: 10px 8px; font-size: 12px;" onclick="setSponsorTier('standard')">📋 Standard (Marquee)</button>
+                </div>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px; line-height: 1.4;">Featured logos rotate in the premium spotlight (max 4 recommended). Standard logos appear in the scrolling marquee below.</p>
+                
                 <button class="primary-btn" onclick="submitAdminSponsor()">Upload & Sync</button>
-               <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
-            <!-- NEW: Manage Sponsors UI -->
-            <label style="margin-top: 20px;">Manage Active Logos</label>
-            <div id="admin-sponsor-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 50px;"></div>
+                <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
+                
+                <label style="margin-top: 20px;">Manage Active Logos</label>
+                <div id="admin-sponsor-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 50px;"></div>
             </div>
                 <div class="admin-section">
                 <label>Email Blast to All Players</label>
@@ -1419,8 +1610,17 @@
                 <button class="primary-btn" onclick="showSection('donate')" style="background-color: #e74c3c; margin-top: 10px;">Donate</button>
             </div>
 
+            <!-- NEW: Featured Sponsor Spotlight (HD, rotating every 4s, clickable) -->
+            <div class="sponsor-spotlight-container" id="sponsor-spotlight-container" style="display: none;">
+                <p class="spotlight-title">⭐ Featured Partners ⭐</p>
+                <p class="spotlight-subtitle">Tap a logo to visit our partner</p>
+                <div class="spotlight-stage" id="spotlight-stage"></div>
+                <div class="spotlight-dots" id="spotlight-dots"></div>
+            </div>
+
+            <!-- KEPT: Marquee for "all sponsors" -->
             <div class="sponsor-marquee-container">
-                <p class="marquee-title">Thank You To Our Sponsors</p>
+                <p class="marquee-title">Thank You To All Our Sponsors</p>
                 <div class="marquee-track" id="marquee-track">
                     <div class="marquee-logo" style="text-align: center; width: 100%;">Sponsors Loading...</div>
                 </div>
@@ -1669,21 +1869,21 @@
                 <div class="timeline-item">
                     <div class="timeline-date">1990 - 2004</div>
                     <div class="timeline-content">
-                        <p>For those who have not had the pleasure to meet Ryan Thomas yet, I will tell you a little bit about this brave young man. Ryan’s story starts on July 15th 1990, born a healthy, perfect little boy. Years later in 1997 and as Ryan enters into 2nd grade, his parents start their long journey into what no parent should have to do, they take their little boy to see a neurologist for what were his first symptoms - hand tremors. They are told it is nothing. In 1999, now a fourth grader and full of life and trouble as all young boys are, Ryan symptoms are now progressively getting worse. His tremors are the same, but is now experiencing a bit of unbalanceness in his walk. At this point, he is taken to Children’s Hospital of Pennsylvania (CHOP) every 6 months for blood work. All result of which came up negative for every common and rare disease. In the year 2000, Ryan is now having difficulty walking which results in him tripping and falling. His body is showing signs of fatigue and tiredness, which resulted in frequent seizures. At this point Ryan is no longer able to walk and required a badass scooter to get around. The following years only are filled with testing, poking, prodding and trips to several doctors and specialists with only dead ends and no answers. In 2004, CHOP called and requested to see Bob and Leigh (Ryan’s parents) without Ryan. They are told they have a diagnosis, it is a mitochondrial disease known as Myoclonic Epilepsy with Ragged Red Fibers, aka MERRF. The disease is extremely rare, believed to affect only 1/400,000, but CHOP is not able to give any more details about the disease or what Ryan’s future would be.</p>
+                        <p>For those who have not had the pleasure to meet Ryan Thomas yet, I will tell you a little bit about this brave young man. Ryan's story starts on July 15th 1990, born a healthy, perfect little boy. Years later in 1997 and as Ryan enters into 2nd grade, his parents start their long journey into what no parent should have to do, they take their little boy to see a neurologist for what were his first symptoms - hand tremors. They are told it is nothing. In 1999, now a fourth grader and full of life and trouble as all young boys are, Ryan symptoms are now progressively getting worse. His tremors are the same, but is now experiencing a bit of unbalanceness in his walk. At this point, he is taken to Children's Hospital of Pennsylvania (CHOP) every 6 months for blood work. All result of which came up negative for every common and rare disease. In the year 2000, Ryan is now having difficulty walking which results in him tripping and falling. His body is showing signs of fatigue and tiredness, which resulted in frequent seizures. At this point Ryan is no longer able to walk and required a badass scooter to get around. The following years only are filled with testing, poking, prodding and trips to several doctors and specialists with only dead ends and no answers. In 2004, CHOP called and requested to see Bob and Leigh (Ryan's parents) without Ryan. They are told they have a diagnosis, it is a mitochondrial disease known as Myoclonic Epilepsy with Ragged Red Fibers, aka MERRF. The disease is extremely rare, believed to affect only 1/400,000, but CHOP is not able to give any more details about the disease or what Ryan's future would be.</p>
                     </div>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-date">2005 - 2007</div>
                     <div class="timeline-content">
-                        <p>What is Mitochondrial Disease? Mitochondrial Organelles are found in every cell of the body which are responsible for the body’s energy production. Imagine a major city with half of its power plants shut down. At best such conditions would produce a brown out with large sections of the city working far below optimum efficiency. Now imagine your body working with one half of energy producing facility shut down. The brain would be impaired, vision would be dim at best, muscles would twitch spastically or would be too weak to allow your body to walk or write, your heart would be weakened, and you would not be able to eat and digest your food. Mitochondrial disease compromises their lives and can be fatal. In 2005, Ryan was hospitalized at CHOP as a result of a simple cold. One of the results of this cold was back to back seizures. He was placed on anti-seizure medication, but the cold would not go away and Ryan grew weaker and weaker. The seizures continued and were becoming more violent, eventually causing Optic Atrophy. As a result Ryan can only see from a small part of his right eye. In 2007, Ryan is plagued with another cold which turns life threatening. He enters CHOP in January and is not released until May. During his stay he developed many complications, was intubated 4 times and also developed pancreatitis. The only way to get Ryan home would be to have a tracheotomy to assist in his breathing, and a gastric tube put in place for eating, forever changing Ryan’s life. Ryan is now home surrounded by his loving family and friends and is always willing to give a smile to anyone. But for me, his Uncle, he makes me work for it.</p>
+                        <p>What is Mitochondrial Disease? Mitochondrial Organelles are found in every cell of the body which are responsible for the body's energy production. Imagine a major city with half of its power plants shut down. At best such conditions would produce a brown out with large sections of the city working far below optimum efficiency. Now imagine your body working with one half of energy producing facility shut down. The brain would be impaired, vision would be dim at best, muscles would twitch spastically or would be too weak to allow your body to walk or write, your heart would be weakened, and you would not be able to eat and digest your food. Mitochondrial disease compromises their lives and can be fatal. In 2005, Ryan was hospitalized at CHOP as a result of a simple cold. One of the results of this cold was back to back seizures. He was placed on anti-seizure medication, but the cold would not go away and Ryan grew weaker and weaker. The seizures continued and were becoming more violent, eventually causing Optic Atrophy. As a result Ryan can only see from a small part of his right eye. In 2007, Ryan is plagued with another cold which turns life threatening. He enters CHOP in January and is not released until May. During his stay he developed many complications, was intubated 4 times and also developed pancreatitis. The only way to get Ryan home would be to have a tracheotomy to assist in his breathing, and a gastric tube put in place for eating, forever changing Ryan's life. Ryan is now home surrounded by his loving family and friends and is always willing to give a smile to anyone. But for me, his Uncle, he makes me work for it.</p>
                     </div>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-date">Moving Forward</div>
                     <div class="timeline-content">
-                        <p>With every life’s struggle there are challenges. For the Thomas’, it’s just their way of life - it is just what they do, and there isn’t anything they wouldn’t do for Ryan. What you won’t find are excuses, pity or selfishness, they don’t ask for help, they just do what needs to be done. That is why I am asking for your help in raising money for a great cause and hopefully one day our contribution will provide the ultimate relief, a cure for all mitochondrial diseases. Thank you!</p>
+                        <p>With every life's struggle there are challenges. For the Thomas', it's just their way of life - it is just what they do, and there isn't anything they wouldn't do for Ryan. What you won't find are excuses, pity or selfishness, they don't ask for help, they just do what needs to be done. That is why I am asking for your help in raising money for a great cause and hopefully one day our contribution will provide the ultimate relief, a cure for all mitochondrial diseases. Thank you!</p>
                         <p style="margin-top: 15px; color: #f1c40f;"><em>Written by Mike Mignogna (Uncle Mike)</em></p>
                     </div>
                 </div>
@@ -1792,7 +1992,7 @@
     const golfBtn = document.getElementById('intent-golf-btn');
     const sponsorBtn = document.getElementById('intent-sponsor-btn');
     const sponsorDropdown = document.getElementById('sponsorship-level');
-    const nextBtn = document.getElementById('step1-next-btn'); // ADD THIS
+    const nextBtn = document.getElementById('step1-next-btn');
 
     if (isSponsorOnly) {
         if (sponsorDropdown && sponsorDropdown.value === "0") {
@@ -1801,19 +2001,18 @@
         if (golfBtn) golfBtn.classList.remove('active');
         if (sponsorBtn) sponsorBtn.classList.add('active');
         if (checkbox) checkbox.checked = true;
-        if (nextBtn) nextBtn.innerText = "Next: Sponsorship Contact ➡️"; // ADD THIS
+        if (nextBtn) nextBtn.innerText = "Next: Sponsorship Contact ➡️";
     } else {
         if (sponsorBtn) sponsorBtn.classList.remove('active');
         if (golfBtn) golfBtn.classList.add('active');
         if (checkbox) checkbox.checked = false;
-        if (nextBtn) nextBtn.innerText = "Next: Player Details ➡️"; // ADD THIS
+        if (nextBtn) nextBtn.innerText = "Next: Player Details ➡️";
     }
     toggleSponsorOnly();
 }
 
 
         function goToSponsorOnly() {
-            // Remove extra players
             while(playerCount > 1) {
                 removePlayer();
             }
@@ -1847,24 +2046,19 @@
             const activeSection = document.getElementById('section-' + sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block'; 
-                        // Reset Wizard to Step 1 if opening the Signup section
-            if (sectionId === 'signup' && typeof nextWizardStep === 'function') {
+                        if (sectionId === 'signup' && typeof nextWizardStep === 'function') {
                 nextWizardStep(1);
             }
 
             
-            // --- NEW: Mobile CTA Visibility Toggle ---
             const mobileCta = document.getElementById('mobile-cta');
             if (mobileCta) {
                 if (sectionId === 'signup') {
-                    // Force hide the button when on the signup form
                     mobileCta.style.setProperty('display', 'none', 'important');
                 } else {
-                    // Restore inline style so the CSS media query can display it on mobile
                     mobileCta.style.display = 'none'; 
                 }
             }
-            // -----------------------------------------
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
@@ -1881,7 +2075,6 @@
                 sponsorDropdown.value = levelValue;
             }
             
-            // Auto-switch to sponsor only mode when clicking from the sponsor marquee
             if (checkbox && !checkbox.checked) {
                 setSponsorIntent(true); 
             } else {
@@ -1895,12 +2088,9 @@
         let currentWizardStep = 1;
 
         function nextWizardStep(step) {
-            // Hide all steps
             document.querySelectorAll('.wizard-step-content').forEach(el => el.classList.remove('active'));
-            // Show target step
             document.getElementById('wizard-step-' + step).classList.add('active');
             
-            // Update progress bar
             document.querySelectorAll('.progress-step').forEach((el, index) => {
                 if (index + 1 < step) {
                     el.classList.add('completed');
@@ -1913,7 +2103,6 @@
                 }
             });
             currentWizardStep = step;
-            // Scroll back to the top of the form for the new step
             window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
         }
 
@@ -1922,7 +2111,6 @@
         }
 
         function validateAndNextStep(currentStep, nextStep) {
-            // Basic validation check before allowing user to proceed
             let isValid = true;
             const currentContainer = document.getElementById('wizard-step-' + currentStep);
             const inputs = currentContainer.querySelectorAll('input[required]');
@@ -1956,12 +2144,12 @@
                         const submitBtn = document.getElementById('submit-btn');
                         if(submitBtn) {
                             submitBtn.innerText = "Join Waitlist";
-                            submitBtn.style.backgroundColor = "#f39c12"; // Change button to orange
+                            submitBtn.style.backgroundColor = "#f39c12";
                         }
                     }
                                         if (data && data.sponsors && data.sponsors.length > 0) {
                         console.log("Sponsor Data from Script:", data.sponsors);
-                        updateMarqueeUI(data.sponsors);
+                        updateSponsorShowcase(data.sponsors);
                     }
 
                     if (data && data.soldHoles && data.soldHoles.length > 0) {
@@ -1989,80 +2177,240 @@
             }
         }
 
-       let marqueeInterval;
+        // =================================================================
+        // NEW: Unified Sponsor Showcase (handles both old strings & new objects)
+        // =================================================================
+        
+        let spotlightRotationTimer = null;
+        let currentSpotlightIndex = 0;
+        let featuredSponsorsCache = [];
 
-        function updateMarqueeUI(sponsorsArray) {
-            const track = document.getElementById('marquee-track');
-            if (!track || sponsorsArray.length === 0) return;
-
-            // Aggressively filter out junk data
-            const validSponsors = sponsorsArray.filter(url => {
-                if (!url) return false;
-                const str = url.toString().trim();
-                if (str === '' || str === 'undefined' || str === 'null' || str === 'data:image/jpeg;base64,') return false;
-                if (str.length < 20) return false; 
-                return true;
-            });
-
-            if (validSponsors.length === 0) return;
-
-            let logoHTML = '';
+        /**
+         * Normalizes a sponsor entry into a standard object.
+         * Backwards compatible: accepts plain URL strings OR objects.
+         * Object shape: { logo: "url", website: "url", tier: "featured" | "standard" }
+         */
+        function normalizeSponsor(entry) {
+            if (!entry) return null;
             
-            // Build the HTML for the logos
-            validSponsors.forEach(url => {
-                let imageSrc = url.toString().trim();
+            // OLD FORMAT: plain string (just a logo URL/base64)
+            if (typeof entry === 'string') {
+                const str = entry.trim();
+                if (!str || str === 'undefined' || str === 'null' || str.length < 20) return null;
+                return {
+                    logo: str,
+                    website: null,
+                    tier: 'standard'
+                };
+            }
+            
+            // NEW FORMAT: object
+            if (typeof entry === 'object' && entry.logo) {
+                const logo = entry.logo.toString().trim();
+                if (!logo || logo.length < 20) return null;
+                return {
+                    logo: logo,
+                    website: entry.website || null,
+                    tier: entry.tier === 'featured' ? 'featured' : 'standard'
+                };
+            }
+            
+            return null;
+        }
 
-                if (imageSrc.includes('drive.google.com')) {
-                    const fileIdMatch = imageSrc.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (fileIdMatch && fileIdMatch[1]) {
-                        // FIXED: Using the correct template literal and reliable Drive URL
-                        imageSrc = `https://drive.google.com/uc?id=${fileIdMatch[1]}`;
-                    }
-                } else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
-                    imageSrc = 'data:image/jpeg;base64,' + imageSrc;
+        /**
+         * Resolves an image URL — handles Google Drive links and base64.
+         */
+        function resolveImageSrc(rawSrc) {
+            if (!rawSrc) return '';
+            let src = rawSrc.toString().trim();
+            
+            if (src.includes('drive.google.com')) {
+                const fileIdMatch = src.match(/id=([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    return `https://drive.google.com/uc?id=${fileIdMatch[1]}`;
                 }
+            } else if (!src.startsWith('http') && !src.startsWith('data:')) {
+                return 'data:image/jpeg;base64,' + src;
+            }
+            return src;
+        }
 
-                logoHTML += `<img src="${imageSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.remove();">`;
-            });
+        /**
+         * Main entry point — splits sponsors into featured (spotlight) + standard (marquee)
+         * and renders both showcases.
+         */
+        function updateSponsorShowcase(sponsorsArray) {
+            const normalized = sponsorsArray
+                .map(normalizeSponsor)
+                .filter(s => s !== null);
+            
+            if (normalized.length === 0) return;
+            
+            const featured = normalized.filter(s => s.tier === 'featured');
+            const standard = normalized.filter(s => s.tier === 'standard');
+            
+            // If no one is explicitly featured, promote the first 3 to featured
+            // (provides graceful fallback for old data with no tier info)
+            let spotlightSponsors = featured;
+            if (spotlightSponsors.length === 0 && standard.length > 0) {
+                spotlightSponsors = standard.slice(0, Math.min(3, standard.length));
+            }
+            
+            renderSpotlight(spotlightSponsors);
+            renderMarquee(normalized); // Marquee shows ALL sponsors
+            renderAdminList(normalized);
+        }
 
-            // Insert original set, plus a cloned set for the seamless desktop scroll
-            track.innerHTML = logoHTML + `<div class="marquee-clone" style="display: contents;">${logoHTML}</div>`;
-
-            // Populate Admin Dashboard Logo List
-            const adminList = document.getElementById('admin-sponsor-list');
-            if (adminList) {
-                adminList.innerHTML = '';
-                validSponsors.forEach(url => {
-                    let previewSrc = url.toString().trim();
-                    if (previewSrc.includes('drive.google.com')) {
-                        const fileIdMatch = previewSrc.match(/id=([a-zA-Z0-9_-]+)/);
-                        if (fileIdMatch && fileIdMatch[1]) {
-                            // FIXED: Using the correct template literal and reliable Drive URL
-                            previewSrc = `https://drive.google.com/uc?id=${fileIdMatch[1]}`;
-                        }
-                    } else if (!previewSrc.startsWith('http') && !previewSrc.startsWith('data:')) {
-                        previewSrc = 'data:image/jpeg;base64,' + previewSrc;
-                    }
-                    adminList.innerHTML += `
-                        <div style="position: relative; display: inline-block;">
-                            <img src="${previewSrc}" style="height: 40px; border-radius: 4px; border: 1px solid #fff; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
-                            <span onclick="deleteSponsor('${url}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
+        /**
+         * Renders the rotating Featured Spotlight (3-4 logos, 4s rotation, hover-zoom, clickable)
+         */
+        function renderSpotlight(featuredArray) {
+            const container = document.getElementById('sponsor-spotlight-container');
+            const stage = document.getElementById('spotlight-stage');
+            const dotsContainer = document.getElementById('spotlight-dots');
+            
+            if (!container || !stage || !dotsContainer) return;
+            
+            // Clear any existing rotation
+            if (spotlightRotationTimer) {
+                clearInterval(spotlightRotationTimer);
+                spotlightRotationTimer = null;
+            }
+            
+            // Hide spotlight if no featured sponsors
+            if (!featuredArray || featuredArray.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            // Cap at 4 for premium feel
+            featuredSponsorsCache = featuredArray.slice(0, 4);
+            container.style.display = 'block';
+            
+            // Build slides
+            stage.innerHTML = '';
+            featuredSponsorsCache.forEach((sponsor, index) => {
+                const imgSrc = resolveImageSrc(sponsor.logo);
+                const websiteUrl = sponsor.website && sponsor.website.trim() 
+                    ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website) 
+                    : null;
+                
+                const slide = document.createElement('div');
+                slide.className = 'spotlight-slide' + (index === 0 ? ' active' : '');
+                slide.dataset.index = index;
+                
+                if (websiteUrl) {
+                    slide.innerHTML = `
+                        <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="spotlight-link">
+                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor" onerror="this.parentElement.parentElement.remove();">
+                            <span class="spotlight-visit-hint">↗ Visit Website</span>
+                        </a>
+                    `;
+                } else {
+                    slide.innerHTML = `
+                        <div class="spotlight-link" style="cursor: default;">
+                            <img src="${imgSrc}" class="spotlight-img" alt="Featured Sponsor" onerror="this.parentElement.parentElement.remove();">
                         </div>
                     `;
-               });
+                }
+                stage.appendChild(slide);
+            });
+            
+            // Build dots
+            dotsContainer.innerHTML = '';
+            featuredSponsorsCache.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.className = 'spotlight-dot' + (index === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Show featured sponsor ${index + 1}`);
+                dot.onclick = () => goToSpotlight(index);
+                dotsContainer.appendChild(dot);
+            });
+            
+            currentSpotlightIndex = 0;
+            
+            // Only rotate if there's more than 1
+            if (featuredSponsorsCache.length > 1) {
+                spotlightRotationTimer = setInterval(rotateSpotlight, 4000);
             }
+        }
 
-            // Ensure JS animations are killed so pure CSS can take over
-            clearInterval(marqueeInterval);
-            track.style.transform = `none`; 
+        function rotateSpotlight() {
+            const next = (currentSpotlightIndex + 1) % featuredSponsorsCache.length;
+            goToSpotlight(next);
+        }
+
+        function goToSpotlight(index) {
+            const slides = document.querySelectorAll('.spotlight-slide');
+            const dots = document.querySelectorAll('.spotlight-dot');
+            
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            
+            if (slides[index]) slides[index].classList.add('active');
+            if (dots[index]) dots[index].classList.add('active');
+            
+            currentSpotlightIndex = index;
+        }
+
+        /**
+         * Renders the scrolling Marquee — now clickable when website is provided.
+         */
+        function renderMarquee(allSponsors) {
+            const track = document.getElementById('marquee-track');
+            if (!track || allSponsors.length === 0) return;
+
+            let logoHTML = '';
+            allSponsors.forEach(sponsor => {
+                const imgSrc = resolveImageSrc(sponsor.logo);
+                const websiteUrl = sponsor.website && sponsor.website.trim()
+                    ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website)
+                    : null;
+                
+                if (websiteUrl) {
+                    logoHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="marquee-logo-link"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.parentElement.remove();"></a>`;
+                } else {
+                    logoHTML += `<span class="marquee-logo-link" style="cursor: default;"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.parentElement.remove();"></span>`;
+                }
+            });
+
+            track.innerHTML = logoHTML + `<div class="marquee-clone" style="display: contents;">${logoHTML}</div>`;
+            track.style.transform = `none`;
+        }
+
+        /**
+         * Renders the Admin sponsor management list with tier badges + delete buttons.
+         */
+        function renderAdminList(allSponsors) {
+            const adminList = document.getElementById('admin-sponsor-list');
+            if (!adminList) return;
+            
+            adminList.innerHTML = '';
+            allSponsors.forEach(sponsor => {
+                const previewSrc = resolveImageSrc(sponsor.logo);
+                const tierClass = sponsor.tier === 'featured' ? 'featured' : 'standard';
+                const tierLabel = sponsor.tier === 'featured' ? '⭐ Featured' : '📋 Standard';
+                const websiteText = sponsor.website || 'No URL';
+                
+                const tile = document.createElement('div');
+                tile.className = 'admin-sponsor-tile ' + tierClass;
+                tile.innerHTML = `
+                    <img src="${previewSrc}" style="height: 40px; max-width: 100px; border-radius: 4px; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
+                    <span class="admin-tier-badge ${tierClass}">${tierLabel}</span>
+                    <span class="admin-tile-url" title="${websiteText}">${websiteText}</span>
+                    <span onclick="deleteSponsor('${encodeURIComponent(sponsor.logo)}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 18px; text-align: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">✖</span>
+                `;
+                adminList.appendChild(tile);
+            });
         }
 
 
-        function deleteSponsor(urlToDelete) {
+        function deleteSponsor(encodedUrl) {
             let password = document.getElementById('admin-pass').value;
             if (!password) { alert("Please enter the Admin Password to delete logos."); return; }
-            if (!confirm("Are you sure you want to remove this logo from the marquee?")) return;
+            if (!confirm("Are you sure you want to remove this logo?")) return;
 
+            const urlToDelete = decodeURIComponent(encodedUrl);
             document.getElementById('admin-loader').style.display = 'block';
             document.getElementById('admin-loader').innerText = '🗑️ Deleting logo...';
 
@@ -2073,9 +2421,9 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById('admin-loader').style.display = 'none';
-                document.getElementById('admin-loader').innerText = '⚙️ Compressing & Uploading...'; // Reset loader text
+                document.getElementById('admin-loader').innerText = '⚙️ Compressing & Uploading...';
                 if(data.result === 'success') {
-                    updateMarqueeUI(data.sponsors);
+                    updateSponsorShowcase(data.sponsors);
                 } else { 
                     alert("Backend Error: " + (data.error ? data.error : "Check password.")); 
                 }
@@ -2093,7 +2441,7 @@
                 if (card && status) {
                     card.classList.add('hole-sold');
                     card.style.cursor = 'not-allowed';
-                    card.onclick = null; // Remove the click event
+                    card.onclick = null;
                     status.innerText = 'Sold';
                 }
             });
@@ -2137,14 +2485,15 @@
                 secretClickCount = 0; 
                 document.getElementById('admin-overlay').style.display = 'flex';
                 document.getElementById('admin-pass').value = '';
-                document.body.style.overflow = 'hidden'; /* Locks background scroll */
+                document.body.style.overflow = 'hidden';
             }
         }
 
         function closeAdminDashboard() {
             document.getElementById('admin-overlay').style.display = 'none';
-            document.body.style.overflow = ''; /* Restores background scroll */
+            document.body.style.overflow = '';
         }
+        
         // --- Photo Lightbox Logic ---
         function openLightbox(imageSrc) {
             const lightbox = document.getElementById('photo-lightbox');
@@ -2183,7 +2532,11 @@
             });
         }
 
-        // --- Client-Side Compression Engine ---
+        // =================================================================
+        // ENHANCED: HD Client-Side Compression Engine
+        // Bumped from 150px / 0.8 quality → 400px / 0.92 quality
+        // Still small file size, MUCH sharper visuals
+        // =================================================================
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -2192,27 +2545,61 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_HEIGHT = 150; 
-                    const scaleSize = MAX_HEIGHT / img.height;
-                    canvas.width = img.width * scaleSize;
-                    canvas.height = MAX_HEIGHT;
+                    const MAX_HEIGHT = 400; // Was 150 — now HD-quality
+                    const MAX_WIDTH = 800;  // Cap width for wide logos
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Scale down by whichever dimension hits limit first
+                    if (height > MAX_HEIGHT) {
+                        width = width * (MAX_HEIGHT / height);
+                        height = MAX_HEIGHT;
+                    }
+                    if (width > MAX_WIDTH) {
+                        height = height * (MAX_WIDTH / width);
+                        width = MAX_WIDTH;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
                     
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    // Enable image smoothing for crisp downsampling
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, width, height);
                     
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    // 0.92 quality = visually lossless, modest file size
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
                     const base64 = dataUrl.split(',')[1];
                     callback(base64, 'image/jpeg');
                 }
             }
         }
 
+        // --- Tier selection state for upload ---
+        let selectedUploadTier = 'featured';
+        
+        function setSponsorTier(tier) {
+            selectedUploadTier = tier;
+            document.getElementById('tier-featured-btn').classList.toggle('active', tier === 'featured');
+            document.getElementById('tier-standard-btn').classList.toggle('active', tier === 'standard');
+        }
+
         function submitAdminSponsor() {
             let password = document.getElementById('admin-pass').value;
             let fileInput = document.getElementById('admin-sponsor-file');
+            let website = document.getElementById('admin-sponsor-website').value.trim();
             
             if (!password) { alert("Please enter password"); return; }
             if (!fileInput.files || fileInput.files.length === 0) { alert("Select an image first."); return; }
+            if (!website) { alert("Please provide the sponsor's website URL."); return; }
+            
+            // Auto-prepend https:// if missing
+            if (!website.startsWith('http://') && !website.startsWith('https://')) {
+                website = 'https://' + website;
+            }
 
             document.getElementById('admin-loader').style.display = 'block';
 
@@ -2226,16 +2613,20 @@
                         action: "upload_sponsor", 
                         password: password, 
                         imageBase64: base64Data,
-                        mimeType: mimeType
+                        mimeType: mimeType,
+                        website: website,
+                        tier: selectedUploadTier
                     })
                 })
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('admin-loader').style.display = 'none';
                     if(data.result === 'success') {
-                        updateMarqueeUI(data.sponsors);
+                        updateSponsorShowcase(data.sponsors);
                         alert("Sponsor logo uploaded successfully!");
                         fileInput.value = '';
+                        document.getElementById('admin-sponsor-website').value = '';
+                        setSponsorTier('featured'); // Reset to default
                     } else { 
                         alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
                     }
@@ -2343,7 +2734,6 @@
             const sponsorDropdown = document.getElementById('sponsorship-level');
             const checkbox = document.getElementById('sponsor-only-checkbox');
             
-            // If they manually select "No Sponsorship" (Golf Only), auto-switch to Golf Mode
             if (sponsorDropdown && sponsorDropdown.value === "0") {
                 if (checkbox && checkbox.checked) {
                     setSponsorIntent(false); 
@@ -2373,10 +2763,8 @@
 
             if (paymentType === 'PayPalTest') finalTotal = 1;
             
-            // Updates total, preserving cents if needed
             document.getElementById('total-amount').innerText = `$${finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}`;
 
-            // Pushes the text to the breakdown div
             const feeBreakdown = document.getElementById('fee-breakdown');
             if (feeBreakdown) {
                 if (feeAmount > 0) {
@@ -2400,7 +2788,6 @@
             const formSubtitle = document.getElementById('form-subtitle');
             
             if (isSponsorOnly) {
-                // Strip extra players if they checked the box late
                 while(playerCount > 1) {
                     removePlayer();
                 }
@@ -2441,7 +2828,6 @@
             container.appendChild(playerCard);
             updateCostDisplay(); 
             
-            // Hide the Add buttons if we hit 4 players
             if (playerCount === 4) {
     document.getElementById('add-player-btn').style.display = 'none';
 }
@@ -2456,7 +2842,6 @@
                 playerCount--;
                 updateCostDisplay(); 
                 
-                // Show the Add buttons since we are below 4 players
                 document.getElementById('add-player-btn').style.display = 'block';
 
              
@@ -2505,13 +2890,11 @@
             const sponsorCost = sponsorLevelSelect ? (parseInt(sponsorLevelSelect.value) || 0) : 0;
             let sponsorName = (sponsorLevelSelect && sponsorLevelSelect.value) ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
             
-            // Append the specific hole number so the Google Script catches it
             if (sponsorCost === 250 && selectedHoleNum) {
                 sponsorName = "Assigned Hole #" + selectedHoleNum + " — $250";
             }
             
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
-// Validation: Ensure Terms are checked
             const termsBoxSignup = document.getElementById('terms-checkbox-signup');
             
             if (termsBoxSignup && !termsBoxSignup.checked) {
@@ -2521,7 +2904,6 @@
                 return;
             }
             
-            // Validation: Ensure a sponsorship level is selected if "Sponsor Only" is checked
             if (isSponsorOnly && sponsorCost === 0) {
                 alert("Please select a sponsorship level before submitting.");
                 submitBtn.disabled = false;
@@ -2539,7 +2921,6 @@
 
         const teamName = document.getElementById('team-name') ? document.getElementById('team-name').value : "";
 
-            // Generate a unique Transaction ID (e.g., TX-LMAO123-ABCD)
             const transactionId = 'TX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 let squareToken = "";
             if (selectedPaymentType === 'Credit/Debit Card') {
@@ -2550,7 +2931,7 @@ let squareToken = "";
                     alert("Card processing failed. Please check your details.");
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Submit Registration";
-                    return; // Stop form submission
+                    return;
                 }
             }
             let players = [];
@@ -2593,7 +2974,6 @@ body: JSON.stringify({
                         paymentDiv.innerHTML = "";
                     }
 
-                    // --- Dynamic Success Message Update ---
                     const successHeader = document.getElementById('success-header');
                     const successBody = document.getElementById('success-body');
                     const foursomeContainer = document.getElementById('tell-foursome-container');
@@ -2704,12 +3084,10 @@ async function submitDonation() {
                 amount = amount + (amount * 0.03) + 0.30;
             }
             
-            // Capture new contact fields
             const firstName = document.getElementById('donate-first').value.trim();
             const lastName = document.getElementById('donate-last').value.trim();
             const email = document.getElementById('donate-email').value.trim();
 
-            // Validate fields
             if (!firstName || !lastName || !email || !email.includes('@')) {
                 alert("Please provide a valid First Name, Last Name, and Email.");
                 return;
@@ -2723,11 +3101,10 @@ async function submitDonation() {
                 return;
             }
   const termsBox = document.getElementById('terms-checkbox-donate');
-            if (termsBox && !termsBox.checked) {
-                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
-                return;
-            }
-    // Generate a unique Transaction ID for donations
+            if (termsBox && !termsBox.checked) {
+                showValidationModal("Please agree to the Terms & Conditions and Privacy Policy before proceeding.");
+                return;
+            }
             const transactionId = 'TX-D' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
             const submitBtn = document.getElementById('submit-donate-btn');
             submitBtn.disabled = true;
@@ -2745,7 +3122,6 @@ async function submitDonation() {
                 }
             }
 
-            // Send data to Google Apps Script
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
@@ -2762,10 +3138,8 @@ async function submitDonation() {
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Hide the form section
                     document.getElementById('section-donate').style.display = 'none';
                     
-                    // Populate the payment link/instructions
                     const paymentDiv = document.getElementById('donate-payment-instructions');
                     if (paymentType === 'Venmo') {
                         paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
@@ -2775,15 +3149,12 @@ async function submitDonation() {
                         paymentDiv.innerHTML = `Please bring your $${amount} cash donation to the golf outing on 10/9.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
                     }
                     
-                    // Reveal success modal
                     document.getElementById('donate-success-overlay').style.display = 'flex';
 
-                    // Trigger Confetti
                     if (typeof confetti === 'function') {
                         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10001 });
                     }
 
-                    // Reset form for next use
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Submit Donation";
                     document.getElementById('donation-amount').value = '';
@@ -2796,7 +3167,6 @@ async function submitDonation() {
                     document.getElementById('donate-payment-note').innerText = '';
                     updateDonationDisplay();
                     
-                    // Refresh the global meter data!
                     fetchGlobalData();
                 } else {
                     throw new Error(data.error || 'Unknown Server Error');
@@ -2814,7 +3184,6 @@ async function submitDonation() {
             showSection('home');
         }
         function initCountdown() {
-            // 100% Bulletproof cross-browser date using UTC: Oct 9, 2026 9:30 AM EDT
             const teeTime = new Date(Date.UTC(2026, 9, 9, 13, 30, 0)).getTime();
             
             function updateTimer() {
@@ -2837,10 +3206,8 @@ async function submitDonation() {
                 }
             }
             
-            // Run immediately so it doesn't show 00 for the first second
             updateTimer(); 
             
-            // Then run every second
             setInterval(updateTimer, 1000);
         }
         let videoIsMuted = false;
@@ -2862,7 +3229,7 @@ async function submitDonation() {
                 introVideo.muted = videoIsMuted; 
                 introVideo.play();
                 introVideo.addEventListener('ended', () => {
-                    localStorage.setItem('introPlayed', 'true'); // Save state
+                    localStorage.setItem('introPlayed', 'true');
                     splashScreen.classList.add('splash-fade-zoom');
                     setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
                 });
@@ -2870,7 +3237,7 @@ async function submitDonation() {
         }
 
         function skipIntro() {
-            localStorage.setItem('introPlayed', 'true'); // Save state
+            localStorage.setItem('introPlayed', 'true');
             const splashScreen = document.getElementById('splash-screen');
             const introVideo = document.getElementById('intro-video');
             if (introVideo) introVideo.pause();
@@ -2902,7 +3269,6 @@ async function submitDonation() {
         ];
 
         function triggerRandomToast() {
-            // Pick a random message
             const msg = toastMessages[Math.floor(Math.random() * toastMessages.length)];
             
             const container = document.getElementById('toast-container');
@@ -2920,21 +3286,17 @@ async function submitDonation() {
             
             container.appendChild(toast);
             
-            // Trigger animation in
             setTimeout(() => toast.classList.add('show'), 100);
             
-            // Remove after 5 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 500); // Wait for transition to finish
+                setTimeout(() => toast.remove(), 500);
             }, 5000);
         }
 
         function startToastEngine() {
-            // Wait 5 seconds before the first toast
             setTimeout(() => {
                 triggerRandomToast();
-                // Then trigger a new one randomly every 15 to 30 seconds
                 setInterval(triggerRandomToast, Math.floor(Math.random() * 15000) + 15000);
             }, 5000);
         }
@@ -2955,7 +3317,6 @@ async function submitDonation() {
             mapContainer.innerHTML = html;
         }
         document.addEventListener("DOMContentLoaded", () => {
-            // Initialize Square Forms
             if (window.Square) {
                 const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
                 payments.card().then(card => {
@@ -2974,14 +3335,13 @@ async function submitDonation() {
             initTimelineObserver();
             startToastEngine();
             
-            // Check if the user already watched or skipped the intro
             if (localStorage.getItem('introPlayed') === 'true') {
                 const splashScreen = document.getElementById('splash-screen');
                 if (splashScreen) splashScreen.style.display = 'none';
             }
         });
     </script>
-<!-- Mobile CTA (keep as-is) -->
+<!-- Mobile CTA -->
 <button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
 
 <!-- Social Footer -->
