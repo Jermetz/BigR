@@ -1409,6 +1409,196 @@
     .impact-icon { font-size: 48px; }
     .impact-text { font-size: 15px; }
 }
+        /* =================================================================
+           TRIBUTE WALL — memorial dedications on Ryan's Story page
+           ================================================================= */
+        .tribute-wall-section {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tribute-wall-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tribute-wall-header h2 {
+            color: #f39c12;
+            margin-bottom: 8px;
+        }
+        .tribute-wall-header p {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-style: italic;
+        }
+        .tribute-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 30px;
+        }
+        .tribute-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+            border-radius: 12px;
+            padding: 20px 20px 16px 20px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: tributeFadeIn 0.6s ease-out forwards;
+        }
+        .tribute-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(243, 156, 18, 0.15);
+            border-color: rgba(243, 156, 18, 0.5);
+        }
+        .tribute-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            font-size: 60px;
+            color: #f39c12;
+            font-family: Georgia, serif;
+            line-height: 1;
+            opacity: 0.5;
+        }
+        .tribute-message {
+            color: #f8fafc;
+            font-size: 15px;
+            line-height: 1.55;
+            margin-bottom: 14px;
+            margin-top: 10px;
+            font-style: italic;
+            word-break: break-word;
+        }
+        .tribute-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 10px;
+        }
+        .tribute-author {
+            color: #f39c12;
+            font-weight: 600;
+        }
+        @keyframes tributeFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tribute-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #94a3b8;
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px dashed rgba(243, 156, 18, 0.2);
+        }
+        .tribute-empty p { margin-bottom: 20px; }
+        .tribute-empty-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 6px 18px rgba(243, 156, 18, 0.4);
+            transition: transform 0.2s ease;
+        }
+        .tribute-empty-cta:hover { transform: translateY(-2px); }
+
+        /* Tribute field on the donate form */
+        .tribute-field {
+            background: rgba(243, 156, 18, 0.06);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .tribute-field-label {
+            display: block;
+            font-size: 12px;
+            color: #f39c12;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .tribute-field-hint {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .tribute-field textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid transparent;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            min-height: 75px;
+            transition: all 0.3s ease;
+        }
+        .tribute-field textarea:focus {
+            outline: none;
+            border-color: #f39c12;
+            background-color: #ffffff;
+        }
+        .tribute-char-count {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: right;
+            margin-top: 5px;
+        }
+        .tribute-char-count.warn { color: #e74c3c; font-weight: 600; }
+
+        /* Admin moderation tile */
+        .pending-tribute {
+            background: rgba(243, 156, 18, 0.08);
+            border-left: 3px solid #f39c12;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        .pending-tribute .tribute-msg-preview {
+            color: #f8fafc;
+            margin-bottom: 8px;
+            font-style: italic;
+            word-break: break-word;
+        }
+        .pending-tribute .tribute-meta {
+            color: #cbd5e1;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+        .pending-tribute .tribute-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .pending-tribute button {
+            flex: 1;
+            font-size: 12px;
+            padding: 8px;
+        }
+        .pending-tribute-badge {
+            display: inline-block;
+            background: #f39c12;
+            color: #000;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 50px;
+            margin-left: 6px;
+        }
 /* --- Live Social Proof Toasts --- */
         #toast-container {
             position: fixed;
@@ -1615,7 +1805,12 @@
                     <button class="secondary-btn" onclick="submitAdminTotal()" style="width: auto;">Save</button>
                 </div>
             </div>
-
+<div class="admin-section">
+                <label>💝 Moderate Tributes <span class="pending-tribute-badge" id="admin-pending-badge" style="display:none;">0</span></label>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve donor tribute messages before they appear on the public wall.</p>
+                <button class="secondary-btn" onclick="loadPendingTributes()" style="margin-bottom: 10px;">🔍 Load Pending Tributes</button>
+                <div id="pending-tributes-list" style="margin-top: 10px;"></div>
+            </div>
             <!-- ENHANCED: Sponsor upload now requires website URL + tier selection -->
             <div class="admin-section">
                 <label>Upload Sponsor Logo</label>
@@ -1976,6 +2171,13 @@
                         <input type="number" id="donation-amount" placeholder="0.00" min="1" step="1" oninput="updateDonationDisplay()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px; width: 100%;">
                     </div>
                 </div>
+                <!-- Optional Tribute Message -->
+                <div class="tribute-field">
+                    <label class="tribute-field-label">💝 Leave a Tribute (Optional)</label>
+                    <p class="tribute-field-hint">Dedicate this donation in someone's honor or share a message of support. Approved tributes will appear on our Tribute Wall.</p>
+                    <textarea id="donate-tribute" placeholder="e.g., In honor of my brother who fought MERRF..." maxlength="280" oninput="updateTributeCharCount()"></textarea>
+                    <div class="tribute-char-count"><span id="tribute-char-count">0</span> / 280</div>
+                </div>
 
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
@@ -2050,6 +2252,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- PHASE 3: Tribute Wall -->
+            <div class="tribute-wall-section">
+                <div class="tribute-wall-header">
+                    <h2>💝 Tribute Wall</h2>
+                    <p>Messages of love, hope, and remembrance from our community</p>
+                </div>
+                <div id="tribute-grid" class="tribute-grid">
+                    <!-- Tributes populated by JavaScript -->
+                </div>
+                <div id="tribute-empty" class="tribute-empty" style="display: none;">
+                    <p>No tributes yet — be the first to leave a dedication in honor of someone you love.</p>
+                    <a href="javascript:void(0);" onclick="showSection('donate')" class="tribute-empty-cta">❤️ Leave a Tribute</a>
+                </div>
+            </div>
+
+        </section>
 
         </section>
 
@@ -2316,6 +2535,13 @@
                     if (data && data.recentActivity) {
                         liveActivityCache = data.recentActivity;
                         console.log("📡 Live activity feed:", liveActivityCache.length, "recent items");
+                    }
+                    if (data && data.tributes) {
+                        renderTributeWall(data.tributes);
+                        console.log("💝 Tribute wall:", data.tributes.length, "approved tributes");
+                    }
+                    if (data && typeof data.pendingTributesCount === "number") {
+                        updatePendingTributesBadge(data.pendingTributesCount);
                     }
 
                     if (data && data.soldHoles && data.soldHoles.length > 0) {
@@ -2711,7 +2937,7 @@
         let secretClickCount = 0;
         let secretClickTimer;
 
-        function handleSecretAdminClick() {
+function handleSecretAdminClick() {
             secretClickCount++;
             clearTimeout(secretClickTimer);
             
@@ -2724,6 +2950,15 @@
                 document.getElementById('admin-overlay').style.display = 'flex';
                 document.getElementById('admin-pass').value = '';
                 document.body.style.overflow = 'hidden';
+                
+                // Show pending tribute badge if there are any awaiting review
+                const badge = document.getElementById('admin-pending-badge');
+                if (badge && window.__pendingTributesCount > 0) {
+                    badge.textContent = window.__pendingTributesCount;
+                    badge.style.display = 'inline-block';
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
             }
         }
 
@@ -3360,6 +3595,10 @@ async function submitDonation() {
                 }
             }
 
+           // Capture tribute message if provided
+            const tributeEl = document.getElementById('donate-tribute');
+            const tributeText = tributeEl ? tributeEl.value.trim() : "";
+            
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
@@ -3370,7 +3609,8 @@ async function submitDonation() {
                     amount: amount,
                     paymentType: paymentType,
                     squareToken: squareToken,
-                    transactionId: transactionId
+                    transactionId: transactionId,
+                    tribute: tributeText
                 })
             })
             .then(response => response.json())
@@ -3646,6 +3886,156 @@ async function submitDonation() {
                     setTimeout(() => { amountInput.style.boxShadow = ''; }, 1800);
                 }
             }, 400);
+        }
+        // =================================================================
+        // PHASE 3 — TRIBUTE WALL
+        // =================================================================
+        
+        // Character counter for the donate form's tribute textarea
+        function updateTributeCharCount() {
+            const ta = document.getElementById('donate-tribute');
+            const counter = document.getElementById('tribute-char-count');
+            if (!ta || !counter) return;
+            const len = ta.value.length;
+            counter.textContent = len;
+            // Warn visually when close to limit
+            if (len >= 250) counter.parentElement.classList.add('warn');
+            else counter.parentElement.classList.remove('warn');
+        }
+
+        // Safe HTML escape — tributes are user content, never inject raw
+        function escapeTributeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        // Render the approved tributes into the wall on Ryan's Story page
+        function renderTributeWall(tributesArray) {
+            const grid = document.getElementById('tribute-grid');
+            const empty = document.getElementById('tribute-empty');
+            if (!grid || !empty) return;
+            
+            if (!tributesArray || tributesArray.length === 0) {
+                grid.innerHTML = '';
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+            
+            // Stagger the fade-in animation by capping animation-delay
+            grid.innerHTML = tributesArray.map((t, idx) => {
+                const safeMsg = escapeTributeHtml(t.message);
+                const safeAuthor = escapeTributeHtml(t.author || 'Anonymous');
+                const delay = Math.min(idx * 0.08, 1.0); // Cap at 1s so the last cards aren't waiting forever
+                return `
+                    <div class="tribute-card" style="animation-delay: ${delay}s;">
+                        <div class="tribute-message">${safeMsg}</div>
+                        <div class="tribute-footer">
+                            <span class="tribute-author">— ${safeAuthor}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show a pending-tributes badge in the sidebar admin link (optional polish)
+        function updatePendingTributesBadge(count) {
+            // We're stashing this on a global so the admin dashboard can read it
+            window.__pendingTributesCount = count;
+        }
+
+        // ----------- Admin: Tribute moderation -----------
+        function loadPendingTributes() {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password."); return; }
+            
+            const listEl = document.getElementById('pending-tributes-list');
+            if (listEl) listEl.innerHTML = '<p style="color: #94a3b8; font-size: 13px; text-align: center;">Loading...</p>';
+            
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "list_pending_tributes", password: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    renderPendingTributes(data.pending || []);
+                } else {
+                    alert("Backend Error: " + (data.error || "Check password."));
+                }
+            })
+            .catch(err => alert("Network Error: " + err.message));
+        }
+
+        function renderPendingTributes(pendingArr) {
+            const listEl = document.getElementById('pending-tributes-list');
+            if (!listEl) return;
+            
+            if (pendingArr.length === 0) {
+                listEl.innerHTML = '<p style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">✅ No pending tributes — you\'re all caught up.</p>';
+                return;
+            }
+            
+            listEl.innerHTML = pendingArr.map(t => {
+                const safeMsg = escapeTributeHtml(t.message);
+                const safeAuthor = escapeTributeHtml(t.author);
+                const dateStr = t.timestamp ? new Date(t.timestamp).toLocaleString() : 'Unknown time';
+                return `
+                    <div class="pending-tribute" data-row="${t.rowIndex}">
+                        <div class="tribute-msg-preview">"${safeMsg}"</div>
+                        <div class="tribute-meta">— ${safeAuthor} · ${dateStr}</div>
+                        <div class="tribute-actions">
+                            <button class="primary-btn" style="background: #27ae60;" onclick="moderateTribute(${t.rowIndex}, 'approved')">✓ Approve</button>
+                            <button class="danger-btn" onclick="moderateTribute(${t.rowIndex}, 'rejected')">✗ Reject</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function moderateTribute(rowIndex, decision) {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password."); return; }
+            
+            // Optimistically disable buttons in this tile
+            const tile = document.querySelector(`.pending-tribute[data-row="${rowIndex}"]`);
+            if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = true);
+            
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: "moderate_tribute", 
+                    password: password, 
+                    rowIndex: rowIndex, 
+                    decision: decision 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    // Fade out the tile then re-check the pending list
+                    if (tile) {
+                        tile.style.transition = "opacity 0.4s ease";
+                        tile.style.opacity = "0";
+                        setTimeout(() => tile.remove(), 400);
+                    }
+                    // Refresh global data so the public wall updates immediately
+                    fetchGlobalData();
+                    // Also re-load the pending list after a moment in case there are more
+                    setTimeout(loadPendingTributes, 500);
+                } else {
+                    alert("Backend Error: " + (data.error || "Check password."));
+                    if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+                }
+            })
+            .catch(err => {
+                alert("Network Error: " + err.message);
+                if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+            });
         }
         // --- Abstract Course Map Generation ---
         function renderCourseMap() {
