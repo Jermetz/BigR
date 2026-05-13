@@ -2434,20 +2434,28 @@
                         <div class="player-card" id="team-size-selectors" style="text-align: center; display: block; width: 100%;">
                             <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
                             
-                            <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;">
-                                <button type="button" id="select-foursome-btn" class="size-btn active" onclick="setPlayerCount(4)">
-                                    <span style="font-size: 28px;">⛳</span>
-                                    <span>Foursome (4 Players)</span>
-                                </button>
-                                <button type="button" id="select-twosome-btn" class="size-btn" onclick="setPlayerCount(2)">
-                                    <span style="font-size: 24px;">🏌️</span>
-                                    <span>Twosome (2 Players)</span>
-                                </button>
-                                <button type="button" id="select-individual-btn" class="size-btn" onclick="setPlayerCount(1)">
-                                    <span style="font-size: 24px;">🧍</span>
-                                    <span>Individual (1 Player)</span>
-                                </button>
-                            </div>
+                           <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;">
+    <button type="button" id="select-three-foursomes-btn" class="size-btn" onclick="setPlayerCount(12)">
+        <span style="font-size: 28px;">⛳⛳⛳</span>
+        <span>Three Foursomes (12 Players)</span>
+    </button>
+    <button type="button" id="select-two-foursomes-btn" class="size-btn" onclick="setPlayerCount(8)">
+        <span style="font-size: 28px;">⛳⛳</span>
+        <span>Two Foursomes (8 Players)</span>
+    </button>
+    <button type="button" id="select-foursome-btn" class="size-btn active" onclick="setPlayerCount(4)">
+        <span style="font-size: 28px;">⛳</span>
+        <span>Foursome (4 Players)</span>
+    </button>
+    <button type="button" id="select-twosome-btn" class="size-btn" onclick="setPlayerCount(2)">
+        <span style="font-size: 24px;">🏌️</span>
+        <span>Twosome (2 Players)</span>
+    </button>
+    <button type="button" id="select-individual-btn" class="size-btn" onclick="setPlayerCount(1)">
+        <span style="font-size: 24px;">🧍</span>
+        <span>Individual (1 Player)</span>
+    </button>
+</div>
                         </div>
 
                         <div class="wizard-navigation">
@@ -2864,7 +2872,7 @@
     for(let i = 1; i < numPlayers; i++) { addPlayer(); }
 
     document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
-    const map = { 4: 'select-foursome-btn', 2: 'select-twosome-btn', 1: 'select-individual-btn' };
+   const map = { 12: 'select-three-foursomes-btn', 8: 'select-two-foursomes-btn', 4: 'select-foursome-btn', 2: 'select-twosome-btn', 1: 'select-individual-btn' };
     const btn = document.getElementById(map[numPlayers]);
     if (btn) btn.classList.add('active');
 }
@@ -3843,7 +3851,7 @@ function handleSecretAdminClick() {
         }
 
         function addPlayer() {
-            if (playerCount >= 4) return;
+            if (playerCount >= 12) return;
             playerCount++;
             const container = document.getElementById('players-container');
             const playerCard = document.createElement('div');
@@ -3861,7 +3869,7 @@ function handleSecretAdminClick() {
             container.appendChild(playerCard);
             updateCostDisplay(); 
             
-            if (playerCount === 4) {
+            if (playerCount === 12) {
     document.getElementById('add-player-btn').style.display = 'none';
 }
 
