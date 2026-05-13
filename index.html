@@ -802,7 +802,42 @@
                border-radius: 8px;
                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
            }
-
+/* Foursome grouping for 8/12-player registrations */
+.foursome-group {
+    background: rgba(46, 204, 113, 0.06);
+    border: 1px solid rgba(46, 204, 113, 0.25);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+.foursome-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+}
+.foursome-group-label {
+    font-size: 13px;
+    color: #2ecc71;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+.foursome-group-icon {
+    font-size: 22px;
+}
+.foursome-group .player-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.foursome-team-name-input {
+    width: 100%;
+    margin-bottom: 14px;
+    font-size: 14px;
+    padding: 10px 12px;
+}
 .player-card:hover {
                transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-4px) scale(1.01);
                box-shadow: -5px 12px 24px rgba(0,0,0,0.4), inset 0 0 15px rgba(255, 255, 255, 0.05);
@@ -2478,7 +2513,9 @@
                                 </div>
                                 <div class="form-group">
                                     <input type="email" id="p1-email" placeholder="Email Address *" required>
-                                    <input type="tel" id="p1-phone" placeholder="Mobile Number *" required>
+                                    <input type="tel" id="p1-phone" placeholder="Mobile Number *" required
+       maxlength="14" inputmode="numeric"
+       oninput="formatPhoneAsTyping(this)">
                                 </div>
                             </div>
                         </div>
@@ -2490,7 +2527,7 @@
                             </div>
                         </div>
 
-                        <div class="wizard-navigation">
+                <div class="wizard-navigation">
                             <button type="button" class="secondary-btn" onclick="prevWizardStep(1)">⬅️ Back</button>
                             <button type="button" class="primary-btn" onclick="validateAndNextStep(2, 3)">Next: Sponsorships ➡️</button>
                         </div>
@@ -2675,7 +2712,7 @@
         <p>Text your score from your registered phone in this format:</p>
         <div class="sms-example">team# hole# strokes</div>
         <p style="margin-top: 10px;">Example: <strong style="color:#2ecc71;">3 7 5</strong> = Team 3, Hole 7, 5 strokes</p>
-        <span class="sms-number" id="sms-number-display">Text to: (888) 621-5658(XXX) </span>
+      <span class="sms-number" id="sms-number-display">Text to: (888) 621-5658</span>
         <p style="font-size: 11px; color: #94a3b8; margin-top: 10px;">Only the primary contact's phone can submit scores for a team. Resending a hole replaces the previous score.</p>
     </div>
 
@@ -2866,15 +2903,166 @@
             showSection('signup');
         }
 
-        function setPlayerCount(numPlayers) {
-    while(playerCount > 1) { removePlayer(); }
+function setPlayerCount(numPlayers) {
+    while (playerCount > 1) { removePlayer(); }
     setSponsorIntent(false);
-    for(let i = 1; i < numPlayers; i++) { addPlayer(); }
+
+    // Rebuild players-container from scratch based on count
+    if (numPlayers === 8 || numPlayers === 12) {
+        renderFoursomeGroupedPlayers(numPlayers);
+    } else {
+        // 1, 2, 4 players → flat list (existing behavior)
+        for (let i = 1; i < numPlayers; i++) { addPlayer(); }
+    }
 
     document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
-   const map = { 12: 'select-three-foursomes-btn', 8: 'select-two-foursomes-btn', 4: 'select-foursome-btn', 2: 'select-twosome-btn', 1: 'select-individual-btn' };
+    const map = {
+        12: 'select-three-foursomes-btn',
+        8: 'select-two-foursomes-btn',
+        4: 'select-foursome-btn',
+        2: 'select-twosome-btn',
+        1: 'select-individual-btn'
+    };
     const btn = document.getElementById(map[numPlayers]);
     if (btn) btn.classList.add('active');
+}
+
+// Renders foursome-grouped player UI for 8- or 12-player registrations.
+// Each foursome gets its own optional team-name field and 4 player cards.
+function renderFoursomeGroupedPlayers(totalPlayers) {
+    const container = document.getElementById('players-container');
+    if (!container) return;
+
+    // Hide the top-level single "Team Name" field — each foursome has its own
+    const topTeamName = document.getElementById('team-name-container');
+    if (topTeamName) topTeamName.style.display = 'none';
+
+    container.innerHTML = '';  // wipe existing player cards
+
+    const numFoursomes = totalPlayers / 4;
+    const groupLabels = ['a', 'b', 'c'];
+    const groupTitles = ['Foursome A', 'Foursome B', 'Foursome C'];
+    let playerNum = 1;
+
+    for (let g = 0; g < numFoursomes; g++) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'foursome-group';
+
+        const groupHeader = `
+            <div class="foursome-group-header">
+                <span class="foursome-group-label">⛳ ${groupTitles[g]}</span>
+                <span class="foursome-group-icon">${'⛳'.repeat(1)}</span>
+            </div>
+            <input type="text" id="foursome-name-${groupLabels[g]}" class="foursome-team-name-input"
+                   placeholder="${groupTitles[g]} — Team Name (Optional)">
+        `;
+
+        let playersHtml = '';
+        for (let p = 0; p < 4; p++) {
+            const n = playerNum;
+            const isPrimary = (n === 1);
+            playersHtml += `
+                <div class="player-card">
+                    <h3>${isPrimary ? 'Player 1 (Primary Contact)' : 'Player ' + n}</h3>
+                    <div class="form-group">
+                        <input type="text" id="p${n}-first" placeholder="First Name *" required>
+                        <input type="text" id="p${n}-last" placeholder="Last Name *" required>
+                    </div>
+                    <div class="form-group">
+                        ${isPrimary
+                            ? `<input type="email" id="p${n}-email" placeholder="Email Address *" required>
+                               <input type="tel" id="p${n}-phone" placeholder="Mobile Number *" required
+                                      maxlength="14" inputmode="numeric"
+                                      oninput="formatPhoneAsTyping(this)">`
+                            : `<input type="email" id="p${n}-email" placeholder="Email Address (Optional)">`
+                        }
+                    </div>
+                </div>
+            `;
+            playerNum++;
+        }
+
+        groupDiv.innerHTML = groupHeader + playersHtml;
+        container.appendChild(groupDiv);
+    }
+
+    // Update playerCount and hide Add/Remove buttons (count is locked in grouped mode)
+    playerCount = totalPlayers;
+    const addBtn = document.getElementById('add-player-btn');
+    const removeBtn = document.getElementById('remove-player-btn');
+    if (addBtn) addBtn.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'none';
+
+    updateCostDisplay();
+}
+
+function addPlayer() {
+    if (playerCount >= 12) return;
+
+    // If we're currently in a grouped-foursome layout, addPlayer doesn't apply — bail out
+    if (document.querySelector('.foursome-group')) return;
+
+    playerCount++;
+    const container = document.getElementById('players-container');
+    const playerCard = document.createElement('div');
+    playerCard.className = 'player-card';
+    playerCard.innerHTML = `
+        <h3>Player ${playerCount}</h3>
+        <div class="form-group">
+            <input type="text" id="p${playerCount}-first" placeholder="First Name *" required>
+            <input type="text" id="p${playerCount}-last" placeholder="Last Name *" required>
+        </div>
+        <div class="form-group">
+            <input type="email" id="p${playerCount}-email" placeholder="Email Address (Optional)">
+        </div>
+    `;
+    container.appendChild(playerCard);
+    updateCostDisplay();
+
+    if (playerCount === 4) {
+        document.getElementById('add-player-btn').style.display = 'none';
+    }
+    document.getElementById('remove-player-btn').style.display = 'block';
+}
+
+function removePlayer() {
+    if (playerCount > 1) {
+        const container = document.getElementById('players-container');
+
+        // If we have foursome groups, wipe them entirely and rebuild as a single player
+        const groups = container.querySelectorAll('.foursome-group');
+        if (groups.length > 0) {
+            container.innerHTML = `
+                <div class="player-card">
+                    <h3>Player 1 (Primary Contact)</h3>
+                    <div class="form-group" id="team-name-container">
+                        <input type="text" id="team-name" placeholder="Team Name (Optional)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="p1-first" placeholder="First Name *" required>
+                        <input type="text" id="p1-last" placeholder="Last Name *" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="p1-email" placeholder="Email Address *" required>
+                        <input type="tel" id="p1-phone" placeholder="Mobile Number *" required
+                               maxlength="14" inputmode="numeric"
+                               oninput="formatPhoneAsTyping(this)">
+                    </div>
+                </div>
+            `;
+            playerCount = 1;
+            document.getElementById('add-player-btn').style.display = 'block';
+            document.getElementById('remove-player-btn').style.display = 'none';
+            updateCostDisplay();
+            return;
+        }
+
+        container.removeChild(container.lastElementChild);
+        playerCount--;
+        updateCostDisplay();
+        document.getElementById('add-player-btn').style.display = 'block';
+        if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
+    }
 }
 
 
@@ -2962,26 +3150,214 @@ if (sectionId === 'leaderboard') {
             nextWizardStep(step);
         }
 
-        function validateAndNextStep(currentStep, nextStep) {
-            let isValid = true;
-            const currentContainer = document.getElementById('wizard-step-' + currentStep);
-            const inputs = currentContainer.querySelectorAll('input[required]');
-            
-            inputs.forEach(input => {
-                if (!input.value) {
-                    isValid = false;
-                    input.style.borderColor = '#e74c3c';
-                } else {
-                    input.style.borderColor = 'transparent';
-                }
-            });
+    function validateAndNextStep(currentStep, nextStep) {
+    let isValid = true;
+    let errorMessage = "Please fill out all required fields before proceeding.";
+    const currentContainer = document.getElementById('wizard-step-' + currentStep);
+    const inputs = currentContainer.querySelectorAll('input[required]');
+    
+    // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (isValid) {
-                nextWizardStep(nextStep);
-            } else {
-                showValidationModal("Please fill out all required fields before proceeding.");
+    inputs.forEach(input => {
+        // Empty check first
+        if (!input.value || !input.value.trim()) {
+            isValid = false;
+            input.style.borderColor = '#e74c3c';
+            return;
+        }
+
+        // Email format check
+        if (input.type === 'email' && !EMAIL_REGEX.test(input.value.trim())) {
+            isValid = false;
+            input.style.borderColor = '#e74c3c';
+            errorMessage = "Please enter a valid email address (e.g., name@example.com).";
+            return;
+        }
+
+        // Phone format check — must have at least 10 digits
+        if (input.type === 'tel') {
+            const digitsOnly = input.value.replace(/\D/g, '');
+            if (digitsOnly.length < 10) {
+                isValid = false;
+                input.style.borderColor = '#e74c3c';
+                errorMessage = "Please enter a valid 10-digit mobile number.";
+                return;
             }
         }
+
+input.style.borderColor = 'transparent';
+    });
+
+    // Also validate any OPTIONAL email fields (teammate emails) — empty is fine, but bad format is not
+    const optionalEmails = currentContainer.querySelectorAll('input[type="email"]:not([required])');
+    optionalEmails.forEach(input => {
+        if (input.value && input.value.trim() && !EMAIL_REGEX.test(input.value.trim())) {
+            isValid = false;
+            input.style.borderColor = '#e74c3c';
+            errorMessage = "One or more teammate emails is invalid — please fix or leave blank.";
+        } else if (input.value && input.value.trim()) {
+            input.style.borderColor = 'transparent';
+        }
+    });
+
+if (isValid) {
+        // Persist progress now that this step is valid
+        if (typeof saveWizardProgress === 'function') saveWizardProgress();
+        nextWizardStep(nextStep);
+    } else {
+        showValidationModal(errorMessage);
+    }
+}
+
+// =================================================================
+// PHONE AUTO-FORMAT
+// Formats (215) 555-1234 as the user types. Idempotent — re-running
+// on already-formatted input gives the same result.
+// =================================================================
+function formatPhoneAsTyping(input) {
+    const digits = input.value.replace(/\D/g, '').slice(0, 10);
+    if (digits.length === 0) { input.value = ''; return; }
+    if (digits.length < 4) {
+        input.value = '(' + digits;
+    } else if (digits.length < 7) {
+        input.value = '(' + digits.slice(0, 3) + ') ' + digits.slice(3);
+    } else {
+        input.value = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    }
+    input.style.borderColor = 'transparent';
+}
+
+// =================================================================
+// WIZARD STATE PERSISTENCE
+// Saves form state to sessionStorage so a refresh doesn't wipe out
+// a half-completed registration. Cleared automatically on successful submit.
+// =================================================================
+const WIZARD_STORAGE_KEY = 'bigRWizardState';
+
+function saveWizardProgress() {
+    try {
+        const state = {
+            playerCount: playerCount,
+            isSponsorOnly: document.getElementById('sponsor-only-checkbox')?.checked || false,
+            currentStep: currentWizardStep,
+            teamName: document.getElementById('team-name')?.value || '',
+            sponsorshipLevel: document.getElementById('sponsorship-level')?.value || '',
+            selectedHoleNum: selectedHoleNum,
+            players: []
+        };
+
+        for (let i = 1; i <= playerCount; i++) {
+            state.players.push({
+                first: document.getElementById(`p${i}-first`)?.value || '',
+                last: document.getElementById(`p${i}-last`)?.value || '',
+                email: document.getElementById(`p${i}-email`)?.value || '',
+                phone: i === 1 ? (document.getElementById('p1-phone')?.value || '') : ''
+            });
+        }
+
+        const fsNameA = document.getElementById('foursome-name-a');
+        const fsNameB = document.getElementById('foursome-name-b');
+        const fsNameC = document.getElementById('foursome-name-c');
+        if (fsNameA || fsNameB || fsNameC) {
+            state.foursomeNames = {
+                a: fsNameA?.value || '',
+                b: fsNameB?.value || '',
+                c: fsNameC?.value || ''
+            };
+        }
+
+        sessionStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+        console.warn('Wizard progress save failed:', err);
+    }
+}
+
+function clearWizardProgress() {
+    try {
+        sessionStorage.removeItem(WIZARD_STORAGE_KEY);
+    } catch (err) { /* fail silently */ }
+}
+
+function restoreWizardProgress() {
+    let state;
+    try {
+        const raw = sessionStorage.getItem(WIZARD_STORAGE_KEY);
+        if (!raw) return false;
+        state = JSON.parse(raw);
+    } catch (err) {
+        return false;
+    }
+
+    if (!state || !state.players || state.players.length === 0) return false;
+
+    if (state.isSponsorOnly) {
+        setSponsorIntent(true);
+    } else {
+        setSponsorIntent(false);
+        setPlayerCount(state.players.length);
+    }
+
+    setTimeout(() => {
+        const teamNameEl = document.getElementById('team-name');
+        if (teamNameEl) teamNameEl.value = state.teamName || '';
+
+        state.players.forEach((p, idx) => {
+            const i = idx + 1;
+            const firstEl = document.getElementById(`p${i}-first`);
+            const lastEl = document.getElementById(`p${i}-last`);
+            const emailEl = document.getElementById(`p${i}-email`);
+            if (firstEl) firstEl.value = p.first || '';
+            if (lastEl) lastEl.value = p.last || '';
+            if (emailEl) emailEl.value = p.email || '';
+            if (i === 1) {
+                const phoneEl = document.getElementById('p1-phone');
+                if (phoneEl) phoneEl.value = p.phone || '';
+            }
+        });
+
+        if (state.foursomeNames) {
+            const a = document.getElementById('foursome-name-a');
+            const b = document.getElementById('foursome-name-b');
+            const c = document.getElementById('foursome-name-c');
+            if (a) a.value = state.foursomeNames.a || '';
+            if (b) b.value = state.foursomeNames.b || '';
+            if (c) c.value = state.foursomeNames.c || '';
+        }
+
+        const sponsorDropdown = document.getElementById('sponsorship-level');
+        if (sponsorDropdown && state.sponsorshipLevel) {
+            sponsorDropdown.value = state.sponsorshipLevel;
+        }
+        selectedHoleNum = state.selectedHoleNum || null;
+
+        const targetStep = Math.min(state.currentStep || 1, 3);
+        if (targetStep > 1) {
+            showSection('signup');
+            setTimeout(() => nextWizardStep(targetStep), 100);
+            setTimeout(() => {
+                showValidationModal("✅ We saved your progress. Continue where you left off!");
+            }, 600);
+        }
+
+        updateCostDisplay();
+    }, 100);
+
+    return true;
+}
+
+function attachWizardAutosave() {
+    const form = document.getElementById('golf-signup-form');
+    if (!form) return;
+    form.addEventListener('input', debounceWizardSave);
+    form.addEventListener('change', debounceWizardSave);
+}
+
+let wizardSaveTimer = null;
+function debounceWizardSave() {
+    clearTimeout(wizardSaveTimer);
+    wizardSaveTimer = setTimeout(saveWizardProgress, 400);
+}
 
         // --- Global Fetches & UI Updates ---
         function fetchGlobalData() {
@@ -3839,7 +4215,7 @@ function handleSecretAdminClick() {
                 if (p1Header) p1Header.innerText = "Sponsor Contact Info";
                 if (formMainTitle) formMainTitle.innerText = "Sponsor Registration";
                 if (formSubtitle) formSubtitle.style.display = 'none';
-            } else {
+} else {
                 if (addBtn) addBtn.style.display = 'block';
                 if (teamNameContainer) teamNameContainer.style.display = 'flex';
                 if (sizeSelectors) sizeSelectors.style.display = 'block';
@@ -3848,47 +4224,6 @@ function handleSecretAdminClick() {
                 if (formSubtitle) formSubtitle.style.display = 'block';
             }
             updateCostDisplay();
-        }
-
-        function addPlayer() {
-            if (playerCount >= 12) return;
-            playerCount++;
-            const container = document.getElementById('players-container');
-            const playerCard = document.createElement('div');
-            playerCard.className = 'player-card';
-            playerCard.innerHTML = `
-                <h3>Player ${playerCount}</h3>
-                <div class="form-group">
-                    <input type="text" id="p${playerCount}-first" placeholder="First Name *" required>
-                    <input type="text" id="p${playerCount}-last" placeholder="Last Name *" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="p${playerCount}-email" placeholder="Email Address (Optional)">
-                </div>
-            `;
-            container.appendChild(playerCard);
-            updateCostDisplay(); 
-            
-            if (playerCount === 12) {
-    document.getElementById('add-player-btn').style.display = 'none';
-}
-
-            document.getElementById('remove-player-btn').style.display = 'block';
-        }
-
-        function removePlayer() {
-            if (playerCount > 1) {
-                const container = document.getElementById('players-container');
-                container.removeChild(container.lastElementChild);
-                playerCount--;
-                updateCostDisplay(); 
-                
-                document.getElementById('add-player-btn').style.display = 'block';
-
-             
-                
-                if (playerCount === 1) document.getElementById('remove-player-btn').style.display = 'none';
-            }
         }
 
         function updatePaymentNote() {
@@ -3960,8 +4295,23 @@ function handleSecretAdminClick() {
 
             if (selectedPaymentType === 'PayPalTest') finalTotal = 1;
 
-        const teamName = document.getElementById('team-name') ? document.getElementById('team-name').value : "";
-
+      // For grouped 8/12-player registrations, combine all foursome names.
+// For single-team registrations (1/2/4 players), use the single team-name field.
+let teamName = "";
+const foursomeA = document.getElementById('foursome-name-a');
+if (foursomeA) {
+    // Grouped registration — build combined team name from each foursome
+    const parts = [];
+    const a = foursomeA.value.trim();
+    const b = document.getElementById('foursome-name-b')?.value.trim();
+    const c = document.getElementById('foursome-name-c')?.value.trim();
+    if (a) parts.push('A: ' + a);
+    if (b) parts.push('B: ' + b);
+    if (c) parts.push('C: ' + c);
+    teamName = parts.length > 0 ? parts.join(' | ') : '';
+} else {
+    teamName = document.getElementById('team-name') ? document.getElementById('team-name').value : "";
+}
             const transactionId = 'TX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 let squareToken = "";
             if (selectedPaymentType === 'Credit/Debit Card') {
@@ -4056,6 +4406,7 @@ body: JSON.stringify({
                     document.getElementById('signup-form-container').style.display = 'none';
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
+                    clearWizardProgress();  // ← ADD THIS LINE
              } else {
                     throw new Error(data.error || 'Unknown Server Error');
                 }
@@ -4636,7 +4987,7 @@ let lastKnownTeamIds = new Set();
 let lastKnownScoreSignatures = new Map();  // teamId -> "total|holes" signature, for change detection
 
 // EDIT THIS: Your Twilio number for scoring
-const SCORING_PHONE_NUMBER = "(XXX) XXX-XXXX";
+const SCORING_PHONE_NUMBER = "(888) 621-5658";
 
 function renderLeaderboard(data) {
     const podiumContainer = document.getElementById('leaderboard-podium-container');
@@ -4975,30 +5326,40 @@ function moderatePhoto(rowIndex, decision) {
             }
             mapContainer.innerHTML = html;
         }
-        document.addEventListener("DOMContentLoaded", () => {
-            if (window.Square) {
-                const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-                payments.card().then(card => {
-                    signupCard = card;
-                    signupCard.attach('#sq-card-container');
-                });
-                payments.card().then(card => {
-                    donateCard = card;
-                    donateCard.attach('#donate-sq-card-container');
-                });
-            }
-            initCountdown();
-            showSection('home');
-            renderCourseMap();
-            fetchGlobalData(); 
-            initTimelineObserver();
-            startToastEngine();
-            
-            if (localStorage.getItem('introPlayed') === 'true') {
-                const splashScreen = document.getElementById('splash-screen');
-                if (splashScreen) splashScreen.style.display = 'none';
-            }
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.Square) {
+        const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+        payments.card().then(card => {
+            signupCard = card;
+            signupCard.attach('#sq-card-container');
         });
+        payments.card().then(card => {
+            donateCard = card;
+            donateCard.attach('#donate-sq-card-container');
+        });
+    }
+    initCountdown();
+    showSection('home');
+    renderCourseMap();
+    fetchGlobalData(); 
+    initTimelineObserver();
+    startToastEngine();
+
+    // Restore in-progress registration if one exists
+    const restored = restoreWizardProgress();
+    if (!restored) {
+        // Only attach autosave if we DIDN'T just restore — restore triggers its own saves
+        attachWizardAutosave();
+    } else {
+        // After restore animation settles, attach autosave for ongoing edits
+        setTimeout(attachWizardAutosave, 1500);
+    }
+
+    if (localStorage.getItem('introPlayed') === 'true') {
+        const splashScreen = document.getElementById('splash-screen');
+        if (splashScreen) splashScreen.style.display = 'none';
+    }
+});
     </script>
 <!-- Mobile CTA -->
 <button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
