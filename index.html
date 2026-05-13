@@ -2636,7 +2636,7 @@
         <h3>📸 Share an Event Photo</h3>
         <p>Capture a moment from the outing and share it with everyone.</p>
         <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">
-        <input type="file" id="photo-upload-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhotoSelected(this)">
+      <input type="file" id="photo-upload-input" accept="image/*" style="display: none;" onchange="handlePhotoSelected(this)">
         <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>
         <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
         <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Photos are reviewed before appearing publicly.</p>
