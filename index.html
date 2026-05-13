@@ -1802,7 +1802,366 @@
             color: #ffffff;
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.3), inset 0 0 10px rgba(46, 204, 113, 0.1);
         }
+/* =================================================================
+   LIVE LEADERBOARD
+   ================================================================= */
+.leaderboard-hero {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.12), rgba(52, 152, 219, 0.08));
+    border: 1px solid rgba(46, 204, 113, 0.25);
+    border-radius: 16px;
+    padding: 24px 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.leaderboard-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #2ecc71;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2ecc71;
+    animation: livePulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 8px #2ecc71;
+}
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+.leaderboard-status.dormant .live-dot {
+    background: #94a3b8;
+    box-shadow: none;
+    animation: none;
+}
+.leaderboard-status.dormant {
+    color: #94a3b8;
+}
+.leaderboard-update {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-style: italic;
+}
 
+/* Podium for top 3 */
+.podium-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 10px;
+    align-items: end;
+    margin: 20px 0 30px;
+    min-height: 180px;
+}
+.podium-spot {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px 10px 0 0;
+    padding: 14px 8px;
+    text-align: center;
+    border-top: 4px solid;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+.podium-spot:hover { transform: translateY(-4px); }
+.podium-spot.gold { border-top-color: #f1c40f; min-height: 160px; box-shadow: 0 0 25px rgba(241, 196, 15, 0.25); }
+.podium-spot.silver { border-top-color: #cbd5e1; min-height: 130px; }
+.podium-spot.bronze { border-top-color: #cd7f32; min-height: 110px; }
+.podium-medal { font-size: 28px; margin-bottom: 4px; }
+.podium-team-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 6px;
+    word-break: break-word;
+    line-height: 1.2;
+}
+.podium-score {
+    font-size: 28px;
+    font-weight: 800;
+    color: #2ecc71;
+    line-height: 1;
+}
+.podium-thru {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Full leaderboard table */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px;
+    margin-top: 10px;
+}
+.leaderboard-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.leaderboard-table td {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #f8fafc;
+    font-size: 14px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.leaderboard-table tr td:first-child {
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px 0 0 6px;
+}
+.leaderboard-table tr td:last-child {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-radius: 0 6px 6px 0;
+}
+.leaderboard-table tr.row-flash td {
+    background: rgba(46, 204, 113, 0.18);
+    animation: rowGlow 2.5s ease-out;
+}
+@keyframes rowGlow {
+    0% { background: rgba(46, 204, 113, 0.4); }
+    100% { background: rgba(0, 0, 0, 0.3); }
+}
+.lb-rank {
+    font-weight: 800;
+    color: #f1c40f;
+    width: 40px;
+}
+.lb-total {
+    font-weight: 700;
+    color: #2ecc71;
+    font-size: 16px;
+}
+.lb-thru {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+/* "How to play" instructions card */
+.text-scoring-howto {
+    background: rgba(52, 152, 219, 0.08);
+    border: 1px solid rgba(52, 152, 219, 0.25);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.text-scoring-howto h4 {
+    color: #3498db;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+.text-scoring-howto .sms-example {
+    display: inline-block;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    color: #2ecc71;
+    font-family: 'Menlo', 'Monaco', monospace;
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin: 6px 0;
+    font-weight: 700;
+}
+.text-scoring-howto .sms-number {
+    font-size: 22px;
+    font-weight: 800;
+    color: #f1c40f;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 8px;
+}
+.text-scoring-howto p {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+/* Empty state */
+.lb-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* =================================================================
+   EVENT PHOTO UPLOAD + GALLERY
+   ================================================================= */
+.photo-upload-card {
+    background: rgba(243, 156, 18, 0.08);
+    border: 1px solid rgba(243, 156, 18, 0.25);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0 30px;
+    text-align: center;
+}
+.photo-upload-card h3 {
+    color: #f39c12;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+.photo-upload-card p {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 15px;
+}
+.photo-upload-btn {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(243, 156, 18, 0.4);
+    transition: transform 0.2s ease;
+}
+.photo-upload-btn:hover { transform: translateY(-2px); }
+.photo-upload-btn:disabled { opacity: 0.6; cursor: wait; }
+
+.uploader-name-input {
+    width: 100%;
+    max-width: 280px;
+    margin: 10px auto 0;
+    display: block;
+}
+
+/* Gallery grid */
+.event-gallery-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.event-gallery-section h3 {
+    text-align: center;
+    color: #f39c12;
+    margin-bottom: 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.event-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+.gallery-tile {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    background: rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.gallery-tile:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+    z-index: 2;
+}
+.gallery-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.gallery-tile:hover img { transform: scale(1.1); }
+.gallery-tile .uploader-tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    color: #f8fafc;
+    font-size: 11px;
+    padding: 16px 8px 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.gallery-tile:hover .uploader-tag { opacity: 1; }
+
+.gallery-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+    font-style: italic;
+    background: rgba(0,0,0,0.2);
+    border: 1px dashed rgba(243, 156, 18, 0.25);
+    border-radius: 12px;
+}
+
+/* Admin pending photo tile (reuses .pending-tribute styles where possible) */
+.pending-photo {
+    background: rgba(243, 156, 18, 0.08);
+    border-left: 3px solid #f39c12;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.pending-photo img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+.pending-photo .pp-info {
+    flex: 1;
+    min-width: 0;
+}
+.pending-photo .pp-uploader {
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+}
+.pending-photo .pp-time {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+.pending-photo .pp-actions {
+    display: flex;
+    gap: 6px;
+}
+.pending-photo button {
+    flex: 1;
+    font-size: 11px;
+    padding: 6px;
+}
+
+@media (max-width: 768px) {
+    .podium-grid { gap: 6px; }
+    .podium-team-name { font-size: 11px; }
+    .podium-score { font-size: 22px; }
+    .leaderboard-table td { padding: 10px 8px; font-size: 13px; }
+    .text-scoring-howto .sms-number { font-size: 18px; }
+    .event-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
 
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
@@ -1858,6 +2217,12 @@
                 <button class="secondary-btn" onclick="loadPendingTributes()" style="margin-bottom: 10px;">🔍 Load Pending Tributes</button>
                 <div id="pending-tributes-list" style="margin-top: 10px;"></div>
             </div>
+            <div class="admin-section">
+    <label>📸 Moderate Event Photos <span class="pending-tribute-badge" id="admin-pending-photos-badge" style="display:none;">0</span></label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve uploaded photos before they appear in the public gallery.</p>
+    <button class="secondary-btn" onclick="loadPendingPhotos()" style="margin-bottom: 10px;">🔍 Load Pending Photos</button>
+    <div id="pending-photos-list" style="margin-top: 10px;"></div>
+</div>
             <!-- ENHANCED: Sponsor upload now requires website URL + tier selection -->
             <div class="admin-section">
                 <label>Upload Sponsor Logo</label>
@@ -1933,6 +2298,7 @@
             <li><a href="javascript:void(0);" onclick="showSection('signup')">⛳ <span class="menu-text">Sign Up</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('donate')">❤️ <span class="menu-text">Donate</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('photos')">📷 <span class="menu-text">Photos</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('leaderboard')">🏆 <span class="menu-text">Leaderboard</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('terms')">📝 <span class="menu-text">Terms & Privacy</span></a></li>
@@ -2259,12 +2625,58 @@
         </section>
 
         <section id="section-photos" class="content-section">
-            <h2>Photos</h2>
-            <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
-            <div class="photo-grid" style="text-align: center;">
-                <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-            </div>
-        </section>
+    <h2>Photos</h2>
+    <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
+    <div class="photo-grid" style="text-align: center;">
+        <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+
+    <!-- Live event upload — only meaningful on event day, but works year-round -->
+    <div class="photo-upload-card">
+        <h3>📸 Share an Event Photo</h3>
+        <p>Capture a moment from the outing and share it with everyone.</p>
+        <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">
+        <input type="file" id="photo-upload-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhotoSelected(this)">
+        <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>
+        <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Photos are reviewed before appearing publicly.</p>
+    </div>
+
+    <!-- Event gallery (populated by JS) -->
+    <div class="event-gallery-section">
+        <h3>📷 Event Gallery</h3>
+        <div id="event-gallery-grid" class="event-gallery-grid"></div>
+        <div id="event-gallery-empty" class="gallery-empty" style="display: none;">
+            No event photos yet — be the first to share one above.
+        </div>
+    </div>
+</section>
+        <section id="section-leaderboard" class="content-section">
+    <h2>🏆 Live Leaderboard</h2>
+    
+    <div class="leaderboard-hero">
+        <div class="leaderboard-status" id="lb-status">
+            <span class="live-dot"></span>
+            <span id="lb-status-text">Live</span>
+        </div>
+        <div class="leaderboard-update" id="lb-last-update">Waiting for first score...</div>
+    </div>
+
+    <div class="text-scoring-howto">
+        <h4>📱 How to Submit Scores</h4>
+        <p>Text your score from your registered phone in this format:</p>
+        <div class="sms-example">team# hole# strokes</div>
+        <p style="margin-top: 10px;">Example: <strong style="color:#2ecc71;">3 7 5</strong> = Team 3, Hole 7, 5 strokes</p>
+        <span class="sms-number" id="sms-number-display">Text to: (XXX) XXX-XXXX</span>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 10px;">Only the primary contact's phone can submit scores for a team. Resending a hole replaces the previous score.</p>
+    </div>
+
+    <!-- Podium populated by JS -->
+    <div id="leaderboard-podium-container"></div>
+    
+    <!-- Full table populated by JS -->
+    <div id="leaderboard-table-container"></div>
+</section>
 
         <section id="section-story" class="content-section">
             <h2>Ryan's Story</h2>
@@ -2489,6 +2901,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
+     // Add at the bottom of showSection(), after the scrollTo:
+if (sectionId === 'leaderboard') {
+    startLeaderboardPolling();
+} else {
+    stopLeaderboardPolling();
+}
         }
 
         let selectedHoleNum = null;
@@ -2573,6 +2991,12 @@
                             submitBtn.style.backgroundColor = "#f39c12";
                         }
                     }
+                    if (data && data.leaderboard) {
+    renderLeaderboard(data.leaderboard);
+}
+if (data && data.eventPhotos) {
+    renderEventGallery(data.eventPhotos);
+}
                                         if (data && data.sponsors && data.sponsors.length > 0) {
                         console.log("📦 Raw sponsor data from script:", data.sponsors);
                         updateSponsorShowcase(data.sponsors);
@@ -4125,6 +4549,313 @@ async function submitDonation() {
                 if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
             });
         }
+        // =================================================================
+// LIVE LEADERBOARD
+// =================================================================
+let leaderboardPollTimer = null;
+let lastKnownTeamIds = new Set();
+let lastKnownScoreSignatures = new Map();  // teamId -> "total|holes" signature, for change detection
+
+// EDIT THIS: Your Twilio number for scoring
+const SCORING_PHONE_NUMBER = "(XXX) XXX-XXXX";
+
+function renderLeaderboard(data) {
+    const podiumContainer = document.getElementById('leaderboard-podium-container');
+    const tableContainer = document.getElementById('leaderboard-table-container');
+    const statusEl = document.getElementById('lb-status');
+    const statusText = document.getElementById('lb-status-text');
+    const updateEl = document.getElementById('lb-last-update');
+    const smsDisplay = document.getElementById('sms-number-display');
+    
+    if (smsDisplay) smsDisplay.textContent = 'Text to: ' + SCORING_PHONE_NUMBER;
+    
+    if (!data || !data.teams || data.teams.length === 0) {
+        if (podiumContainer) podiumContainer.innerHTML = '';
+        if (tableContainer) tableContainer.innerHTML = '<div class="lb-empty">⛳ No scores yet — leaderboard will populate as text messages come in.</div>';
+        if (statusEl) { statusEl.classList.add('dormant'); }
+        if (statusText) statusText.textContent = 'Standing By';
+        if (updateEl) updateEl.textContent = 'Waiting for first score...';
+        return;
+    }
+    
+    if (statusEl) statusEl.classList.remove('dormant');
+    if (statusText) statusText.textContent = 'Live';
+    if (updateEl && data.lastUpdate) {
+        const mins = Math.floor((Date.now() - data.lastUpdate) / 60000);
+        updateEl.textContent = mins < 1 ? 'Updated just now' : 'Updated ' + mins + ' min ago';
+    }
+    
+    // Podium (top 3)
+    const top3 = data.teams.slice(0, 3);
+    if (podiumContainer && top3.length > 0) {
+        // Visual order: 2nd-1st-3rd so 1st sits centered/tallest
+        const order = [];
+        if (top3[1]) order.push({ team: top3[1], spot: 'silver', medal: '🥈', rank: 2 });
+        if (top3[0]) order.push({ team: top3[0], spot: 'gold', medal: '🥇', rank: 1 });
+        if (top3[2]) order.push({ team: top3[2], spot: 'bronze', medal: '🥉', rank: 3 });
+        
+        podiumContainer.innerHTML = '<div class="podium-grid">' + order.map(o => `
+            <div class="podium-spot ${o.spot}">
+                <div class="podium-medal">${o.medal}</div>
+                <div class="podium-team-name">${escapeTributeHtml(o.team.name)}</div>
+                <div class="podium-score">${o.team.totalStrokes}</div>
+                <div class="podium-thru">Thru ${o.team.holesPlayed}</div>
+            </div>
+        `).join('') + '</div>';
+    }
+    
+    // Full table — flag any team whose total/holes changed since last render
+    const newSignatures = new Map();
+    const rowsHtml = data.teams.map((team, idx) => {
+        const sig = team.totalStrokes + '|' + team.holesPlayed;
+        newSignatures.set(team.id, sig);
+        const flash = lastKnownScoreSignatures.has(team.id) && lastKnownScoreSignatures.get(team.id) !== sig;
+        return `
+            <tr class="${flash ? 'row-flash' : ''}" data-team="${team.id}">
+                <td class="lb-rank">${idx + 1}</td>
+                <td>${escapeTributeHtml(team.name)}</td>
+                <td class="lb-total">${team.totalStrokes}</td>
+                <td class="lb-thru">Thru ${team.holesPlayed}</td>
+            </tr>
+        `;
+    }).join('');
+    
+    if (tableContainer) {
+        tableContainer.innerHTML = `
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Team</th>
+                        <th style="width:80px;">Total</th>
+                        <th style="width:80px;">Thru</th>
+                    </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+        `;
+    }
+    
+    lastKnownScoreSignatures = newSignatures;
+}
+
+function startLeaderboardPolling() {
+    if (leaderboardPollTimer) return;  // already running
+    
+    const poll = () => {
+        fetch(GOOGLE_APP_SCRIPT_URL)
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.leaderboard) renderLeaderboard(data.leaderboard);
+            })
+            .catch(err => console.warn('Leaderboard poll failed:', err));
+    };
+    
+    poll();  // immediate
+    leaderboardPollTimer = setInterval(poll, 30000);  // every 30s
+}
+
+function stopLeaderboardPolling() {
+    if (leaderboardPollTimer) {
+        clearInterval(leaderboardPollTimer);
+        leaderboardPollTimer = null;
+    }
+}
+
+// =================================================================
+// EVENT PHOTO UPLOAD
+// =================================================================
+function handlePhotoSelected(input) {
+    if (!input.files || input.files.length === 0) return;
+    
+    const file = input.files[0];
+    const statusEl = document.getElementById('photo-upload-status');
+    const nameInput = document.getElementById('photo-uploader-name');
+    const uploaderName = (nameInput && nameInput.value) ? nameInput.value.trim().slice(0, 40) : 'Anonymous';
+    
+    if (file.size > 15 * 1024 * 1024) {
+        statusEl.innerHTML = '<span style="color:#e74c3c;">Photo too large (15MB max).</span>';
+        input.value = '';
+        return;
+    }
+    
+    statusEl.innerHTML = '<span style="color:#f1c40f;">⚙️ Compressing & uploading...</span>';
+    
+    // Reuse the existing compression function with bumped dimensions for photos
+    compressPhotoForUpload(file, (base64, mimeType) => {
+        fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'upload_photo',
+                imageBase64: base64,
+                mimeType: mimeType,
+                uploaderName: uploaderName
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.result === 'success') {
+                statusEl.innerHTML = '<span style="color:#2ecc71;">✅ Submitted! Your photo will appear after review.</span>';
+                input.value = '';
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ['#f39c12', '#f1c40f', '#ffffff'] });
+                }
+                setTimeout(() => { statusEl.innerHTML = ''; }, 6000);
+            } else {
+                statusEl.innerHTML = '<span style="color:#e74c3c;">Upload failed: ' + (data.error || 'Unknown error') + '</span>';
+            }
+        })
+        .catch(err => {
+            statusEl.innerHTML = '<span style="color:#e74c3c;">Network error. Try again?</span>';
+        });
+    });
+}
+
+// Photo-specific compressor — larger dimensions than logo compressor, EXIF stripped by canvas re-encode
+function compressPhotoForUpload(file, callback) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = event => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_DIM = 1600;  // good detail, ~300-500KB output
+            
+            let { width, height } = img;
+            if (width > height && width > MAX_DIM) {
+                height = height * (MAX_DIM / width);
+                width = MAX_DIM;
+            } else if (height > MAX_DIM) {
+                width = width * (MAX_DIM / height);
+                height = MAX_DIM;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Re-encoding to JPEG drops EXIF (including GPS) — privacy win
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            const base64 = dataUrl.split(',')[1];
+            callback(base64, 'image/jpeg');
+        };
+    };
+}
+
+function renderEventGallery(photos) {
+    const grid = document.getElementById('event-gallery-grid');
+    const empty = document.getElementById('event-gallery-empty');
+    if (!grid || !empty) return;
+    
+    if (!photos || photos.length === 0) {
+        grid.innerHTML = '';
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+    }
+    
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+    grid.innerHTML = photos.map(p => `
+        <div class="gallery-tile" onclick="openLightbox('${p.url}')">
+            <img src="${p.thumbUrl}" loading="lazy" alt="Event photo by ${escapeTributeHtml(p.uploader)}">
+            ${p.uploader && p.uploader !== 'Anonymous' ? `<div class="uploader-tag">📷 ${escapeTributeHtml(p.uploader)}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+// =================================================================
+// ADMIN: photo moderation
+// =================================================================
+function loadPendingPhotos() {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+    
+    const listEl = document.getElementById('pending-photos-list');
+    if (listEl) listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center;">Loading...</p>';
+    
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'list_pending_photos', password: password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            renderPendingPhotos(data.pending || []);
+        } else {
+            alert('Backend Error: ' + (data.error || 'Check password.'));
+        }
+    })
+    .catch(err => alert('Network Error: ' + err.message));
+}
+
+function renderPendingPhotos(pending) {
+    const listEl = document.getElementById('pending-photos-list');
+    if (!listEl) return;
+    
+    if (pending.length === 0) {
+        listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">✅ No pending photos — all caught up.</p>';
+        return;
+    }
+    
+    listEl.innerHTML = pending.map(p => {
+        const dateStr = p.timestamp ? new Date(p.timestamp).toLocaleString() : '';
+        return `
+            <div class="pending-photo" data-row="${p.rowIndex}">
+                <img src="${p.thumbUrl}" alt="Pending photo" onclick="openLightbox('${p.thumbUrl.replace('=s400', '=s1200')}')">
+                <div class="pp-info">
+                    <div class="pp-uploader">— ${escapeTributeHtml(p.uploader)}</div>
+                    <div class="pp-time">${dateStr}</div>
+                    <div class="pp-actions">
+                        <button class="primary-btn" style="background:#27ae60;" onclick="moderatePhoto(${p.rowIndex}, 'approved')">✓ Approve</button>
+                        <button class="danger-btn" onclick="moderatePhoto(${p.rowIndex}, 'rejected')">✗ Reject</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function moderatePhoto(rowIndex, decision) {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+    
+    const tile = document.querySelector(`.pending-photo[data-row="${rowIndex}"]`);
+    if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = true);
+    
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'moderate_photo',
+            password: password,
+            rowIndex: rowIndex,
+            decision: decision
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            if (tile) {
+                tile.style.transition = 'opacity 0.4s ease';
+                tile.style.opacity = '0';
+                setTimeout(() => tile.remove(), 400);
+            }
+            fetchGlobalData();
+            setTimeout(loadPendingPhotos, 500);
+        } else {
+            alert('Backend Error: ' + (data.error || 'Check password.'));
+            if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+        }
+    })
+    .catch(err => {
+        alert('Network Error: ' + err.message);
+        if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+    });
+}
         // --- Abstract Course Map Generation ---
         function renderCourseMap() {
             const mapContainer = document.getElementById('abstract-course-map');
