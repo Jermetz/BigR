@@ -2264,7 +2264,7 @@
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
-<div id="photo-lightbox" class="fullscreen-overlay" onclick="closeLightbox()">
+<div id="photo-lightbox" class="fullscreen-overlay">
         <span class="lightbox-close">&times;</span>
         <img class="lightbox-content" id="lightbox-img">
     </div>
@@ -3457,16 +3457,83 @@ function handleSecretAdminClick() {
         }
         
         // --- Photo Lightbox Logic ---
-        function openLightbox(imageSrc) {
-            const lightbox = document.getElementById('photo-lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.src = imageSrc;
-            lightbox.style.display = 'flex';
-        }
-
-        function closeLightbox() {
-            document.getElementById('photo-lightbox').style.display = 'none';
-        }
+    let currentLightboxImages = [];
+           let currentLightboxIndex = -1;
+           let touchstartX = 0;
+           let touchendX = 0;
+           let isSwiping = false;
+   
+           function openLightbox(imageSrc) {
+               const lightbox = document.getElementById('photo-lightbox');
+               const lightboxImg = document.getElementById('lightbox-img');
+               lightboxImg.src = imageSrc;
+               lightbox.style.display = 'flex';
+               
+               // 1. Prevent background scrolling
+               document.body.style.overflow = 'hidden';
+   
+               // Gather all clickable images currently loaded on the page for swiping
+               const elements = Array.from(document.querySelectorAll('[onclick^="openLightbox"]'));
+               currentLightboxImages = elements.map(el => {
+                   if (el.tagName === 'IMG' && el.getAttribute('onclick').includes('this.src')) {
+                       return el.src;
+                   }
+                   const match = el.getAttribute('onclick').match(/'([^']+)'/);
+                   return match ? match[1] : null;
+               }).filter(url => url !== null);
+   
+               currentLightboxIndex = currentLightboxImages.indexOf(imageSrc);
+           }
+   
+           function closeLightbox() {
+               document.getElementById('photo-lightbox').style.display = 'none';
+               
+               // Restore background scrolling
+               document.body.style.overflow = '';
+           }
+   
+           // --- Swipe & Click Logic for Lightbox ---
+           const lightboxEl = document.getElementById('photo-lightbox');
+           
+           lightboxEl.addEventListener('touchstart', e => {
+               touchstartX = e.changedTouches[0].screenX;
+               isSwiping = false;
+           }, { passive: true });
+   
+           lightboxEl.addEventListener('touchmove', () => {
+               isSwiping = true;
+           }, { passive: true });
+   
+           lightboxEl.addEventListener('touchend', e => {
+               touchendX = e.changedTouches[0].screenX;
+               handleLightboxSwipe();
+               // Slight delay so the swipe doesn't trigger a click event
+               setTimeout(() => { isSwiping = false; }, 50);
+           }, { passive: true });
+   
+           lightboxEl.addEventListener('click', e => {
+               if (isSwiping) return; // Don't close if they were just swiping
+               // Close if clicking the background or the 'X'
+               if (e.target.id === 'photo-lightbox' || e.target.classList.contains('lightbox-close')) {
+                   closeLightbox();
+               }
+           });
+   
+           function handleLightboxSwipe() {
+               if (currentLightboxIndex === -1 || currentLightboxImages.length <= 1) return;
+   
+               const SWIPE_THRESHOLD = 50; // Minimum pixels to register as a swipe
+               
+               if (touchendX < touchstartX - SWIPE_THRESHOLD) {
+                   // Swipe Left -> Next Image
+                   currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+                   document.getElementById('lightbox-img').src = currentLightboxImages[currentLightboxIndex];
+               } else if (touchendX > touchstartX + SWIPE_THRESHOLD) {
+                   // Swipe Right -> Prev Image
+                   currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+                   document.getElementById('lightbox-img').src = currentLightboxImages[currentLightboxIndex];
+               }
+           }
 
         function submitAdminTotal() {
             let password = document.getElementById('admin-pass').value;
