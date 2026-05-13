@@ -1458,6 +1458,13 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        .toast-time {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 4px;
+            font-style: italic;
+        }
         
         @media (max-width: 768px) {
             #toast-container {
@@ -2305,6 +2312,10 @@
                                         if (data && data.sponsors && data.sponsors.length > 0) {
                         console.log("📦 Raw sponsor data from script:", data.sponsors);
                         updateSponsorShowcase(data.sponsors);
+                    }
+                    if (data && data.recentActivity) {
+                        liveActivityCache = data.recentActivity;
+                        console.log("📡 Live activity feed:", liveActivityCache.length, "recent items");
                     }
 
                     if (data && data.soldHoles && data.soldHoles.length > 0) {
@@ -3488,39 +3499,81 @@ async function submitDonation() {
             });
         }
 
-// --- Social Proof Toast System ---
-        const toastMessages = [
-            { title: "New Registration", body: "A Foursome just registered!", icon: "🏌️‍♂️", color: "#3498db" },
-            { title: "Donation Received", body: "A generous $100 donation was just made!", icon: "❤️", color: "#e74c3c" },
-            { title: "New Registration", body: "A Twosome just registered!", icon: "🏌️‍♀️", color: "#3498db" }
-        ];
+// --- Live Activity Toast System (Phase 2) — pulls real recent activity from sheet ---
+        let liveActivityCache = [];
+        let toastShuffleQueue = [];  // Tracks which items haven't been shown yet this cycle
 
-        function triggerRandomToast() {
-            const msg = toastMessages[Math.floor(Math.random() * toastMessages.length)];
-            
+        // Converts a millisecond timestamp into a human-readable "X min ago" / "just now" string
+        function humanizeTime(timestamp) {
+            const diff = Date.now() - timestamp;
+            const mins = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            if (diff < 60000) return "just now";
+            if (mins < 60) return mins + " min ago";
+            if (hours < 24) return hours + (hours === 1 ? " hour ago" : " hours ago");
+            return days + (days === 1 ? " day ago" : " days ago");
+        }
+
+        // HTML-escape — defense against weird characters in team names being interpreted as markup
+        function escapeToastHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        function triggerLiveToast() {
+            // No live data → don't show anything (no fake toasts allowed)
+            if (!liveActivityCache || liveActivityCache.length === 0) return;
+
+            // Refill the shuffle queue when empty — ensures every item shows once before any repeat
+            if (toastShuffleQueue.length === 0) {
+                toastShuffleQueue = [...liveActivityCache];
+                // Fisher-Yates shuffle for randomized rotation order
+                for (let i = toastShuffleQueue.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [toastShuffleQueue[i], toastShuffleQueue[j]] = [toastShuffleQueue[j], toastShuffleQueue[i]];
+                }
+            }
+            const item = toastShuffleQueue.pop();
+            if (!item) return;
+
             const container = document.getElementById('toast-container');
+            if (!container) return;
+            
             const toast = document.createElement('div');
             toast.className = 'social-toast';
-            toast.style.borderLeftColor = msg.color;
+            toast.style.borderLeftColor = item.color || '#2ecc71';
+            
+            const safeText = escapeToastHtml(item.text);
+            const safeTitle = escapeToastHtml(item.title);
+            const timeLabel = humanizeTime(item.timestamp);
             
             toast.innerHTML = `
-                <div class="toast-icon" style="background: ${msg.color}20;">${msg.icon}</div>
+                <div class="toast-icon" style="background: ${item.color || '#2ecc71'}20;">${item.icon || '🎉'}</div>
                 <div class="toast-text">
-                    <strong style="color: ${msg.color};">${msg.title}</strong>
-                    <span>${msg.body}</span>
+                    <strong style="color: ${item.color || '#2ecc71'};">${safeTitle}</strong>
+                    <span>${safeText}</span>
+                    <span class="toast-time">${timeLabel}</span>
                 </div>
             `;
             
             container.appendChild(toast);
-            
             setTimeout(() => toast.classList.add('show'), 100);
-            
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 500);
-            }, 5000);
+            }, 5500);
         }
 
+        function startToastEngine() {
+            // Initial delay so the page can settle before the first toast appears
+            setTimeout(() => {
+                triggerLiveToast();
+                // Then rotate every 20–30 seconds (slight randomness so it doesn't feel robotic)
+                setInterval(triggerLiveToast, Math.floor(Math.random() * 10000) + 20000);
+            }, 6000);
+        }
         function startToastEngine() {
             setTimeout(() => {
                 triggerRandomToast();
