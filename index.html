@@ -2636,7 +2636,7 @@
         <h3>📸 Share an Event Photo</h3>
         <p>Capture a moment from the outing and share it with everyone.</p>
         <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">
-      <input type="file" id="photo-upload-input" accept="image/*" style="display: none;" onchange="handlePhotoSelected(this)">
+     <input type="file" id="photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelected(this)">
         <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>
         <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
         <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Photos are reviewed before appearing publicly.</p>
@@ -4665,51 +4665,75 @@ function stopLeaderboardPolling() {
 // =================================================================
 // EVENT PHOTO UPLOAD
 // =================================================================
-function handlePhotoSelected(input) {
-    if (!input.files || input.files.length === 0) return;
-    
-    const file = input.files[0];
-    const statusEl = document.getElementById('photo-upload-status');
-    const nameInput = document.getElementById('photo-uploader-name');
-    const uploaderName = (nameInput && nameInput.value) ? nameInput.value.trim().slice(0, 40) : 'Anonymous';
-    
-    if (file.size > 15 * 1024 * 1024) {
-        statusEl.innerHTML = '<span style="color:#e74c3c;">Photo too large (15MB max).</span>';
-        input.value = '';
-        return;
-    }
-    
-    statusEl.innerHTML = '<span style="color:#f1c40f;">⚙️ Compressing & uploading...</span>';
-    
-    // Reuse the existing compression function with bumped dimensions for photos
-    compressPhotoForUpload(file, (base64, mimeType) => {
-        fetch(GOOGLE_APP_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'upload_photo',
-                imageBase64: base64,
-                mimeType: mimeType,
-                uploaderName: uploaderName
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.result === 'success') {
-                statusEl.innerHTML = '<span style="color:#2ecc71;">✅ Submitted! Your photo will appear after review.</span>';
-                input.value = '';
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ['#f39c12', '#f1c40f', '#ffffff'] });
-                }
-                setTimeout(() => { statusEl.innerHTML = ''; }, 6000);
-            } else {
-                statusEl.innerHTML = '<span style="color:#e74c3c;">Upload failed: ' + (data.error || 'Unknown error') + '</span>';
-            }
-        })
-        .catch(err => {
-            statusEl.innerHTML = '<span style="color:#e74c3c;">Network error. Try again?</span>';
-        });
-    });
-}
+async function handlePhotoSelected(input) {
+       if (!input.files || input.files.length === 0) return;
+       
+       const statusEl = document.getElementById('photo-upload-status');
+       const nameInput = document.getElementById('photo-uploader-name');
+       const uploaderName = (nameInput && nameInput.value) ? nameInput.value.trim().slice(0, 40) : 'Anonymous';
+       
+       // Limit to 5 files maximum
+       const filesToProcess = Array.from(input.files).slice(0, 5);
+       if (input.files.length > 5) {
+           alert("You can only upload up to 5 photos at a time. Only the first 5 will be processed.");
+       }
+
+       let successCount = 0;
+       let failCount = 0;
+
+       for (let i = 0; i < filesToProcess.length; i++) {
+           const file = filesToProcess[i];
+           statusEl.innerHTML = `<span style="color:#f1c40f;">⚙️ Compressing & uploading ${i + 1} of ${filesToProcess.length}...</span>`;
+           
+           if (file.size > 15 * 1024 * 1024) {
+               failCount++;
+               continue; // Skip files that are too large
+           }
+
+           // Await the compression and fetch upload sequentially
+           await new Promise((resolve) => {
+               compressPhotoForUpload(file, (base64, mimeType) => {
+                   fetch(GOOGLE_APP_SCRIPT_URL, {
+                       method: 'POST',
+                       body: JSON.stringify({
+                           action: 'upload_photo',
+                           imageBase64: base64,
+                           mimeType: mimeType,
+                           uploaderName: uploaderName
+                       })
+                   })
+                   .then(r => r.json())
+                   .then(data => {
+                       if (data.result === 'success') successCount++;
+                       else failCount++;
+                       resolve();
+                   })
+                   .catch(err => {
+                       failCount++;
+                       resolve();
+                   });
+               });
+           });
+       }
+
+       input.value = ''; // Clear input buffer
+
+       // Final UI feedback
+       if (successCount > 0) {
+           statusEl.innerHTML = `<span style="color:#2ecc71;">✅ Successfully submitted ${successCount} photo(s) for review!</span>`;
+           if (typeof confetti === 'function') {
+               confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ['#f39c12', '#f1c40f', '#ffffff'] });
+           }
+       } else {
+           statusEl.innerHTML = '';
+       }
+       
+       if (failCount > 0) {
+           statusEl.innerHTML += `<br><span style="color:#e74c3c;">❌ ${failCount} photo(s) failed (e.g., too large or network error).</span>`;
+       }
+
+       setTimeout(() => { statusEl.innerHTML = ''; }, 6000);
+   }
 
 // Photo-specific compressor — larger dimensions than logo compressor, EXIF stripped by canvas re-encode
 function compressPhotoForUpload(file, callback) {
