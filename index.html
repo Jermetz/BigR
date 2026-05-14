@@ -2584,7 +2584,7 @@
                         <div class="form-group" style="margin-bottom: 15px;">
                             <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
                                 <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
-                                <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages.</span>
+                              <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages. Message and data rates may apply. Reply STOP to opt out.</span>
                             </label>
                         </div>
 
@@ -4059,6 +4059,13 @@ function handleSecretAdminClick() {
             let password = document.getElementById('admin-pass').value;
             let phoneNumbers = document.getElementById('admin-sms-numbers').value;
             let body = document.getElementById('admin-sms-body').value;
+            // Ensure Twilio compliance: Append Sender ID and Opt-out language if the admin forgot it
+            if (!body.toLowerCase().includes('big r')) {
+                body = "Big R Golf: " + body;
+            }
+            if (!body.toLowerCase().includes('stop')) {
+                body = body + " Reply STOP to opt out.";
+            }
 
             if (!password) { alert("Please enter the Admin Password."); return; }
             if (!phoneNumbers.trim() || !body.trim()) { alert("Please enter both phone numbers and a message."); return; }
