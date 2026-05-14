@@ -1229,6 +1229,87 @@
             position: relative;
             padding: 10px;
         }
+        /* SOLD HOLE — show sponsor name on hover/tap */
+.map-node.hole-sold {
+    overflow: visible;  /* allow tooltip to escape the circle */
+    position: relative;
+}
+
+.map-node .sponsor-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    color: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.map-node .sponsor-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.95);
+}
+
+.map-node .sponsor-tooltip .tooltip-label {
+    display: block;
+    font-size: 9px;
+    color: #e74c3c;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.map-node:hover .sponsor-tooltip,
+.map-node.tooltip-active .sponsor-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* SOLD HOLE — allow hover/tap on sold holes even though they can't be purchased */
+.map-node.hole-sold {
+    cursor: help;  /* visual hint that something happens on hover */
+}
+
+/* SCARCITY PULSE — when 10+ holes are sold, the remaining open ones pulse to draw the eye */
+.map-node.scarcity-pulse {
+    animation: scarcityPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes scarcityPulse {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(46, 204, 113, 0.7), 0 0 50px rgba(46, 204, 113, 0.3);
+        transform: scale(1.06);
+    }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .map-node.scarcity-pulse { animation: none; }
+}
 
         .map-node {
             position: relative;
@@ -2868,6 +2949,12 @@
                 }
             });
         });
+        // Close any open hole-sponsor tooltips when tapping outside a sold hole
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.map-node.hole-sold')) {
+                document.querySelectorAll('.map-node.tooltip-active').forEach(n => n.classList.remove('tooltip-active'));
+            }
+        });
 
         // --- Sponsorship Segmented Control Logic ---
         function setSponsorIntent(isSponsorOnly) {
@@ -3770,18 +3857,74 @@ if (data && data.eventPhotos) {
                 alert("Network Error: Could not connect to Google Script.");
             });
         }
+function updateHoleSponsorsUI(soldHoles) {
+            if (!Array.isArray(soldHoles)) return;
 
-        function updateHoleSponsorsUI(soldHoles) {
-            soldHoles.forEach(holeNum => {
+            // Track which holes are sold so we can pulse the remaining open ones
+            const soldHoleNumbers = new Set();
+
+            soldHoles.forEach(entry => {
+                // Backwards compatible: accept both old plain-number format AND new {hole, sponsor} object format.
+                // If Apps Script hasn't been redeployed yet, we gracefully fall back to "Sold" with no sponsor name.
+                let holeNum, sponsorName;
+                if (typeof entry === 'number') {
+                    holeNum = entry;
+                    sponsorName = null;
+                } else if (entry && typeof entry === 'object') {
+                    holeNum = entry.hole;
+                    sponsorName = entry.sponsor || null;
+                } else {
+                    return;  // skip malformed entries
+                }
+
                 const card = document.getElementById(`hole-card-${holeNum}`);
                 const status = document.getElementById(`hole-status-${holeNum}`);
-                if (card && status) {
-                    card.classList.add('hole-sold');
-                    card.style.cursor = 'not-allowed';
-                    card.onclick = null;
-                    status.innerText = 'Sold';
+                if (!card || !status) return;
+
+                card.classList.add('hole-sold');
+                card.onclick = null;
+                status.innerText = 'Sold';
+                soldHoleNumbers.add(holeNum);
+
+                // Inject the sponsor tooltip if we have a name
+                if (sponsorName) {
+                    // Remove any existing tooltip first (in case fetchGlobalData polls and re-runs us)
+                    const existing = card.querySelector('.sponsor-tooltip');
+                    if (existing) existing.remove();
+
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'sponsor-tooltip';
+                    tooltip.innerHTML = `<span class="tooltip-label">⛳ Sponsored by</span>${escapeTributeHtml(sponsorName)}`;
+                    card.appendChild(tooltip);
+
+                    // Mobile tap support: toggle the tooltip on tap since hover doesn't work on touch
+                    card.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Close any other open tooltips
+                        document.querySelectorAll('.map-node.tooltip-active').forEach(n => {
+                            if (n !== card) n.classList.remove('tooltip-active');
+                        });
+                        card.classList.toggle('tooltip-active');
+                    });
                 }
             });
+
+            // SCARCITY PULSE — when 10+ of 18 holes are sold, pulse the remaining open ones
+            const SCARCITY_THRESHOLD = 10;
+            if (soldHoleNumbers.size >= SCARCITY_THRESHOLD) {
+                for (let i = 1; i <= 18; i++) {
+                    const card = document.getElementById(`hole-card-${i}`);
+                    if (!card) continue;
+                    if (!soldHoleNumbers.has(i)) {
+                        card.classList.add('scarcity-pulse');
+                    } else {
+                        card.classList.remove('scarcity-pulse');  // defensive: clear on re-poll
+                    }
+                }
+            } else {
+                // Below threshold: ensure no holes are pulsing
+                document.querySelectorAll('.map-node.scarcity-pulse').forEach(n => n.classList.remove('scarcity-pulse'));
+            }
         }
 
         function updatePremiumSponsorsUI(soldPremium) {
