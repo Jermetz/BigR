@@ -1817,6 +1817,106 @@
             border-radius: 50px;
             margin-left: 6px;
         }
+        /* --- Recent Scores Feed --- */
+.recent-scores-feed {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 25px;
+}
+.recent-scores-feed h4 {
+  color: #3498db;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.score-feed-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: #cbd5e1;
+  transition: background 0.2s ease;
+}
+.score-feed-item:last-child { margin-bottom: 0; }
+.score-feed-item .feed-team { font-weight: 600; color: #f8fafc; }
+.score-feed-item .feed-detail { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+.score-feed-item .feed-strokes {
+  font-weight: 800;
+  font-size: 18px;
+  color: #2ecc71;
+  min-width: 32px;
+  text-align: right;
+}
+.score-feed-item.feed-flash {
+  animation: feedFlash 2s ease-out;
+}
+@keyframes feedFlash {
+  0% { background: rgba(46, 204, 113, 0.3); }
+  100% { background: rgba(255, 255, 255, 0.04); }
+}
+
+/* --- Hole-by-Hole Scorecard (expandable row) --- */
+.scorecard-row {
+  display: none;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 0 0 8px 8px;
+}
+.scorecard-row.open { display: table-row; }
+.scorecard-inner {
+  padding: 14px 12px;
+}
+.scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 5px;
+  margin-bottom: 6px;
+}
+.scorecard-cell {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 12px;
+}
+.scorecard-cell .sc-hole {
+  color: #94a3b8;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.scorecard-cell .sc-strokes {
+  font-weight: 700;
+  font-size: 16px;
+  color: #2ecc71;
+}
+.scorecard-cell.sc-empty .sc-strokes { color: #475569; }
+.scorecard-total {
+  text-align: right;
+  font-size: 13px;
+  color: #cbd5e1;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.scorecard-total strong { color: #2ecc71; font-size: 16px; }
+.lb-expand-hint {
+  font-size: 10px;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  float: right;
+  margin-top: 2px;
+}
+tr.lb-team-row { cursor: pointer; }
+tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 /* --- Live Social Proof Toasts --- */
         #toast-container {
             position: fixed;
@@ -3024,15 +3124,9 @@
             </div>
 
             <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
-            <div class="hole-grid">
-                <script>
-                    for(let i=1; i<=18; i++) {
-                        document.write(`
-<div id="abstract-course-map" class="abstract-course-map"></div>
-                        `);
-                    }
-                </script>
-            </div>
+        <div class="hole-grid">
+  <div id="abstract-course-map" class="abstract-course-map"></div>
+</div>
         </section>
         <section id="section-terms" class="content-section">
             <h2>Terms & Privacy Policy</h2>
@@ -4675,7 +4769,28 @@ function handleSecretAdminClick() {
                 submitBtn.innerText = "Submit Registration";
                 return;
             }
-
+// --- CLIENT-SIDE DUPLICATE CHECK ---
+// Warn the user before they hit the server. Non-blocking (just a confirm dialog)
+// because we can't be 100% sure without checking the sheet.
+const primaryEmailInput = document.getElementById('p1-email');
+if (primaryEmailInput && primaryEmailInput.value) {
+  const emailLower = primaryEmailInput.value.trim().toLowerCase();
+  // Store last submitted email in sessionStorage so refreshing the page also warns
+  const lastSubmitted = sessionStorage.getItem('bigR_lastSubmittedEmail');
+  if (lastSubmitted && lastSubmitted === emailLower) {
+    const proceed = confirm(
+      "⚠️ It looks like this email may have already been submitted this session.\n\n" +
+      "Did you mean to register again, or are you refreshing after a successful submission?\n\n" +
+      "Press OK to continue, or Cancel to go back."
+    );
+    if (!proceed) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Submit Registration";
+      return;
+    }
+  }
+}
+// --- END CLIENT-SIDE DUPLICATE CHECK ---
          let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
             
             if (selectedPaymentType === 'Credit/Debit Card' && finalTotal > 0) {
@@ -4796,6 +4911,9 @@ body: JSON.stringify({
                     document.getElementById('success-overlay').style.display = 'flex';
                     document.getElementById('golf-signup-form').reset();
                     clearWizardProgress();  // ← ADD THIS LINE
+                    // Remember this email so a duplicate submission on the same device is caught
+const p1Email = document.getElementById('p1-email');
+if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase());
              } else {
                     throw new Error(data.error || 'Unknown Server Error');
                 }
@@ -5424,84 +5542,166 @@ let lastKnownScoreSignatures = new Map();  // teamId -> "total|holes" signature,
 const SCORING_PHONE_NUMBER = "(888) 621-5658";
 
 function renderLeaderboard(data) {
-    const podiumContainer = document.getElementById('leaderboard-podium-container');
-    const tableContainer = document.getElementById('leaderboard-table-container');
-    const statusEl = document.getElementById('lb-status');
-    const statusText = document.getElementById('lb-status-text');
-    const updateEl = document.getElementById('lb-last-update');
-    const smsDisplay = document.getElementById('sms-number-display');
-    
-    if (smsDisplay) smsDisplay.textContent = 'Text to: ' + SCORING_PHONE_NUMBER;
-    
-    if (!data || !data.teams || data.teams.length === 0) {
-        if (podiumContainer) podiumContainer.innerHTML = '';
-        if (tableContainer) tableContainer.innerHTML = '<div class="lb-empty">⛳ No scores yet — leaderboard will populate as text messages come in.</div>';
-        if (statusEl) { statusEl.classList.add('dormant'); }
-        if (statusText) statusText.textContent = 'Standing By';
-        if (updateEl) updateEl.textContent = 'Waiting for first score...';
-        return;
-    }
-    
-    if (statusEl) statusEl.classList.remove('dormant');
-    if (statusText) statusText.textContent = 'Live';
-    if (updateEl && data.lastUpdate) {
-        const mins = Math.floor((Date.now() - data.lastUpdate) / 60000);
-        updateEl.textContent = mins < 1 ? 'Updated just now' : 'Updated ' + mins + ' min ago';
-    }
-    
-    // Podium (top 3)
-    const top3 = data.teams.slice(0, 3);
-    if (podiumContainer && top3.length > 0) {
-        // Visual order: 2nd-1st-3rd so 1st sits centered/tallest
-        const order = [];
-        if (top3[1]) order.push({ team: top3[1], spot: 'silver', medal: '🥈', rank: 2 });
-        if (top3[0]) order.push({ team: top3[0], spot: 'gold', medal: '🥇', rank: 1 });
-        if (top3[2]) order.push({ team: top3[2], spot: 'bronze', medal: '🥉', rank: 3 });
-        
-        podiumContainer.innerHTML = '<div class="podium-grid">' + order.map(o => `
-            <div class="podium-spot ${o.spot}">
-                <div class="podium-medal">${o.medal}</div>
-                <div class="podium-team-name">${escapeTributeHtml(o.team.name)}</div>
-                <div class="podium-score">${o.team.totalStrokes}</div>
-                <div class="podium-thru">Thru ${o.team.holesPlayed}</div>
-            </div>
-        `).join('') + '</div>';
-    }
-    
-    // Full table — flag any team whose total/holes changed since last render
-    const newSignatures = new Map();
-    const rowsHtml = data.teams.map((team, idx) => {
-        const sig = team.totalStrokes + '|' + team.holesPlayed;
-        newSignatures.set(team.id, sig);
-        const flash = lastKnownScoreSignatures.has(team.id) && lastKnownScoreSignatures.get(team.id) !== sig;
-        return `
-            <tr class="${flash ? 'row-flash' : ''}" data-team="${team.id}">
-                <td class="lb-rank">${idx + 1}</td>
-                <td>${escapeTributeHtml(team.name)}</td>
-                <td class="lb-total">${team.totalStrokes}</td>
-                <td class="lb-thru">Thru ${team.holesPlayed}</td>
-            </tr>
-        `;
-    }).join('');
-    
-    if (tableContainer) {
-        tableContainer.innerHTML = `
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th style="width:40px;">#</th>
-                        <th>Team</th>
-                        <th style="width:80px;">Total</th>
-                        <th style="width:80px;">Thru</th>
-                    </tr>
-                </thead>
-                <tbody>${rowsHtml}</tbody>
-            </table>
-        `;
-    }
-    
-    lastKnownScoreSignatures = newSignatures;
+  const podiumContainer = document.getElementById('leaderboard-podium-container');
+  const tableContainer = document.getElementById('leaderboard-table-container');
+  const statusEl = document.getElementById('lb-status');
+  const statusText = document.getElementById('lb-status-text');
+  const updateEl = document.getElementById('lb-last-update');
+  const smsDisplay = document.getElementById('sms-number-display');
+
+  if (smsDisplay) smsDisplay.textContent = 'Text to: ' + SCORING_PHONE_NUMBER;
+
+  if (!data || !data.teams || data.teams.length === 0) {
+    if (podiumContainer) podiumContainer.innerHTML = '';
+    if (tableContainer) tableContainer.innerHTML = '<div class="lb-empty">⛳ No scores yet — leaderboard will populate as text messages come in.</div>';
+    if (statusEl) statusEl.classList.add('dormant');
+    if (statusText) statusText.textContent = 'Standing By';
+    if (updateEl) updateEl.textContent = 'Waiting for first score...';
+    renderRecentScoresFeed(data && data.recentScores ? data.recentScores : []);
+    return;
+  }
+
+  if (statusEl) statusEl.classList.remove('dormant');
+  if (statusText) statusText.textContent = 'Live';
+  if (updateEl && data.lastUpdate) {
+    const mins = Math.floor((Date.now() - data.lastUpdate) / 60000);
+    updateEl.textContent = mins < 1 ? 'Updated just now' : 'Updated ' + mins + ' min ago';
+  }
+
+  // Podium (top 3) — unchanged
+  const top3 = data.teams.slice(0, 3);
+  if (podiumContainer && top3.length > 0) {
+    const order = [];
+    if (top3[1]) order.push({ team: top3[1], spot: 'silver', medal: '🥈', rank: 2 });
+    if (top3[0]) order.push({ team: top3[0], spot: 'gold', medal: '🥇', rank: 1 });
+    if (top3[2]) order.push({ team: top3[2], spot: 'bronze', medal: '🥉', rank: 3 });
+    podiumContainer.innerHTML = '<div class="podium-grid">' + order.map(o => `
+      <div class="podium-spot ${o.spot}">
+        <div class="podium-medal">${o.medal}</div>
+        <div class="podium-team-name">${escapeTributeHtml(o.team.name)}</div>
+        <div class="podium-score">${o.team.totalStrokes}</div>
+        <div class="podium-thru">Thru ${o.team.holesPlayed}</div>
+      </div>
+    `).join('') + '</div>';
+  }
+
+  // Full table with expandable scorecard rows
+  const newSignatures = new Map();
+  const tableRows = data.teams.map((team, idx) => {
+    const sig = team.totalStrokes + '|' + team.holesPlayed;
+    newSignatures.set(team.id, sig);
+    const flash = lastKnownScoreSignatures.has(team.id) && lastKnownScoreSignatures.get(team.id) !== sig;
+    const scorecardHtml = buildScorecardHtml(team);
+    return `
+      <tr class="lb-team-row ${flash ? 'row-flash' : ''}" data-team="${team.id}" onclick="toggleScorecard('${team.id}')">
+        <td class="lb-rank">${idx + 1}</td>
+        <td>${escapeTributeHtml(team.name)}<span class="lb-expand-hint">▼ tap</span></td>
+        <td class="lb-total">${team.totalStrokes}</td>
+        <td class="lb-thru">Thru ${team.holesPlayed}</td>
+      </tr>
+      <tr class="scorecard-row" id="scorecard-${team.id}">
+        <td colspan="4"><div class="scorecard-inner">${scorecardHtml}</div></td>
+      </tr>
+    `;
+  }).join('');
+
+  if (tableContainer) {
+    tableContainer.innerHTML = `
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>Team</th>
+            <th style="width:80px;">Total</th>
+            <th style="width:80px;">Thru</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    `;
+  }
+
+  lastKnownScoreSignatures = newSignatures;
+
+  // Render recent scores feed below the table
+  renderRecentScoresFeed(data.recentScores || []);
 }
+
+function buildScorecardHtml(team) {
+  const scores = team.scoresByHole || {};
+  // Build two rows of 9 holes each
+  let html = '';
+  for (let half = 0; half < 2; half++) {
+    html += '<div class="scorecard-grid">';
+    for (let h = 1; h <= 9; h++) {
+      const hole = h + (half * 9);
+      const strokes = scores[hole];
+      const hasScore = strokes !== undefined && strokes !== null;
+      html += `
+        <div class="scorecard-cell ${hasScore ? '' : 'sc-empty'}">
+          <div class="sc-hole">H${hole}</div>
+          <div class="sc-strokes">${hasScore ? strokes : '—'}</div>
+        </div>
+      `;
+    }
+    html += '</div>';
+  }
+  html += `<div class="scorecard-total">Total: <strong>${team.totalStrokes}</strong> strokes over <strong>${team.holesPlayed}</strong> holes</div>`;
+  return html;
+}
+
+function toggleScorecard(teamId) {
+  const row = document.getElementById('scorecard-' + teamId);
+  if (!row) return;
+  const isOpen = row.classList.contains('open');
+  // Close all open scorecards first
+  document.querySelectorAll('.scorecard-row.open').forEach(r => r.classList.remove('open'));
+  // Toggle the clicked one (unless it was already open)
+  if (!isOpen) row.classList.add('open');
+}
+
+let knownFeedTimestamps = new Set();
+
+function renderRecentScoresFeed(recentScores) {
+  // Find or create the feed container (insert it after the table)
+  let feedEl = document.getElementById('recent-scores-feed');
+  const tableContainer = document.getElementById('leaderboard-table-container');
+  if (!feedEl && tableContainer) {
+    feedEl = document.createElement('div');
+    feedEl.id = 'recent-scores-feed';
+    feedEl.className = 'recent-scores-feed';
+    tableContainer.insertAdjacentElement('afterend', feedEl);
+  }
+  if (!feedEl) return;
+
+  if (!recentScores || recentScores.length === 0) {
+    feedEl.style.display = 'none';
+    return;
+  }
+
+  feedEl.style.display = 'block';
+
+  const newTimestamps = new Set(recentScores.map(s => s.timestamp + '_' + s.teamId + '_' + s.hole));
+
+  feedEl.innerHTML = '<h4>📬 Recent Scores Received</h4>' +
+    recentScores.map(s => {
+      const key = s.timestamp + '_' + s.teamId + '_' + s.hole;
+      const isNew = !knownFeedTimestamps.has(key);
+      const timeLabel = humanizeTime(s.timestamp);
+      return `
+        <div class="score-feed-item ${isNew ? 'feed-flash' : ''}">
+          <div>
+            <div class="feed-team">${escapeTributeHtml(s.teamName)}</div>
+            <div class="feed-detail">Hole ${s.hole} · ${timeLabel}</div>
+          </div>
+          <div class="feed-strokes">${s.strokes}</div>
+        </div>
+      `;
+    }).join('');
+
+  knownFeedTimestamps = newTimestamps;
+}
+
 
 function startLeaderboardPolling() {
     if (leaderboardPollTimer) return;  // already running
