@@ -2333,7 +2333,73 @@
     .text-scoring-howto .sms-number { font-size: 18px; }
     .event-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 }
+/* Drag and drop styling */
+        .admin-sponsor-tile[draggable="true"] {
+            cursor: grab;
+        }
+        .admin-sponsor-tile[draggable="true"]:active {
+            cursor: grabbing;
+        }
+        /* Spotlight Hover Arrows */
+        .sponsor-spotlight-container {
+            position: relative;
+        }
+        .spotlight-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease, background 0.3s ease, color 0.3s ease;
+            user-select: none;
+        }
+        .sponsor-spotlight-container:hover .spotlight-arrow {
+            opacity: 1;
+        }
+        .spotlight-arrow:hover {
+            background: rgba(241, 196, 15, 0.8);
+            color: #111;
+        }
+        .spotlight-arrow.left { left: 10px; }
+        .spotlight-arrow.right { right: 10px; }
 
+        @media (max-width: 768px) {
+            .spotlight-arrow { opacity: 1; width: 30px; height: 30px; font-size: 18px; background: rgba(0,0,0,0.6); }
+            .spotlight-arrow.left { left: 5px; }
+            .spotlight-arrow.right { right: 5px; }
+        }
+
+        /* Marquee View All Link */
+        .marquee-view-all {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+        }
+        .marquee-view-all:hover {
+            color: #f1c40f;
+        }
+        
+        /* Drag and drop styling */
+        .admin-sponsor-tile[draggable="true"] {
+            cursor: grab;
+        }
+        .admin-sponsor-tile[draggable="true"]:active {
+            cursor: grabbing;
+        }
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
@@ -2411,7 +2477,10 @@
                 <button class="primary-btn" onclick="submitAdminSponsor()">Upload & Sync</button>
                 <p id="admin-loader" class="admin-loader">⚙️ Compressing & Uploading...</p>
                 
-                <label style="margin-top: 20px;">Manage Active Logos</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <label style="margin-top: 0;">Manage Active Logos (Drag to Reorder)</label>
+                    <button id="save-order-btn" class="secondary-btn" style="display: none; padding: 5px 10px; font-size: 11px; background-color: #f39c12; color: #111;" onclick="saveSponsorOrder()">💾 Save Order</button>
+                </div>
                 <div id="admin-sponsor-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 50px;"></div>
             </div>
                 <div class="admin-section">
@@ -2556,12 +2625,17 @@
                 <p class="spotlight-title">⭐ Featured Partners ⭐</p>
                 <p class="spotlight-subtitle">Tap a logo to visit our partner</p>
                 <div class="spotlight-stage" id="spotlight-stage"></div>
+                <div class="spotlight-arrow left" onclick="prevSpotlight()">&#10094;</div>
+                <div class="spotlight-arrow right" onclick="nextSpotlight()">&#10095;</div>
                 <div class="spotlight-dots" id="spotlight-dots"></div>
             </div>
 
             <!-- KEPT: Marquee for "all sponsors" -->
             <div class="sponsor-marquee-container">
-                <p class="marquee-title">Thank You To All Our Sponsors</p>
+                <p class="marquee-title" style="margin-bottom: 5px;">Thank You To All Our Sponsors</p>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <a href="javascript:void(0);" onclick="showSection('sponsors')" class="marquee-view-all">View All Sponsors ➡️</a>
+                </div>
                 <div class="marquee-track" id="marquee-track">
                     <div class="marquee-logo" style="text-align: center; width: 100%;">Sponsors Loading...</div>
                 </div>
@@ -3798,7 +3872,10 @@ if (data && data.eventPhotos) {
                 const dot = document.createElement('button');
                 dot.className = 'spotlight-dot' + (index === 0 ? ' active' : '');
                 dot.setAttribute('aria-label', `Show featured sponsor ${index + 1}`);
-                dot.onclick = () => goToSpotlight(index);
+                dot.onclick = () => {
+                    resetSpotlightTimer();
+                    goToSpotlight(index);
+                };
                 dotsContainer.appendChild(dot);
             });
             
@@ -3810,9 +3887,27 @@ if (data && data.eventPhotos) {
             }
         }
 
-        function rotateSpotlight() {
+       function rotateSpotlight() {
             const next = (currentSpotlightIndex + 1) % featuredSponsorsCache.length;
             goToSpotlight(next);
+        }
+
+        function nextSpotlight() {
+            resetSpotlightTimer();
+            rotateSpotlight();
+        }
+
+        function prevSpotlight() {
+            resetSpotlightTimer();
+            const prev = (currentSpotlightIndex - 1 + featuredSponsorsCache.length) % featuredSponsorsCache.length;
+            goToSpotlight(prev);
+        }
+
+        function resetSpotlightTimer() {
+            if (spotlightRotationTimer) {
+                clearInterval(spotlightRotationTimer);
+                spotlightRotationTimer = setInterval(rotateSpotlight, 4000);
+            }
         }
 
         function goToSpotlight(index) {
@@ -3884,6 +3979,12 @@ if (data && data.eventPhotos) {
                 
                 const tile = document.createElement('div');
                 tile.className = 'admin-sponsor-tile ' + tierClass;
+                tile.draggable = true;
+                tile.dataset.url = sponsor.logo;
+                tile.ondragstart = handleSponsorDragStart;
+                tile.ondragover = handleSponsorDragOver;
+                tile.ondrop = handleSponsorDrop;
+                tile.ondragenter = (e) => e.preventDefault();
                 tile.innerHTML = `
                     <img src="${previewSrc}" style="height: 40px; max-width: 100px; border-radius: 4px; object-fit: contain; background: rgba(255,255,255,0.9); padding: 2px;">
                     <span class="admin-tier-badge ${tierClass}">${tierLabel}</span>
@@ -3894,7 +3995,79 @@ if (data && data.eventPhotos) {
             });
         }
 
+let draggedSponsorTile = null;
 
+        function handleSponsorDragStart(e) {
+            draggedSponsorTile = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+            setTimeout(() => this.style.opacity = '0.4', 0);
+        }
+
+        function handleSponsorDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleSponsorDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (draggedSponsorTile !== this) {
+                const list = document.getElementById('admin-sponsor-list');
+                const tiles = Array.from(list.children);
+                const draggedIdx = tiles.indexOf(draggedSponsorTile);
+                const droppedIdx = tiles.indexOf(this);
+
+                if (draggedIdx < droppedIdx) {
+                    this.parentNode.insertBefore(draggedSponsorTile, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedSponsorTile, this);
+                }
+                document.getElementById('save-order-btn').style.display = 'block';
+            }
+            draggedSponsorTile.style.opacity = '1';
+            return false;
+        }
+
+        document.addEventListener('dragend', function(e) {
+            if (draggedSponsorTile) draggedSponsorTile.style.opacity = '1';
+        });
+
+        function saveSponsorOrder() {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password."); return; }
+
+            const tiles = document.querySelectorAll('.admin-sponsor-tile');
+            const orderedUrls = Array.from(tiles).map(tile => tile.dataset.url);
+
+            document.getElementById('admin-loader').style.display = 'block';
+            document.getElementById('admin-loader').innerText = '💾 Saving new order...';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: "reorder_sponsors",
+                    password: password,
+                    orderedUrls: orderedUrls
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('admin-loader').style.display = 'none';
+                if (data.result === 'success') {
+                    document.getElementById('save-order-btn').style.display = 'none';
+                    updateSponsorShowcase(data.sponsors);
+                    alert("Sponsor order updated successfully!");
+                } else {
+                    alert("Backend Error: " + (data.error || "Check password."));
+                }
+            })
+            .catch(error => {
+                document.getElementById('admin-loader').style.display = 'none';
+                alert("Network Error: Could not connect to Google Script.");
+            });
+        }
         function deleteSponsor(encodedUrl) {
             let password = document.getElementById('admin-pass').value;
             if (!password) { alert("Please enter the Admin Password to delete logos."); return; }
