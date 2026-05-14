@@ -792,7 +792,60 @@
             gap: 15px;
             margin-top: 25px;
         }
+/* Quick-tap donation amount chips */
+.donation-chip-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
 
+.donation-chip {
+    padding: 12px 8px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+}
+
+.donation-chip:hover {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: rgba(231, 76, 60, 0.4);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.donation-chip.active {
+    background: rgba(231, 76, 60, 0.18);
+    border-color: #e74c3c;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.3), inset 0 0 10px rgba(231, 76, 60, 0.1);
+}
+
+.donation-chip-hint {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .donation-chip-row {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+    }
+    .donation-chip { padding: 10px 4px; font-size: 13px; }
+}
         /* Forms and Buttons */
         .player-card {
                background: rgba(255, 255, 255, 0.15);
@@ -1715,13 +1768,15 @@
             border-color: #f39c12;
             background-color: #ffffff;
         }
-        .tribute-char-count {
+      .tribute-char-count {
             font-size: 11px;
             color: #94a3b8;
             text-align: right;
             margin-top: 5px;
+            transition: color 0.2s ease;
         }
-        .tribute-char-count.warn { color: #e74c3c; font-weight: 600; }
+        .tribute-char-count.caution { color: #f1c40f; font-weight: 600; }
+        .tribute-char-count.warn { color: #e74c3c; font-weight: 700; }
 
         /* Admin moderation tile */
         .pending-tribute {
@@ -2691,23 +2746,34 @@
                         <label style="color: #f8fafc; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="anon-donation-checkbox" onchange="toggleAnonymous()" style="width: 18px; height: 18px; padding: 0; flex-shrink: 0; box-shadow: none;"> Make this donation anonymous
                         </label>
+                        <p id="anon-hint" style="display: none; font-size: 12px; color: #f1c40f; margin-top: 8px; margin-left: 26px; font-style: italic; line-height: 1.4;">
+                            Your name won't appear publicly, but we still need your email to send your tax receipt.
+                        </p>
                     </div>
-                    <div id="donor-fields-container">
+                    <div id="donor-name-fields">
                         <div class="form-group">
                             <input type="text" id="donate-first" placeholder="First Name *" required>
                             <input type="text" id="donate-last" placeholder="Last Name *" required>
                         </div>
-                        <div class="form-group">
-                            <input type="email" id="donate-email" placeholder="Email Address *" required>
-                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="donate-email" placeholder="Email Address *" required>
                     </div>
                 </div>
 
                 <div class="player-card">
                     <h3 style="margin-bottom: 15px; color: #cbd5e1;">Donation Amount</h3>
+                    <p class="donation-chip-hint">⚡ Quick Select</p>
+                    <div class="donation-chip-row">
+                        <button type="button" class="donation-chip" onclick="setDonationAmount(25)">$25</button>
+                        <button type="button" class="donation-chip" onclick="setDonationAmount(50)">$50</button>
+                        <button type="button" class="donation-chip" onclick="setDonationAmount(100)">$100</button>
+                        <button type="button" class="donation-chip" onclick="setDonationAmount(250)">$250</button>
+                        <button type="button" class="donation-chip" onclick="setDonationAmount(500)">$500</button>
+                    </div>
                     <div style="display: flex; flex-direction: row; align-items: center; background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding-left: 15px; margin-bottom: 10px;">
                         <span style="font-size: 20px; font-weight: bold; color: #1e293b;">$</span>
-                        <input type="number" id="donation-amount" placeholder="0.00" min="1" step="1" oninput="updateDonationDisplay()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px; width: 100%;">
+                        <input type="number" id="donation-amount" placeholder="Or enter a custom amount" min="1" step="1" oninput="handleDonationAmountInput()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px; width: 100%;">
                     </div>
                 </div>
                 <!-- Optional Tribute Message -->
@@ -4577,24 +4643,60 @@ body: JSON.stringify({
             showSection('home');
         }
 // --- Donation Logic ---
-        function toggleAnonymous() {
+      function toggleAnonymous() {
             const isAnon = document.getElementById('anon-donation-checkbox').checked;
-            const container = document.getElementById('donor-fields-container');
+            const nameFields = document.getElementById('donor-name-fields');
             const first = document.getElementById('donate-first');
             const last = document.getElementById('donate-last');
             const email = document.getElementById('donate-email');
-            
+            const hint = document.getElementById('anon-hint');
+
             if (isAnon) {
-                container.style.display = 'none';
+                // Hide ONLY the name fields. Email stays visible so the donor gets a receipt.
+                nameFields.style.display = 'none';
+                // Fill the name fields with placeholders that the Tribute Wall + activity feed
+                // will recognize as "Anonymous" (Apps Script checks firstName === "Anonymous").
                 first.value = 'Anonymous';
                 last.value = 'Donor';
-                email.value = 'anonymous@bigrgolf.com'; 
+                // Make email field still required + visible — clear it so the user has to type their own.
+                // (If they previously had a value from before checking the box, preserve it.)
+                if (hint) hint.style.display = 'block';
             } else {
-                container.style.display = 'block';
+                nameFields.style.display = 'block';
                 first.value = '';
                 last.value = '';
-                email.value = '';
+                // Don't wipe the email if it has a real value — the user may have already entered it.
+                if (hint) hint.style.display = 'none';
             }
+        }
+        // Quick-tap chip handler — fills the amount input AND highlights the active chip.
+        // Note: amount is the BASE donation (not including the credit card processing fee);
+        // updateDonationDisplay() recalculates the fee + total based on the selected payment method.
+        function setDonationAmount(amount) {
+            const input = document.getElementById('donation-amount');
+            if (input) input.value = amount;
+
+            // Highlight the matching chip, deactivate others
+            document.querySelectorAll('.donation-chip').forEach(chip => {
+                const chipValue = parseInt(chip.textContent.replace(/\D/g, ''), 10);
+                chip.classList.toggle('active', chipValue === amount);
+            });
+
+            updateDonationDisplay();
+        }
+
+        // When the user types into the custom amount field, deactivate all chips
+        // (so a chip doesn't stay highlighted when the value doesn't match).
+        function handleDonationAmountInput() {
+            const input = document.getElementById('donation-amount');
+            const currentValue = parseInt(input.value, 10);
+
+            document.querySelectorAll('.donation-chip').forEach(chip => {
+                const chipValue = parseInt(chip.textContent.replace(/\D/g, ''), 10);
+                chip.classList.toggle('active', chipValue === currentValue);
+            });
+
+            updateDonationDisplay();
         }
         function updateDonationDisplay() {
             const amountInput = document.getElementById('donation-amount').value;
@@ -4983,16 +5085,25 @@ async function submitDonation() {
         // PHASE 3 — TRIBUTE WALL
         // =================================================================
         
-        // Character counter for the donate form's tribute textarea
+      // Character counter for the donate form's tribute textarea
+        // Color progression: gray (default) → yellow caution at 200 → red warn at 250
         function updateTributeCharCount() {
             const ta = document.getElementById('donate-tribute');
             const counter = document.getElementById('tribute-char-count');
             if (!ta || !counter) return;
+
             const len = ta.value.length;
             counter.textContent = len;
-            // Warn visually when close to limit
-            if (len >= 250) counter.parentElement.classList.add('warn');
-            else counter.parentElement.classList.remove('warn');
+
+            const wrap = counter.parentElement;
+            // Always clear both states first to handle the user deleting characters back down
+            wrap.classList.remove('caution', 'warn');
+
+            if (len >= 250) {
+                wrap.classList.add('warn');
+            } else if (len >= 200) {
+                wrap.classList.add('caution');
+            }
         }
 
         // Safe HTML escape — tributes are user content, never inject raw
