@@ -12,7 +12,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-    
+    /* --- Spots Remaining Bar --- */
+.spots-bar-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.spots-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #2ecc71;
+}
+.spots-bar-fill.warn {
+    background: #f39c12;
+}
+.spots-bar-fill.critical {
+    background: #e74c3c;
+    animation: spotsFlicker 1.5s ease-in-out infinite;
+}
+@keyframes spotsFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+.spots-bar-label {
+    font-size: 13px;
+    color: #cbd5e1;
+    text-align: center;
+}
+.spots-bar-label strong {
+    color: #f8fafc;
+}
+.spots-bar-label.warn strong { color: #f39c12; }
+.spots-bar-label.critical strong { color: #e74c3c; }
         * {
             box-sizing: border-box;
             margin: 0;
@@ -2500,6 +2535,98 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         .admin-sponsor-tile[draggable="true"]:active {
             cursor: grabbing;
         }
+        /* --- Personalized Restore Modal --- */
+.restore-summary-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: left;
+}
+.restore-team-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 12px;
+    text-align: center;
+}
+.restore-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.restore-players-list {
+    margin-bottom: 4px;
+}
+.restore-player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.restore-player-row:last-child {
+    border-bottom: none;
+}
+.restore-player-num {
+    font-size: 12px;
+    color: #94a3b8;
+    min-width: 20px;
+}
+.restore-player-name {
+    font-size: 14px;
+    color: #f8fafc;
+    font-weight: 500;
+}
+.restore-primary-tag {
+    font-size: 10px;
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.restore-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 12px 0;
+}
+.restore-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+.restore-meta-label {
+    font-size: 13px;
+    color: #94a3b8;
+}
+.restore-meta-value {
+    font-size: 13px;
+    color: #f8fafc;
+    font-weight: 600;
+}
+.restore-total {
+    color: #2ecc71;
+    font-size: 16px;
+}
+.restore-step-badge {
+    background: rgba(52, 152, 219, 0.15);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    color: #3498db;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
@@ -2511,7 +2638,21 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <button class="primary-btn" style="background-color: #f39c12; color: #111;" onclick="closeValidationModal()">Got It</button>
         </div>
     </div>
-
+<div id="restore-overlay" class="fullscreen-overlay" style="z-index: 100002;">
+    <div class="overlay-card success-card" style="border-color: #3498db; max-width: 480px;">
+        <h2 style="color: #3498db; margin-bottom: 6px;">👋 Welcome back!</h2>
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">We saved your registration progress. Here's where you left off:</p>
+        <div id="restore-modal-body"></div>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+            <button class="primary-btn" style="background-color: #3498db;" onclick="closeRestoreModal()">
+                ✅ Continue Where I Left Off
+            </button>
+            <button class="secondary-btn" style="background-color: transparent; border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 13px; min-height: 40px;" onclick="clearAndStartFresh()">
+                Start Over
+            </button>
+        </div>
+    </div>
+</div>
     
     <div id="success-overlay" class="fullscreen-overlay">
         <div class="overlay-card success-card">
@@ -2548,6 +2689,14 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <button class="secondary-btn" onclick="submitAdminTotal()" style="width: auto;">Save</button>
                 </div>
             </div>
+            <div class="admin-section">
+    <label>Set Max Player Capacity</label>
+    <div style="display: flex; gap: 10px;">
+        <input type="number" id="admin-capacity-input" placeholder="e.g. 144">
+        <button class="secondary-btn" onclick="submitAdminCapacity()" style="width: auto;">Save</button>
+    </div>
+    <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Controls the spots remaining bar on the signup page. Current auto-calculation uses registered player count.</p>
+</div>
 <div class="admin-section">
                 <label>💝 Moderate Tributes <span class="pending-tribute-badge" id="admin-pending-badge" style="display:none;">0</span></label>
                 <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve donor tribute messages before they appear on the public wall.</p>
@@ -2778,7 +2927,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         
                         <div class="player-card" id="team-size-selectors" style="text-align: center; display: block; width: 100%;">
                             <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
-                            
+                            <div id="spots-remaining-bar" style="display:none; margin-bottom: 18px;">
+    <div class="spots-bar-track">
+        <div class="spots-bar-fill" id="spots-bar-fill"></div>
+    </div>
+    <div class="spots-bar-label" id="spots-bar-label"></div>
+</div>
                            <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%;">
     <button type="button" id="select-three-foursomes-btn" class="size-btn" onclick="setPlayerCount(12)">
         <span style="font-size: 28px;">⛳⛳⛳</span>
@@ -3168,7 +3322,28 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         function closeValidationModal() {
             document.getElementById('validation-overlay').style.display = 'none';
         }
+function submitAdminCapacity() {
+    const password = document.getElementById('admin-pass').value;
+    const newCap = document.getElementById('admin-capacity-input').value;
+    if (!password) { alert("Please enter the Admin Password."); return; }
+    if (!newCap || isNaN(newCap) || parseInt(newCap) < 1) { alert("Please enter a valid number."); return; }
 
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "set_capacity", password: password, maxCapacity: parseInt(newCap) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result === 'success') {
+            alert("Max capacity updated to " + data.maxCapacity + " players.");
+            document.getElementById('admin-capacity-input').value = '';
+            fetchGlobalData();
+        } else {
+            alert("Backend Error: " + (data.error || "Check password."));
+        }
+    })
+    .catch(() => alert("Network Error: Could not connect to Google Script."));
+}
         // --- Navigation Logic ---
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -3657,7 +3832,7 @@ function restoreWizardProgress() {
             showSection('signup');
             setTimeout(() => nextWizardStep(targetStep), 100);
             setTimeout(() => {
-                showValidationModal("✅ We saved your progress. Continue where you left off!");
+                showRestoreModal(state);
             }, 600);
         }
 
@@ -3666,7 +3841,68 @@ function restoreWizardProgress() {
 
     return true;
 }
+function showRestoreModal(state) {
+    // Build player name list
+    const playerLines = (state.players || []).map((p, idx) => {
+        const name = ((p.first || '') + ' ' + (p.last || '')).trim();
+        return name ? `<div class="restore-player-row">
+            <span class="restore-player-num">${idx === 0 ? '⭐' : (idx + 1) + '.'}</span>
+            <span class="restore-player-name">${name}${idx === 0 ? ' <span class="restore-primary-tag">Primary</span>' : ''}</span>
+        </div>` : '';
+    }).filter(Boolean).join('');
 
+    const stepLabels = { 1: 'Group Size', 2: 'Player Details', 3: 'Sponsorship', 4: 'Payment' };
+    const stepLabel = stepLabels[state.currentStep] || 'Step ' + state.currentStep;
+    const isSponsorOnly = state.isSponsorOnly;
+    const playerCount = state.players ? state.players.length : 0;
+    const subtotal = isSponsorOnly ? 0 : (playerCount * 175);
+    const sponsorAmount = parseInt(state.sponsorshipLevel) || 0;
+    const grandTotal = subtotal + sponsorAmount;
+    const teamName = state.teamName ? `<div class="restore-team-name">🏌️ ${state.teamName}</div>` : '';
+
+    document.getElementById('restore-modal-body').innerHTML = `
+        <div class="restore-summary-card">
+            ${teamName}
+            <div class="restore-section-label">Players</div>
+            <div class="restore-players-list">
+                ${playerLines || '<div style="color:#94a3b8; font-size:13px;">No names entered yet</div>'}
+            </div>
+            <div class="restore-divider"></div>
+            <div class="restore-meta-row">
+                <span class="restore-meta-label">Registration type</span>
+                <span class="restore-meta-value">${isSponsorOnly ? 'Sponsor Only' : playerCount + ' player' + (playerCount !== 1 ? 's' : '')}</span>
+            </div>
+            ${sponsorAmount > 0 ? `<div class="restore-meta-row">
+                <span class="restore-meta-label">Sponsorship</span>
+                <span class="restore-meta-value">$${sponsorAmount.toLocaleString()}</span>
+            </div>` : ''}
+            <div class="restore-meta-row">
+                <span class="restore-meta-label">Estimated total</span>
+                <span class="restore-meta-value restore-total">$${grandTotal.toLocaleString()}</span>
+            </div>
+            <div class="restore-divider"></div>
+            <div class="restore-meta-row">
+                <span class="restore-meta-label">Saved at step</span>
+                <span class="restore-step-badge">${stepLabel}</span>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('restore-overlay').style.display = 'flex';
+}
+
+function closeRestoreModal() {
+    document.getElementById('restore-overlay').style.display = 'none';
+}
+
+function clearAndStartFresh() {
+    closeRestoreModal();
+    clearWizardProgress();
+    // Reset the form to step 1
+    setPlayerCount(4);
+    nextWizardStep(1);
+    showSection('signup');
+}
 function attachWizardAutosave() {
     const form = document.getElementById('golf-signup-form');
     if (!form) return;
@@ -3724,6 +3960,10 @@ if (data && data.eventPhotos) {
                     if (data && data.soldPremium) {
                         updatePremiumSponsorsUI(data.soldPremium);
                     }
+                    if (data && data.spotsRemaining !== undefined) {
+                        const maxCap = parseInt(data.maxCapacity) || 144;
+                        updateSpotsRemainingUI(data.spotsRemaining, maxCap);
+                    }
                 })
                 .catch(error => console.error("Error fetching global data:", error));
         }
@@ -3762,7 +4002,44 @@ if (data && data.eventPhotos) {
                 window.requestAnimationFrame(step);
             }
         }
+function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
+    const bar = document.getElementById('spots-remaining-bar');
+    const fill = document.getElementById('spots-bar-fill');
+    const label = document.getElementById('spots-bar-label');
+    if (!bar || !fill || !label) return;
 
+    if (spotsRemaining === undefined || spotsRemaining === null || !maxCapacity) {
+        bar.style.display = 'none';
+        return;
+    }
+
+    bar.style.display = 'block';
+
+    const pctFilled = ((maxCapacity - spotsRemaining) / maxCapacity) * 100;
+    fill.style.width = pctFilled + '%';
+
+    // Color thresholds
+    fill.classList.remove('warn', 'critical');
+    label.classList.remove('warn', 'critical');
+
+    if (spotsRemaining <= 8) {
+        fill.classList.add('critical');
+        label.classList.add('critical');
+    } else if (spotsRemaining <= 24) {
+        fill.classList.add('warn');
+        label.classList.add('warn');
+    }
+
+    if (spotsRemaining === 0) {
+        label.innerHTML = '<strong>Tournament is full</strong> — join the waitlist below';
+    } else if (spotsRemaining <= 4) {
+        label.innerHTML = '<strong>' + spotsRemaining + ' spot' + (spotsRemaining !== 1 ? 's' : '') + ' remaining</strong> — register now before it fills up';
+    } else if (spotsRemaining <= 16) {
+        label.innerHTML = 'Only <strong>' + spotsRemaining + ' spots</strong> left out of ' + maxCapacity;
+    } else {
+        label.innerHTML = '<strong>' + spotsRemaining + ' spots</strong> remaining out of ' + maxCapacity;
+    }
+}
         // =================================================================
         // NEW: Unified Sponsor Showcase (handles both old strings & new objects)
         // =================================================================
