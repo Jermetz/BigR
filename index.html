@@ -3904,6 +3904,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         const FUNDRAISING_GOAL = 30000;
         const SQUARE_APP_ID = 'sq0idp-isV5KoeAa_SNzX-6BzC_Cw';
         const SQUARE_LOCATION_ID = 'LJSKDTFSMA0CY';
+        const COST_PER_PERSON = 175;
+        let playerCount = 1;
         let signupCard;
         let donateCard;
         
@@ -5943,8 +5945,6 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             });
         }
         // --- Pricing & Form Logic ---
-        const COST_PER_PERSON = 175;
-        let playerCount = 1;
 
   function handleSponsorshipChange() {
             const sponsorDropdown = document.getElementById('sponsorship-level');
@@ -6142,7 +6142,13 @@ if (foursomeA) {
 }
             const transactionId = 'TX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 let squareToken = "";
-            if (selectedPaymentType === 'Credit/Debit Card') {
+if (selectedPaymentType === 'Credit/Debit Card') {
+                if (!signupCard) {
+                    alert("Payment system is still loading or was blocked by an ad-blocker. Please refresh the page or disable your ad-blocker.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Registration";
+                    return;
+                }
                 const result = await signupCard.tokenize();
                 if (result.status === 'OK') {
                     squareToken = result.token;
@@ -6375,7 +6381,13 @@ async function submitDonation() {
             submitBtn.disabled = true;
             submitBtn.innerText = "Processing...";
     let squareToken = "";
-            if (paymentType === 'Credit/Debit Card') {
+if (paymentType === 'Credit/Debit Card') {
+                if (!donateCard) {
+                    alert("Payment system is still loading or was blocked by an ad-blocker. Please refresh the page or disable your ad-blocker.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit Donation";
+                    return;
+                }
                 const result = await donateCard.tokenize();
                 if (result.status === 'OK') {
                     squareToken = result.token;
