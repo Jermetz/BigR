@@ -12,6 +12,518 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* =================================================================
+   MEMORY WALL — scrapbook-style memorial archive for Ryan
+   ================================================================= */
+.memory-wall-section {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.memory-wall-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.memory-wall-header h2 {
+    color: #f39c12;
+    margin-bottom: 8px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+.memory-wall-header .header-quote {
+    color: #cbd5e1;
+    font-size: 14px;
+    font-style: italic;
+    max-width: 480px;
+    margin: 0 auto 18px;
+    line-height: 1.6;
+    font-family: Georgia, serif;
+}
+.memory-share-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #f39c12, #d35400);
+    color: white;
+    padding: 13px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(243, 156, 18, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+.memory-share-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(243, 156, 18, 0.5);
+}
+
+/* Year filter strip */
+.memory-year-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 25px 0 30px;
+}
+.memory-year-chip {
+    padding: 6px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(243, 156, 18, 0.25);
+    color: #cbd5e1;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+}
+.memory-year-chip:hover {
+    background: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+    border-color: #f39c12;
+}
+.memory-year-chip.active {
+    background: rgba(243, 156, 18, 0.15);
+    border-color: #f39c12;
+    color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.25);
+}
+
+/* Scrapbook grid — masonry-ish using CSS columns */
+.memory-grid {
+    column-count: 3;
+    column-gap: 20px;
+    margin-top: 10px;
+}
+@media (max-width: 900px) {
+    .memory-grid { column-count: 2; }
+}
+@media (max-width: 600px) {
+    .memory-grid { column-count: 1; }
+}
+
+/* Individual memory card — slight random tilt for scrapbook feel */
+.memory-card {
+    break-inside: avoid;
+    background: linear-gradient(180deg, #fdf6e3 0%, #f4e9c8 100%);
+    color: #3d2f1f;
+    border-radius: 4px;
+    padding: 20px 22px 18px;
+    margin-bottom: 22px;
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.35),
+        0 1px 2px rgba(0,0,0,0.2),
+        inset 0 0 40px rgba(139, 90, 43, 0.04);
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: memoryCardFadeIn 0.7s ease-out forwards;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+/* Vary the tilt slightly per card using nth-child for organic scrapbook feel */
+.memory-card:nth-child(3n) { transform: translateY(20px) rotate(-1.1deg); }
+.memory-card:nth-child(3n+1) { transform: translateY(20px) rotate(0.7deg); }
+.memory-card:nth-child(3n+2) { transform: translateY(20px) rotate(-0.4deg); }
+.memory-card.visible:nth-child(3n) { transform: translateY(0) rotate(-1.1deg); }
+.memory-card.visible:nth-child(3n+1) { transform: translateY(0) rotate(0.7deg); }
+.memory-card.visible:nth-child(3n+2) { transform: translateY(0) rotate(-0.4deg); }
+
+.memory-card:hover {
+    transform: translateY(-6px) rotate(0deg) scale(1.02) !important;
+    box-shadow:
+        0 18px 35px rgba(0,0,0,0.5),
+        0 3px 8px rgba(243, 156, 18, 0.3),
+        inset 0 0 40px rgba(139, 90, 43, 0.04);
+    z-index: 5;
+}
+
+/* Decorative "tape" at top of card */
+.memory-card::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 70px;
+    height: 18px;
+    background: rgba(243, 196, 105, 0.65);
+    border-left: 1px dashed rgba(139, 90, 43, 0.2);
+    border-right: 1px dashed rgba(139, 90, 43, 0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    border-radius: 1px;
+}
+
+/* Year ribbon */
+.memory-year-badge {
+    display: inline-block;
+    background: #8b5a2b;
+    color: #fdf6e3;
+    padding: 3px 12px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Photo strip — polaroid style */
+.memory-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 14px;
+}
+.memory-photo {
+    background: white;
+    padding: 6px 6px 18px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+.memory-photo:hover {
+    transform: scale(1.08) rotate(0deg);
+    z-index: 10;
+    position: relative;
+}
+.memory-photo img {
+    display: block;
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+}
+.memory-photo.layout-1 { width: 100%; }
+.memory-photo.layout-1 img { height: 180px; }
+.memory-photo.layout-2 { width: calc(50% - 4px); }
+.memory-photo.layout-3 { width: calc(33.33% - 6px); }
+.memory-photo.layout-3 img { height: 90px; }
+
+/* Memory body text */
+.memory-body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #3d2f1f;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Memory footer — signature line */
+.memory-footer {
+    border-top: 1px dashed rgba(139, 90, 43, 0.3);
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #6b4a25;
+    font-style: italic;
+}
+.memory-author {
+    font-weight: 600;
+    color: #5a3a18;
+}
+.memory-author::before {
+    content: '— ';
+}
+.memory-relationship {
+    color: #8b5a2b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-style: normal;
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes memoryCardFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Empty state */
+.memory-empty {
+    text-align: center;
+    padding: 60px 30px;
+    background: rgba(0,0,0,0.2);
+    border: 1px dashed rgba(243, 156, 18, 0.25);
+    border-radius: 12px;
+    color: #cbd5e1;
+}
+.memory-empty .empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 14px;
+    opacity: 0.6;
+}
+.memory-empty .empty-title {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #f39c12;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.memory-empty p {
+    font-size: 14px;
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+
+/* =================================================================
+   MEMORY SUBMISSION MODAL
+   ================================================================= */
+.memory-submit-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10001;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+.memory-submit-card {
+    background: #1e293b;
+    padding: 32px;
+    border-radius: 16px;
+    border: 2px solid #f39c12;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+}
+.memory-submit-card h2 {
+    color: #f39c12;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-weight: normal;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.memory-submit-card .modal-intro {
+    color: #cbd5e1;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 25px;
+    font-style: italic;
+    font-family: Georgia, serif;
+}
+.memory-field-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #f39c12;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+.memory-submit-card input,
+.memory-submit-card select,
+.memory-submit-card textarea {
+    width: 100%;
+    margin-bottom: 14px;
+}
+.memory-submit-card textarea {
+    padding: 14px;
+    border: 2px solid transparent;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1e293b;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 140px;
+    transition: all 0.3s ease;
+}
+.memory-submit-card textarea:focus {
+    outline: none;
+    border-color: #f39c12;
+    background-color: #ffffff;
+}
+.memory-char-counter {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 14px;
+}
+.memory-char-counter.caution { color: #f1c40f; }
+.memory-char-counter.warn { color: #e74c3c; font-weight: 700; }
+
+.memory-photo-upload-area {
+    border: 2px dashed rgba(243, 156, 18, 0.4);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 14px;
+    background: rgba(243, 156, 18, 0.04);
+}
+.memory-photo-upload-area:hover {
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.08);
+}
+.memory-photo-upload-area p {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 0;
+}
+.memory-photo-upload-area .upload-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+#memory-photo-previews {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.memory-photo-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border: 2px solid rgba(243, 156, 18, 0.3);
+}
+.memory-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.memory-photo-preview .remove-photo {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(231, 76, 60, 0.95);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+}
+
+.memory-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+.memory-modal-actions button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+.memory-modal-actions .submit-btn {
+    background: linear-gradient(135deg, #f39c12, #d35400);
+    color: white;
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+.memory-modal-actions .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(243, 156, 18, 0.6);
+}
+.memory-modal-actions .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+.memory-modal-actions .cancel-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #cbd5e1;
+}
+
+.memory-submit-status {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 13px;
+    min-height: 18px;
+}
+.memory-privacy-note {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 14px;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Admin pending-memory tile */
+.pending-memory {
+    background: rgba(243, 156, 18, 0.08);
+    border-left: 3px solid #f39c12;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.pending-memory .pm-photos {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+.pending-memory .pm-photos img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.pending-memory .pm-body {
+    color: #f8fafc;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-style: italic;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 4px;
+    max-height: 100px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.pending-memory .pm-meta {
+    color: #cbd5e1;
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+.pending-memory .pm-actions {
+    display: flex;
+    gap: 8px;
+}
+.pending-memory .pm-actions button {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px;
+}
     /* --- Spots Remaining Bar --- */
 .spots-bar-track {
     width: 100%;
@@ -2674,6 +3186,49 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <button class="primary-btn" style="background-color: #e74c3c;" onclick="closeDonateSuccess()">Back to Home</button>
         </div>
     </div>
+                <!-- Memory Submission Modal -->
+<div id="memory-submit-modal" class="memory-submit-modal">
+    <div class="memory-submit-card">
+        <h2>Share a Memory of Ryan</h2>
+        <p class="modal-intro">Your story will be added to Ryan's memory wall after a brief review by his family.</p>
+
+        <label class="memory-field-label">Your Name *</label>
+        <input type="text" id="memory-author-name" placeholder="e.g. Mike Mignogna" maxlength="80" required>
+
+        <label class="memory-field-label">Your Email *</label>
+        <input type="email" id="memory-author-email" placeholder="So Ryan's family can reach you if needed" required>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: -10px; margin-bottom: 14px; font-style: italic;">Your email is never shown publicly.</p>
+
+        <label class="memory-field-label">Your Relationship to Ryan (optional)</label>
+        <input type="text" id="memory-relationship" placeholder="e.g. Uncle, Friend, Cousin, Classmate" maxlength="60">
+
+        <label class="memory-field-label">Year This Memory Took Place (optional)</label>
+        <select id="memory-year">
+            <option value="">— Select a year —</option>
+        </select>
+
+        <label class="memory-field-label">Your Memory *</label>
+        <textarea id="memory-body" placeholder="Share a story, a moment, an inside joke, anything that captures Ryan. There are no wrong answers — every memory matters." maxlength="1500" oninput="updateMemoryCharCount()"></textarea>
+        <div class="memory-char-counter"><span id="memory-char-count">0</span> / 1,500</div>
+
+        <label class="memory-field-label">Photos (optional, up to 4)</label>
+        <div class="memory-photo-upload-area" onclick="document.getElementById('memory-photo-input').click()">
+            <span class="upload-icon">📷</span>
+            <p>Tap to add photos from your device</p>
+        </div>
+        <input type="file" id="memory-photo-input" accept="image/*" multiple style="display: none;" onchange="handleMemoryPhotoSelect(this)">
+        <div id="memory-photo-previews"></div>
+
+        <p class="memory-privacy-note">By submitting, you agree that Ryan's family may publicly display this memory on bigrgolf.com.</p>
+
+        <div class="memory-modal-actions">
+            <button class="cancel-btn" onclick="closeMemoryModal()">Cancel</button>
+            <button class="submit-btn" id="memory-submit-btn" onclick="submitMemory()">Submit Memory</button>
+        </div>
+
+        <p class="memory-submit-status" id="memory-submit-status"></p>
+    </div>
+</div>
 <div id="toast-container"></div>
     <div id="admin-overlay" class="fullscreen-overlay">
         <div class="overlay-card admin-card">
@@ -2696,6 +3251,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <button class="secondary-btn" onclick="submitAdminCapacity()" style="width: auto;">Save</button>
     </div>
     <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Controls the spots remaining bar on the signup page. Current auto-calculation uses registered player count.</p>
+</div>
+
+            <div class="admin-section">
+    <label>💭 Moderate Memories <span class="pending-tribute-badge" id="admin-pending-memories-badge" style="display:none;">0</span></label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve memory submissions before they appear on the public Memory Wall.</p>
+    <button class="secondary-btn" onclick="loadPendingMemories()" style="margin-bottom: 10px;">🔍 Load Pending Memories</button>
+    <div id="pending-memories-list" style="margin-top: 10px;"></div>
 </div>
 <div class="admin-section">
                 <label>💝 Moderate Tributes <span class="pending-tribute-badge" id="admin-pending-badge" style="display:none;">0</span></label>
@@ -2789,6 +3351,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <li><a href="javascript:void(0);" onclick="showSection('photos')">📷 <span class="menu-text">Photos</span></a></li>
          <li style="display:none;"><a href="javascript:void(0);" onclick="showSection('leaderboard')">🏆 <span class="menu-text">Leaderboard</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('story')">📖 <span class="menu-text">Ryan's Story</span></a></li>
+            <li><a href="javascript:void(0);" onclick="showSection('memories')">💭 <span class="menu-text">Memories of Ryan</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('sponsors')">🤝 <span class="menu-text">Our Sponsors</span></a></li>
             <li><a href="javascript:void(0);" onclick="showSection('terms')">📝 <span class="menu-text">Terms & Privacy</span></a></li>
         </ul>
@@ -3250,9 +3813,36 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <a href="javascript:void(0);" onclick="showSection('donate')" class="tribute-empty-cta">❤️ Leave a Tribute</a>
                 </div>
             </div>
-
+<!-- Memory Wall teaser at the bottom of Ryan's Story -->
+<div class="tribute-wall-section" style="border-top-color: rgba(243, 156, 18, 0.15);">
+    <div class="memory-wall-header">
+        <h2 style="font-size: 26px;">💭 Share a Memory of Ryan</h2>
+        <p class="header-quote">Have a story, a moment, or a photo that captures Ryan? Add it to our growing memorial archive — every memory matters.</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 8px;">
+            <button class="memory-share-cta" onclick="openMemoryModal()">✍️ Share a Memory</button>
+            <button class="memory-share-cta" style="background: transparent; border: 2px solid #f39c12; color: #f39c12; box-shadow: none;" onclick="showSection('memories')">📖 Read Memory Wall</button>
+        </div>
+    </div>
+</div>
         </section>
+<section id="section-memories" class="content-section">
+    <div class="memory-wall-header">
+        <h2>💭 Memories of Ryan</h2>
+        <p class="header-quote">A living archive of the moments, stories, and small joys that made Ryan who he was. Share yours — we'd love to add it.</p>
+        <button class="memory-share-cta" onclick="openMemoryModal()">✍️ Share a Memory</button>
+    </div>
 
+    <div id="memory-year-filters" class="memory-year-filters"></div>
+
+    <div id="memory-grid" class="memory-grid"></div>
+
+    <div id="memory-empty" class="memory-empty" style="display: none;">
+        <span class="empty-icon">💭</span>
+        <div class="empty-title">No memories shared yet</div>
+        <p>Be the first to add a memory of Ryan to this growing archive.</p>
+        <button class="memory-share-cta" onclick="openMemoryModal()">✍️ Share the First Memory</button>
+    </div>
+</section>
         <section id="section-sponsors" class="content-section">
             <h2>Our Sponsors</h2>
             <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>
@@ -3393,7 +3983,429 @@ function submitAdminCapacity() {
     }
     toggleSponsorOnly();
 }
-
+// =================================================================
+// MEMORY WALL — JavaScript additions
+// Paste this entire block inside your existing <script> tag.
+// I'd suggest placing it right after the tribute moderation functions
+// (moderateTribute) and before the leaderboard code.
+// =================================================================
+ 
+// ----- State for the submission modal -----
+let pendingMemoryPhotos = []; // Array of { base64, mimeType, previewUrl }
+const MEMORY_MAX_PHOTOS = 4;
+const MEMORY_MAX_BODY = 1500;
+ 
+// ----- Open / close the modal -----
+function openMemoryModal() {
+    // Populate the year dropdown (1990 = Ryan's birth year → current year + 5 for forward-looking memories)
+    const yearSelect = document.getElementById('memory-year');
+    if (yearSelect && yearSelect.children.length <= 1) {
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear; y >= 1990; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        }
+    }
+    document.getElementById('memory-submit-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+ 
+function closeMemoryModal() {
+    document.getElementById('memory-submit-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    resetMemoryForm();
+}
+ 
+function resetMemoryForm() {
+    document.getElementById('memory-author-name').value = '';
+    document.getElementById('memory-author-email').value = '';
+    document.getElementById('memory-relationship').value = '';
+    document.getElementById('memory-year').value = '';
+    document.getElementById('memory-body').value = '';
+    document.getElementById('memory-photo-input').value = '';
+    pendingMemoryPhotos = [];
+    renderMemoryPhotoPreviews();
+    updateMemoryCharCount();
+    document.getElementById('memory-submit-status').innerHTML = '';
+}
+ 
+// ----- Character counter -----
+function updateMemoryCharCount() {
+    const body = document.getElementById('memory-body');
+    const counter = document.getElementById('memory-char-count');
+    if (!body || !counter) return;
+    const len = body.value.length;
+    counter.textContent = len.toLocaleString();
+    const wrap = counter.parentElement;
+    wrap.classList.remove('caution', 'warn');
+    if (len >= MEMORY_MAX_BODY - 50) wrap.classList.add('warn');
+    else if (len >= MEMORY_MAX_BODY - 300) wrap.classList.add('caution');
+}
+ 
+// ----- Photo handling for memory submissions -----
+function handleMemoryPhotoSelect(input) {
+    if (!input.files || input.files.length === 0) return;
+ 
+    const slotsLeft = MEMORY_MAX_PHOTOS - pendingMemoryPhotos.length;
+    if (slotsLeft <= 0) {
+        alert(`You can attach up to ${MEMORY_MAX_PHOTOS} photos per memory.`);
+        input.value = '';
+        return;
+    }
+ 
+    const filesToAdd = Array.from(input.files).slice(0, slotsLeft);
+    if (input.files.length > slotsLeft) {
+        alert(`Only ${slotsLeft} more photo${slotsLeft === 1 ? '' : 's'} can fit. Extras were ignored.`);
+    }
+ 
+    filesToAdd.forEach(file => {
+        if (file.size > 15 * 1024 * 1024) {
+            alert(`"${file.name}" is too large (max 15MB).`);
+            return;
+        }
+        compressPhotoForUpload(file, (base64, mimeType) => {
+            const previewUrl = 'data:' + mimeType + ';base64,' + base64;
+            pendingMemoryPhotos.push({ base64, mimeType, previewUrl });
+            renderMemoryPhotoPreviews();
+        });
+    });
+ 
+    input.value = ''; // allow re-selecting the same file
+}
+ 
+function renderMemoryPhotoPreviews() {
+    const container = document.getElementById('memory-photo-previews');
+    if (!container) return;
+    container.innerHTML = pendingMemoryPhotos.map((p, idx) => `
+        <div class="memory-photo-preview">
+            <img src="${p.previewUrl}" alt="Memory photo ${idx + 1}">
+            <button class="remove-photo" onclick="removeMemoryPhoto(${idx})" title="Remove photo">×</button>
+        </div>
+    `).join('');
+}
+ 
+function removeMemoryPhoto(idx) {
+    pendingMemoryPhotos.splice(idx, 1);
+    renderMemoryPhotoPreviews();
+}
+ 
+// ----- Submit the memory -----
+function submitMemory() {
+    const name = document.getElementById('memory-author-name').value.trim();
+    const email = document.getElementById('memory-author-email').value.trim();
+    const relationship = document.getElementById('memory-relationship').value.trim();
+    const year = document.getElementById('memory-year').value;
+    const body = document.getElementById('memory-body').value.trim();
+    const statusEl = document.getElementById('memory-submit-status');
+    const submitBtn = document.getElementById('memory-submit-btn');
+ 
+    // Client-side validation
+    if (!name) {
+        showValidationModal('Please share your name so Ryan\'s family knows who to thank.');
+        return;
+    }
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !EMAIL_REGEX.test(email)) {
+        showValidationModal('Please enter a valid email address. We use it only to reach out if needed — it\'s never shown publicly.');
+        return;
+    }
+    if (!body) {
+        showValidationModal('Your memory text is empty — please share something about Ryan, even a short note.');
+        return;
+    }
+    if (body.length > MEMORY_MAX_BODY) {
+        showValidationModal(`Memories are limited to ${MEMORY_MAX_BODY.toLocaleString()} characters. Please trim it down a bit.`);
+        return;
+    }
+ 
+    // Lock the form
+    submitBtn.disabled = true;
+    submitBtn.innerText = '⏳ Submitting...';
+    statusEl.innerHTML = '<span style="color: #f1c40f;">Sending your memory...</span>';
+ 
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'submit_memory',
+            authorName: name,
+            authorEmail: email,
+            relationship: relationship,
+            year: year,
+            body: body,
+            photos: pendingMemoryPhotos.map(p => ({ base64: p.base64, mimeType: p.mimeType }))
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            statusEl.innerHTML = '<span style="color: #2ecc71; font-weight: 600;">✅ Memory submitted! Ryan\'s family will review it shortly. Thank you for sharing.</span>';
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 60,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#f39c12', '#d35400', '#fdf6e3'],
+                    zIndex: 10002
+                });
+            }
+            setTimeout(closeMemoryModal, 2500);
+        } else {
+            statusEl.innerHTML = '<span style="color: #e74c3c;">❌ ' + (data.error || 'Something went wrong. Please try again.') + '</span>';
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Submit Memory';
+        }
+    })
+    .catch(err => {
+        statusEl.innerHTML = '<span style="color: #e74c3c;">❌ Network error — please try again.</span>';
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Memory';
+    });
+}
+ 
+// =================================================================
+// MEMORY WALL — public display
+// =================================================================
+ 
+let allMemoriesCache = []; // full unfiltered list from server
+let activeMemoryYearFilter = 'all';
+ 
+function renderMemoryWall(memories) {
+    allMemoriesCache = Array.isArray(memories) ? memories : [];
+    renderMemoryYearFilters();
+    applyMemoryYearFilter(activeMemoryYearFilter);
+}
+ 
+function renderMemoryYearFilters() {
+    const filtersEl = document.getElementById('memory-year-filters');
+    if (!filtersEl) return;
+ 
+    // Gather unique years that actually have memories
+    const yearSet = new Set();
+    allMemoriesCache.forEach(m => { if (m.year) yearSet.add(m.year); });
+    const years = Array.from(yearSet).sort((a, b) => b - a); // newest first
+ 
+    if (years.length === 0) {
+        filtersEl.innerHTML = '';
+        return;
+    }
+ 
+    let html = `<button class="memory-year-chip ${activeMemoryYearFilter === 'all' ? 'active' : ''}" onclick="applyMemoryYearFilter('all')">All Years</button>`;
+    years.forEach(y => {
+        html += `<button class="memory-year-chip ${activeMemoryYearFilter == y ? 'active' : ''}" onclick="applyMemoryYearFilter(${y})">${y}</button>`;
+    });
+    filtersEl.innerHTML = html;
+}
+ 
+function applyMemoryYearFilter(year) {
+    activeMemoryYearFilter = year;
+    renderMemoryYearFilters(); // re-render chips to reflect active state
+ 
+    const filtered = year === 'all'
+        ? allMemoriesCache
+        : allMemoriesCache.filter(m => String(m.year) === String(year));
+ 
+    renderMemoryGrid(filtered);
+}
+ 
+function renderMemoryGrid(memories) {
+    const grid = document.getElementById('memory-grid');
+    const empty = document.getElementById('memory-empty');
+    if (!grid || !empty) return;
+ 
+    if (!memories || memories.length === 0) {
+        grid.innerHTML = '';
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+    }
+ 
+    empty.style.display = 'none';
+    grid.style.display = 'block'; // CSS columns layout
+ 
+    grid.innerHTML = memories.map((m, idx) => {
+        const safeName = escapeTributeHtml(m.authorName || 'Anonymous');
+        const safeBody = escapeTributeHtml(m.body || '');
+        const safeRelationship = m.relationship ? escapeTributeHtml(m.relationship) : '';
+        const yearBadge = m.year ? `<span class="memory-year-badge">${m.year}</span>` : '';
+ 
+        // Photo layout based on count
+        let photosHtml = '';
+        if (m.photoUrls && m.photoUrls.length > 0) {
+            const layoutClass = m.photoUrls.length === 1 ? 'layout-1'
+                : m.photoUrls.length === 2 ? 'layout-2'
+                : 'layout-3';
+            photosHtml = '<div class="memory-photos">' +
+                m.photoUrls.map(url => `
+                    <div class="memory-photo ${layoutClass}" onclick="openLightbox('${url.full}')">
+                        <img src="${url.thumb}" alt="Memory photo" loading="lazy">
+                    </div>
+                `).join('') +
+                '</div>';
+        }
+ 
+        return `
+            <div class="memory-card" style="animation-delay: ${Math.min(idx * 0.08, 1.2)}s;">
+                ${yearBadge}
+                ${photosHtml}
+                <div class="memory-body">${safeBody}</div>
+                <div class="memory-footer">
+                    <span class="memory-author">${safeName}</span>
+                    ${safeRelationship ? `<span class="memory-relationship">${safeRelationship}</span>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+ 
+    // Trigger the staggered visible animation
+    setTimeout(() => {
+        document.querySelectorAll('.memory-card').forEach(card => card.classList.add('visible'));
+    }, 50);
+}
+ 
+// =================================================================
+// ADMIN — Memory moderation
+// =================================================================
+ 
+function loadPendingMemories() {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+ 
+    const listEl = document.getElementById('pending-memories-list');
+    if (listEl) listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center;">Loading...</p>';
+ 
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'list_pending_memories', password: password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            renderPendingMemories(data.pending || []);
+        } else {
+            alert('Backend Error: ' + (data.error || 'Check password.'));
+        }
+    })
+    .catch(err => alert('Network Error: ' + err.message));
+}
+ 
+function renderPendingMemories(pending) {
+    const listEl = document.getElementById('pending-memories-list');
+    if (!listEl) return;
+ 
+    if (pending.length === 0) {
+        listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">✅ No pending memories — all caught up.</p>';
+        return;
+    }
+ 
+    listEl.innerHTML = pending.map(m => {
+        const safeBody = escapeTributeHtml(m.body || '');
+        const safeName = escapeTributeHtml(m.authorName || 'Unknown');
+        const safeRel = m.relationship ? escapeTributeHtml(m.relationship) : '';
+        const dateStr = m.timestamp ? new Date(m.timestamp).toLocaleString() : 'Unknown time';
+        const yearStr = m.year ? ` · ${m.year}` : '';
+ 
+        let photosHtml = '';
+        if (m.photoUrls && m.photoUrls.length > 0) {
+            photosHtml = '<div class="pm-photos">' +
+                m.photoUrls.map(url => `<img src="${url.thumb}" onclick="openLightbox('${url.full}')" alt="Pending memory photo">`).join('') +
+                '</div>';
+        }
+ 
+        return `
+            <div class="pending-memory" data-row="${m.rowIndex}">
+                ${photosHtml}
+                <div class="pm-body">"${safeBody}"</div>
+                <div class="pm-meta">— <strong>${safeName}</strong>${safeRel ? ' (' + safeRel + ')' : ''}${yearStr} · ${dateStr}</div>
+                <div class="pm-actions">
+                    <button class="primary-btn" style="background: #27ae60;" onclick="moderateMemory(${m.rowIndex}, 'approved')">✓ Approve</button>
+                    <button class="danger-btn" onclick="moderateMemory(${m.rowIndex}, 'rejected')">✗ Reject</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+ 
+function moderateMemory(rowIndex, decision) {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+ 
+    const tile = document.querySelector(`.pending-memory[data-row="${rowIndex}"]`);
+    if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = true);
+ 
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'moderate_memory',
+            password: password,
+            rowIndex: rowIndex,
+            decision: decision
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            if (tile) {
+                tile.style.transition = 'opacity 0.4s ease';
+                tile.style.opacity = '0';
+                setTimeout(() => tile.remove(), 400);
+            }
+            fetchGlobalData();
+            setTimeout(loadPendingMemories, 500);
+        } else {
+            alert('Backend Error: ' + (data.error || 'Check password.'));
+            if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+        }
+    })
+    .catch(err => {
+        alert('Network Error: ' + err.message);
+        if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+    });
+}
+ 
+// =================================================================
+// HOOK INTO EXISTING fetchGlobalData
+// =================================================================
+// In your existing fetchGlobalData() function, find the .then(data => {...}) block.
+// Add these lines anywhere inside that block (suggested: right after the tributes handling):
+//
+//     if (data && data.memories) {
+//         renderMemoryWall(data.memories);
+//     }
+//     if (data && typeof data.pendingMemoriesCount === "number") {
+//         updatePendingMemoriesBadge(data.pendingMemoriesCount);
+//     }
+//
+// Also add this helper function alongside updatePendingTributesBadge:
+ 
+function updatePendingMemoriesBadge(count) {
+    window.__pendingMemoriesCount = count;
+    // Update visible badge if admin dashboard is open
+    const badge = document.getElementById('admin-pending-memories-badge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+ 
+// =================================================================
+// HOOK INTO handleSecretAdminClick (admin dashboard opening)
+// =================================================================
+// In your existing handleSecretAdminClick() function, after the tribute badge
+// logic, add this parallel block:
+//
+//     const memBadge = document.getElementById('admin-pending-memories-badge');
+//     if (memBadge && window.__pendingMemoriesCount > 0) {
+//         memBadge.textContent = window.__pendingMemoriesCount;
+//         memBadge.style.display = 'inline-block';
+//     } else if (memBadge) {
+//         memBadge.style.display = 'none';
+//     }
 
         function goToSponsorOnly() {
             while(playerCount > 1) {
@@ -3946,6 +4958,12 @@ function debounceWizardSave() {
                             submitBtn.style.backgroundColor = "#f39c12";
                         }
                     }
+                    if (data && data.memories) {
+    renderMemoryWall(data.memories);
+}
+if (data && typeof data.pendingMemoriesCount === "number") {
+    updatePendingMemoriesBadge(data.pendingMemoriesCount);
+}
                     if (data && data.leaderboard) {
     renderLeaderboard(data.leaderboard);
 }
@@ -4590,6 +5608,13 @@ function handleSecretAdminClick() {
                 document.getElementById('admin-overlay').style.display = 'flex';
                 document.getElementById('admin-pass').value = '';
                 document.body.style.overflow = 'hidden';
+                const memBadge = document.getElementById('admin-pending-memories-badge');
+if (memBadge && window.__pendingMemoriesCount > 0) {
+    memBadge.textContent = window.__pendingMemoriesCount;
+    memBadge.style.display = 'inline-block';
+} else if (memBadge) {
+    memBadge.style.display = 'none';
+}
                 
                 // Show pending tribute badge if there are any awaiting review
                 const badge = document.getElementById('admin-pending-badge');
