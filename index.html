@@ -3260,7 +3260,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <button class="secondary-btn" onclick="loadPendingMemories()" style="margin-bottom: 10px;">🔍 Load Pending Memories</button>
     <div id="pending-memories-list" style="margin-top: 10px;"></div>
 </div>
-<div class="admin-section">
+<div class="admin-section" style="display: none;">
                 <label>💝 Moderate Tributes <span class="pending-tribute-badge" id="admin-pending-badge" style="display:none;">0</span></label>
                 <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve donor tribute messages before they appear on the public wall.</p>
                 <button class="secondary-btn" onclick="loadPendingTributes()" style="margin-bottom: 10px;">🔍 Load Pending Tributes</button>
@@ -3671,9 +3671,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         <span style="font-size: 20px; font-weight: bold; color: #1e293b;">$</span>
                         <input type="number" id="donation-amount" placeholder="Or enter a custom amount" min="1" step="1" oninput="handleDonationAmountInput()" style="background: transparent; border: none; box-shadow: none; padding-left: 5px; width: 100%;">
                     </div>
-                </div>
-                <!-- Optional Tribute Message -->
-                <div class="tribute-field">
+          <!-- Optional Tribute Message -->
+                <div class="tribute-field" style="display: none;">
                     <label class="tribute-field-label">💝 Leave a Tribute (Optional)</label>
                     <p class="tribute-field-hint">Dedicate this donation or share a message of support. Approved tributes will appear on our Tribute Wall.</p>
                     <textarea id="donate-tribute" placeholder="e.g., write your Tribute message here" maxlength="280" oninput="updateTributeCharCount()"></textarea>
@@ -3800,8 +3799,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 </div>
             </div>
 
-            <!-- PHASE 3: Tribute Wall -->
-            <div class="tribute-wall-section">
+    <!-- PHASE 3: Tribute Wall -->
+            <div class="tribute-wall-section" style="display: none;">
                 <div class="tribute-wall-header">
                     <h2>💝 Tribute Wall</h2>
                     <p>Messages of love, hope, and remembrance from our community</p>
