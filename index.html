@@ -3004,7 +3004,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
                             
                             <div class="form-group">
-                                <select id="sponsorship-level" onchange="handleSponsorshipChange()">
+                              <select id="sponsorship-level" onchange="handleSponsorshipChange()">
                                     <option value="" disabled selected>- Select a Sponsorship -</option>
                                     <option value="0">No Sponsorship (Golf Only)</option>
                                     <option value="250">Hole Sponsor — $250</option>
@@ -3013,6 +3013,10 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                                     <option value="5000">Platinum Sponsor — $5,000</option>
                                 </select>
                             </div>
+                            <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
+                                <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
+                            </div> 
+                        
                             <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
                         </div>
 
@@ -3739,6 +3743,7 @@ function saveWizardProgress() {
             currentStep: currentWizardStep,
             teamName: document.getElementById('team-name')?.value || '',
             sponsorshipLevel: document.getElementById('sponsorship-level')?.value || '',
+            sponsorDisplayName: document.getElementById('sponsor-display-name')?.value || '',
             selectedHoleNum: selectedHoleNum,
             players: []
         };
@@ -3822,8 +3827,17 @@ function restoreWizardProgress() {
         }
 
         const sponsorDropdown = document.getElementById('sponsorship-level');
+        const nameContainer = document.getElementById('sponsor-name-container');
+        const displayNameInput = document.getElementById('sponsor-display-name');
+        
         if (sponsorDropdown && state.sponsorshipLevel) {
             sponsorDropdown.value = state.sponsorshipLevel;
+            if (state.sponsorshipLevel !== "0" && nameContainer) {
+                nameContainer.style.display = 'block';
+            }
+        }
+        if (displayNameInput && state.sponsorDisplayName) {
+            displayNameInput.value = state.sponsorDisplayName;
         }
         selectedHoleNum = state.selectedHoleNum || null;
 
@@ -4907,20 +4921,23 @@ function handleSecretAdminClick() {
         const COST_PER_PERSON = 175;
         let playerCount = 1;
 
-        function handleSponsorshipChange() {
+  function handleSponsorshipChange() {
             const sponsorDropdown = document.getElementById('sponsorship-level');
             const checkbox = document.getElementById('sponsor-only-checkbox');
+            const nameContainer = document.getElementById('sponsor-name-container');
             
             if (sponsorDropdown && sponsorDropdown.value === "0") {
+                if (nameContainer) nameContainer.style.display = 'none';
                 if (checkbox && checkbox.checked) {
                     setSponsorIntent(false); 
                     return; 
                 }
+            } else if (sponsorDropdown && sponsorDropdown.value !== "") {
+                if (nameContainer) nameContainer.style.display = 'block';
             }
             
             updateCostDisplay();
         }
-
        function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
@@ -5026,8 +5043,13 @@ function handleSecretAdminClick() {
             const sponsorCost = sponsorLevelSelect ? (parseInt(sponsorLevelSelect.value) || 0) : 0;
             let sponsorName = (sponsorLevelSelect && sponsorLevelSelect.value) ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
             
-            if (sponsorCost === 250 && selectedHoleNum) {
+           if (sponsorCost === 250 && selectedHoleNum) {
                 sponsorName = "Assigned Hole #" + selectedHoleNum + " — $250";
+            }
+            
+            const displayInput = document.getElementById('sponsor-display-name');
+            if (displayInput && displayInput.value.trim()) {
+                sponsorName += ` (Display: ${displayInput.value.trim()})`;
             }
             
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
