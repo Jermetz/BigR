@@ -1819,20 +1819,17 @@
                20% { left: 200%; }
                100% { left: 200%; }
            }
-/* --- Abstract Node Map --- */
-       /* --- Interactive Course Map --- */
-        .abstract-course-map {
+.abstract-course-map {
             position: relative;
             width: 100%;
             max-width: 800px;
-            aspect-ratio: 4 / 3; /* Keeps map proportional on all devices */
+            aspect-ratio: 750 / 600; 
             margin: 30px auto 0 auto;
-            /* Replace with your actual Bucks Club map image */
-            background: url('MapFinal.jpg') center/cover no-repeat;
+            background: url('MapFinal.jpg') center/100% 100% no-repeat;
             border-radius: 12px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            overflow: hidden;
+            overflow: visible; 
         }
         /* SOLD HOLE — show sponsor name on hover/tap */
 .map-node.hole-sold {
@@ -1956,7 +1953,19 @@
             letter-spacing: 1px;
             font-weight: bold;
         }
-
+/* Shrink pins on mobile to prevent heavy overlapping */
+        @media (max-width: 768px) {
+            .map-node {
+                width: 32px; 
+                height: 32px;
+            }
+            .map-node .hole-num {
+                font-size: 14px;
+            }
+            .map-node .hole-label {
+                font-size: 7px;
+            }
+        }
 
         /* Remove connector lines on the edges for responsiveness */
         @media (min-width: 769px) {
