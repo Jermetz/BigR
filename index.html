@@ -6601,8 +6601,10 @@ if (paymentType === 'Credit/Debit Card') {
         }
 
 // --- Live Activity Toast System (Phase 2) — pulls real recent activity from sheet ---
-        let liveActivityCache = [];
-        let toastShuffleQueue = [];  // Tracks which items haven't been shown yet this cycle
+              let liveActivityCache = [];
+      let toastShuffleQueue = [];
+      let shownToasts = new Set(); // Tracks items that have already popped up
+
 
         // Converts a millisecond timestamp into a human-readable "X min ago" / "just now" string
         function humanizeTime(timestamp) {
@@ -6627,17 +6629,24 @@ if (paymentType === 'Credit/Debit Card') {
             // No live data → don't show anything (no fake toasts allowed)
             if (!liveActivityCache || liveActivityCache.length === 0) return;
 
-            // Refill the shuffle queue when empty — ensures every item shows once before any repeat
-            if (toastShuffleQueue.length === 0) {
-                toastShuffleQueue = [...liveActivityCache];
-                // Fisher-Yates shuffle for randomized rotation order
-                for (let i = toastShuffleQueue.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [toastShuffleQueue[i], toastShuffleQueue[j]] = [toastShuffleQueue[j], toastShuffleQueue[i]];
-                }
-            }
-            const item = toastShuffleQueue.pop();
-            if (!item) return;
+                    // Refill the queue ONLY with items we haven't shown yet
+          if (toastShuffleQueue.length === 0) {
+              const newItems = liveActivityCache.filter(item => !shownToasts.has(item.timestamp + '_' + item.title));
+              if (newItems.length === 0) return; // Stop popping up if there's nothing new
+
+              toastShuffleQueue = [...newItems];
+              // Fisher-Yates shuffle for randomized rotation order
+              for (let i = toastShuffleQueue.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [toastShuffleQueue[i], toastShuffleQueue[j]] = [toastShuffleQueue[j], toastShuffleQueue[i]];
+              }
+          }
+          const item = toastShuffleQueue.pop();
+          if (!item) return;
+
+          // Mark this specific toast as shown so it never repeats
+          shownToasts.add(item.timestamp + '_' + item.title);
+
 
             const container = document.getElementById('toast-container');
             if (!container) return;
