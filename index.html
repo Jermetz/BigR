@@ -1395,6 +1395,38 @@
     .donation-chip { padding: 10px 4px; font-size: 13px; }
 }
         /* Forms and Buttons */
+        /* TWILIO-COMPLIANT SMS CONSENT BOX */
+.sms-consent-box {
+    background: rgba(52, 152, 219, 0.06);
+    border: 1px solid rgba(52, 152, 219, 0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+}
+.sms-consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+.sms-consent-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    /* Override the global input styles so it doesn't try to stretch */
+    padding: 0 !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+.sms-consent-text {
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+.sms-consent-text strong {
+    color: #3498db;
+    font-size: 13px;
+}
         .player-card {
                background: rgba(255, 255, 255, 0.15);
                border: 1px solid rgba(255, 255, 255, 0.2);
@@ -3572,6 +3604,16 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
        maxlength="14" inputmode="numeric"
        oninput="formatPhoneAsTyping(this)">
                                 </div>
+                                <!-- TWILIO-COMPLIANT SMS CONSENT — must be separate, unchecked, tied to phone field -->
+<div class="sms-consent-box">
+    <label class="sms-consent-label">
+        <input type="checkbox" id="p1-sms-consent" class="sms-consent-checkbox">
+        <span class="sms-consent-text">
+            <strong>📱 Text Message Updates (Optional)</strong><br>
+            By checking this box, I agree to receive informational text messages from Big R Memorial Golf Outing at the phone number provided, including event reminders, schedule updates, and alerts sent via automated technology. Consent is not a condition of registration or purchase. Message frequency varies (approx. 2–6 messages per event). Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe or <strong>HELP</strong> for help. See our <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Privacy Policy</a>.
+        </span>
+    </label>
+</div>
                             </div>
                         </div>
 
@@ -3646,7 +3688,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         <div class="form-group" style="margin-bottom: 15px;">
                             <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
                                 <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
-                              <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages. Message and data rates may apply. Reply STOP to opt out.</span>
+                              <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
                             </label>
                         </div>
 
@@ -3732,7 +3774,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="form-group" style="margin-bottom: 15px;">
                    <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
                       <input type="checkbox" id="terms-checkbox-donate" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
-                        <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>, and consent to receive event-related SMS messages. Message and data rates may apply. Reply STOP to opt out.</span>
+                      <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
                     </label>
                 </div>
                 <div class="form-actions">
@@ -4507,7 +4549,7 @@ function renderFoursomeGroupedPlayers(totalPlayers) {
         for (let p = 0; p < 4; p++) {
             const n = playerNum;
             const isPrimary = (n === 1);
-            playersHtml += `
+          playersHtml += `
                 <div class="player-card">
                     <h3>${isPrimary ? 'Player 1 (Primary Contact)' : 'Player ' + n}</h3>
                     <div class="form-group">
@@ -4523,6 +4565,17 @@ function renderFoursomeGroupedPlayers(totalPlayers) {
                             : `<input type="email" id="p${n}-email" placeholder="Email Address (Optional)">`
                         }
                     </div>
+                    ${isPrimary ? `
+                    <div class="sms-consent-box">
+                        <label class="sms-consent-label">
+                            <input type="checkbox" id="p1-sms-consent" class="sms-consent-checkbox">
+                            <span class="sms-consent-text">
+                                <strong>📱 Text Message Updates (Optional)</strong><br>
+                                By checking this box, I agree to receive informational text messages from Big R Memorial Golf Outing at the phone number provided, including event reminders, schedule updates, and alerts sent via automated technology. Consent is not a condition of registration or purchase. Message frequency varies (approx. 2–6 messages per event). Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe or <strong>HELP</strong> for help. See our <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Privacy Policy</a>.
+                            </span>
+                        </label>
+                    </div>
+                    ` : ''}
                 </div>
             `;
             playerNum++;
@@ -4578,7 +4631,7 @@ function removePlayer() {
         // If we have foursome groups, wipe them entirely and rebuild as a single player
         const groups = container.querySelectorAll('.foursome-group');
         if (groups.length > 0) {
-            container.innerHTML = `
+           container.innerHTML = `
                 <div class="player-card">
                     <h3>Player 1 (Primary Contact)</h3>
                     <div class="form-group" id="team-name-container">
@@ -4593,6 +4646,15 @@ function removePlayer() {
                         <input type="tel" id="p1-phone" placeholder="Mobile Number *" required
                                maxlength="14" inputmode="numeric"
                                oninput="formatPhoneAsTyping(this)">
+                    </div>
+                    <div class="sms-consent-box">
+                        <label class="sms-consent-label">
+                            <input type="checkbox" id="p1-sms-consent" class="sms-consent-checkbox">
+                            <span class="sms-consent-text">
+                                <strong>📱 Text Message Updates (Optional)</strong><br>
+                                By checking this box, I agree to receive informational text messages from Big R Memorial Golf Outing at the phone number provided, including event reminders, schedule updates, and alerts sent via automated technology. Consent is not a condition of registration or purchase. Message frequency varies (approx. 2–6 messages per event). Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe or <strong>HELP</strong> for help. See our <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Privacy Policy</a>.
+                            </span>
+                        </label>
                     </div>
                 </div>
             `;
@@ -4807,11 +4869,12 @@ function saveWizardProgress() {
         };
 
         for (let i = 1; i <= playerCount; i++) {
-            state.players.push({
+state.players.push({
                 first: document.getElementById(`p${i}-first`)?.value || '',
                 last: document.getElementById(`p${i}-last`)?.value || '',
                 email: document.getElementById(`p${i}-email`)?.value || '',
-                phone: i === 1 ? (document.getElementById('p1-phone')?.value || '') : ''
+                phone: i === 1 ? (document.getElementById('p1-phone')?.value || '') : '',
+                smsConsent: i === 1 ? (document.getElementById('p1-sms-consent')?.checked || false) : false
             });
         }
 
@@ -4869,9 +4932,12 @@ function restoreWizardProgress() {
             if (firstEl) firstEl.value = p.first || '';
             if (lastEl) lastEl.value = p.last || '';
             if (emailEl) emailEl.value = p.email || '';
-            if (i === 1) {
+           if (i === 1) {
                 const phoneEl = document.getElementById('p1-phone');
                 if (phoneEl) phoneEl.value = p.phone || '';
+                // Also restore SMS consent
+                const smsEl = document.getElementById('p1-sms-consent');
+                if (smsEl) smsEl.checked = p.smsConsent || false;
             }
         });
 
@@ -6211,6 +6277,11 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                     return;
                 }
             }
+           // Capture SMS consent (Twilio audit trail requirement)
+            const smsConsentCheckbox = document.getElementById('p1-sms-consent');
+            const smsConsent = smsConsentCheckbox ? smsConsentCheckbox.checked : false;
+            const smsConsentTimestamp = smsConsent ? new Date().toISOString() : "";
+            
             let players = [];
             for (let i = 1; i <= playerCount; i++) {
                 let phoneNumber = (i === 1 && document.getElementById('p1-phone')) ? document.getElementById('p1-phone').value : "";
@@ -6222,7 +6293,10 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                     isPrimary: i === 1,
                     paymentType: selectedPaymentType,
                     totalCost: finalTotal,
-                    transactionId: transactionId
+                    transactionId: transactionId,
+                    // Twilio compliance: only on primary contact (they're the one with the phone)
+                    smsConsent: i === 1 ? smsConsent : false,
+                    smsConsentTimestamp: i === 1 ? smsConsentTimestamp : ""
                 });
             }
 
