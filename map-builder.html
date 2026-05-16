@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big R Map Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #111;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        #map-container {
+            position: relative;
+            width: 800px; /* Same max-width as your real site */
+            aspect-ratio: 4 / 3;
+            background: #1e293b;
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: crosshair;
+            flex-shrink: 0;
+        }
+        #map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* Let clicks pass through to the container */
+            user-select: none;
+        }
+        .pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #2ecc71;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        #sidebar {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 350px;
+            background: #000;
+            color: #2ecc71;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: none;
+            box-sizing: border-box;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map-container">
+        <!-- Make sure bucks-club-map.jpg is in the same folder as this file -->
+        <img id="map-image" src="bucks-club-map.jpg" alt="Course Map" onerror="this.style.display='none';">
+    </div>
+
+    <div id="sidebar">
+        <h2>📍 Coordinate Generator</h2>
+        <p>Click the map to place a pin. The code below will update automatically.</p>
+        <p style="color: #cbd5e1; font-size: 14px;" id="status">Placing Hole 1...</p>
+        
+        <textarea id="output" readonly>const holeCoords = [
+
+];</textarea>
+        
+        <button onclick="clearPins()">🗑️ Clear All Pins</button>
+    </div>
+
+    <script>
+        const container = document.getElementById('map-container');
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+        let coords = [];
+
+        container.addEventListener('click', function(e) {
+            if (coords.length >= 18) {
+                alert("You have already placed all 18 holes! Click 'Clear All Pins' to start over.");
+                return;
+            }
+
+            // Calculate percentage based on where the user clicked
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const leftPercent = ((x / rect.width) * 100).toFixed(1);
+            const topPercent = ((y / rect.height) * 100).toFixed(1);
+
+            const holeNum = coords.length + 1;
+            coords.push({ hole: holeNum, top: topPercent, left: leftPercent });
+
+            // Draw the visual pin on the screen
+            const pin = document.createElement('div');
+            pin.className = 'pin';
+            pin.style.left = leftPercent + '%';
+            pin.style.top = topPercent + '%';
+            pin.innerText = holeNum;
+            container.appendChild(pin);
+
+            updateOutput();
+        });
+
+        function updateOutput() {
+            let code = "const holeCoords = [\n";
+            coords.forEach((c, index) => {
+                code += `    { hole: ${c.hole}, top: ${c.top}, left: ${c.left} }`;
+                if (index < coords.length - 1) code += ",";
+                code += "\n";
+            });
+            code += "];";
+            output.value = code;
+
+            if (coords.length < 18) {
+                status.innerText = `Placing Hole ${coords.length + 1}...`;
+            } else {
+                status.innerText = `✅ All 18 holes placed! Copy the code below.`;
+                status.style.color = '#2ecc71';
+            }
+        }
+
+        function clearPins() {
+            coords = [];
+            // Remove all pin elements
+            document.querySelectorAll('.pin').forEach(p => p.remove());
+            updateOutput();
+            status.innerText = "Placing Hole 1...";
+            status.style.color = '#cbd5e1';
+        }
+    </script>
+</body>
+</html>
