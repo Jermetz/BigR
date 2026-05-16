@@ -1969,9 +1969,15 @@
             .map-node:not(.hole-sold) .hole-num {
                 margin-bottom: 0; /* Centers the number perfectly when label is hidden */
             }
-            .map-node.hole-sold .hole-label {
-                font-size: 8px; /* Keeps the 'SOLD' label readable */
-            }
+                  .map-node.hole-sold .hole-label {
+            font-size: 8px;
+            padding: 2px 4px;
+            bottom: -5px;
+        }
+        .map-node.hole-sold .hole-num {
+            margin-bottom: 0; /* Centers the hole number since the label is now floating */
+        }
+
         }
 
 
@@ -1998,9 +2004,20 @@
             opacity: 0.5;
         }
 
-        .map-node.hole-sold .hole-label {
-            color: #e74c3c;
+              .map-node.hole-sold .hole-label {
+            position: absolute;
+            bottom: -6px;
+            background: #e74c3c;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+            z-index: 5;
         }
+
         
                 /* --- Timeline for Ryan's Story --- */
         .timeline {
