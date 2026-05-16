@@ -3574,10 +3574,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <div class="wizard-step-content" id="wizard-step-3">
                         <div class="player-card">
                             <h3>Sponsorship Opportunities</h3>
-                            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
+                                                       <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
                             
+                            <p id="selected-hole-indicator" style="display: none; color: #2ecc71; font-weight: bold; text-align: center; margin-bottom: 15px; background: rgba(46, 204, 113, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.3);">⛳ Sponsoring Hole #<span id="selected-hole-display"></span></p>
+
                             <div class="form-group">
                               <select id="sponsorship-level" onchange="handleSponsorshipChange()">
+
                                     <option value="" disabled selected>- Select a Sponsorship -</option>
                                     <option value="0">No Sponsorship (Golf Only)</option>
                                     <option value="250">Hole Sponsor — $250</option>
@@ -3881,6 +3884,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
 
             <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
+                        <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Tap an open hole on the map below to sponsor it.</p>
+
         <div class="hole-grid">
   <div id="abstract-course-map" class="abstract-course-map"></div>
 </div>
@@ -4628,14 +4633,26 @@ if (sectionId === 'leaderboard') {
 }
         }
 
-        let selectedHoleNum = null;
+                let selectedHoleNum = null;
         function selectSponsorship(levelValue, holeNum = null) {
             selectedHoleNum = holeNum;
             const sponsorDropdown = document.getElementById('sponsorship-level');
             const checkbox = document.getElementById('sponsor-only-checkbox');
+            const holeIndicator = document.getElementById('selected-hole-indicator');
+            const holeDisplay = document.getElementById('selected-hole-display');
             
             if (sponsorDropdown) {
                 sponsorDropdown.value = levelValue;
+                handleSponsorshipChange(); // Trigger this to show the display name input box automatically
+            }
+            
+            if (holeIndicator && holeDisplay) {
+                if (holeNum) {
+                    holeDisplay.innerText = holeNum;
+                    holeIndicator.style.display = 'block';
+                } else {
+                    holeIndicator.style.display = 'none';
+                }
             }
             
             if (checkbox && !checkbox.checked) {
@@ -5955,11 +5972,18 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
         }
         // --- Pricing & Form Logic ---
 
-  function handleSponsorshipChange() {
+    function handleSponsorshipChange() {
             const sponsorDropdown = document.getElementById('sponsorship-level');
             const checkbox = document.getElementById('sponsor-only-checkbox');
             const nameContainer = document.getElementById('sponsor-name-container');
+            const holeIndicator = document.getElementById('selected-hole-indicator');
             
+            // Clear the hole selection indicator if they manually change the dropdown to something else
+            if (sponsorDropdown && sponsorDropdown.value !== "250") {
+                selectedHoleNum = null;
+                if (holeIndicator) holeIndicator.style.display = 'none';
+            }
+
             if (sponsorDropdown && sponsorDropdown.value === "0") {
                 if (nameContainer) nameContainer.style.display = 'none';
                 if (checkbox && checkbox.checked) {
@@ -5972,6 +5996,7 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             
             updateCostDisplay();
         }
+
        function updateCostDisplay() {
             const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
             const playerTotal = isSponsorOnly ? 0 : (playerCount * COST_PER_PERSON);
