@@ -1820,15 +1820,19 @@
                100% { left: 200%; }
            }
 /* --- Abstract Node Map --- */
+       /* --- Interactive Course Map --- */
         .abstract-course-map {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-            max-width: 650px;
-            margin: 30px auto 0 auto;
             position: relative;
-            padding: 10px;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 4 / 3; /* Keeps map proportional on all devices */
+            margin: 30px auto 0 auto;
+            /* Replace with your actual Bucks Club map image */
+            background: url('bucks-club-map.jpg') center/cover no-repeat;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
         /* SOLD HOLE — show sponsor name on hover/tap */
 .map-node.hole-sold {
@@ -1911,13 +1915,13 @@
 @media (prefers-reduced-motion: reduce) {
     .map-node.scarcity-pulse { animation: none; }
 }
-
-        .map-node {
-            position: relative;
-            width: 75px;
-            height: 75px;
+.map-node {
+            position: absolute; /* Allows precise coordinate placement */
+            transform: translate(-50%, -50%); /* Centers the pin exactly on the coordinate */
+            width: 45px; /* Shrunk to fit realistically on the map */
+            height: 45px;
             border-radius: 50%;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             border: 2px solid #2ecc71;
             display: flex;
             flex-direction: column;
@@ -1925,7 +1929,7 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
             z-index: 2;
             text-decoration: none;
         }
@@ -1953,18 +1957,6 @@
             font-weight: bold;
         }
 
-        /* Subtle connecting lines between nodes */
-        .map-node::after {
-            content: '';
-            position: absolute;
-            right: -27px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 25px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: -1;
-        }
 
         /* Remove connector lines on the edges for responsiveness */
         @media (min-width: 769px) {
@@ -7280,20 +7272,42 @@ function moderatePhoto(rowIndex, decision) {
         if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
     });
 }
-        // --- Abstract Course Map Generation ---
+// --- Interactive Course Map Generation ---
         function renderCourseMap() {
             const mapContainer = document.getElementById('abstract-course-map');
             if (!mapContainer) return;
             
+            // X (left) and Y (top) percentages for each hole. 
+            // You can easily tweak these numbers to perfectly align with your background image.
+            const holeCoords = [
+                { hole: 1, top: 80, left: 15 }, { hole: 2, top: 65, left: 10 },
+                { hole: 3, top: 45, left: 15 }, { hole: 4, top: 30, left: 25 },
+                { hole: 5, top: 15, left: 40 }, { hole: 6, top: 25, left: 55 },
+                { hole: 7, top: 10, left: 75 }, { hole: 8, top: 35, left: 80 },
+                { hole: 9, top: 50, left: 65 }, { hole: 10, top: 85, left: 50 },
+                { hole: 11, top: 75, left: 70 }, { hole: 12, top: 60, left: 85 },
+                { hole: 13, top: 45, left: 95 }, { hole: 14, top: 65, left: 55 },
+                { hole: 15, top: 70, left: 35 }, { hole: 16, top: 55, left: 30 },
+                { hole: 17, top: 40, left: 45 }, { hole: 18, top: 85, left: 30 }
+            ];
+
             let html = '';
-            for (let i = 1; i <= 18; i++) {
+            holeCoords.forEach(coord => {
                 html += `
-                <div class="map-node" id="hole-card-${i}" onclick="selectSponsorship('250', ${i})">
-                    <div class="hole-num">${i}</div>
-                    <div class="hole-label" id="hole-status-${i}">Open</div>
+                <div class="map-node" id="hole-card-${coord.hole}" style="top: ${coord.top}%; left: ${coord.left}%;" onclick="selectSponsorship('250', ${coord.hole})">
+                    <div class="hole-num" style="font-size: 16px;">${coord.hole}</div>
+                    <div class="hole-label" id="hole-status-${coord.hole}" style="font-size: 8px;">Open</div>
                 </div>
                 `;
-            }
+            });
+
+            // You can also drop in custom static pins for amenities or contests
+            html += `
+                <div class="map-node" style="top: 85%; left: 85%; background: rgba(52, 152, 219, 0.9); border-color: #2980b9; cursor: help; box-shadow: none;" title="Dual-Tap Draft Beer Station">
+                    <div class="hole-num" style="font-size: 18px; margin-top: 4px;">🍺</div>
+                </div>
+            `;
+
             mapContainer.innerHTML = html;
         }
 document.addEventListener("DOMContentLoaded", () => {
