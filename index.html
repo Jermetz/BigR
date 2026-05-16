@@ -1931,12 +1931,13 @@
             text-decoration: none;
         }
 
-        .map-node:hover {
-            transform: scale(1.15);
+               .map-node:hover {
+            transform: translate(-50%, -50%) scale(1.15);
             box-shadow: 0 0 25px rgba(46, 204, 113, 0.6);
             background: rgba(46, 204, 113, 0.15);
             z-index: 3;
         }
+
 
         .map-node .hole-num {
             font-size: 22px;
@@ -1990,14 +1991,15 @@
         }
         .map-node:last-child::after { display: none; }
 
-        /* Sold State */
+                /* Sold State */
         .map-node.hole-sold {
             border-color: #e74c3c;
             background: rgba(231, 76, 60, 0.05);
             box-shadow: none;
             cursor: not-allowed;
-            transform: none;
+            transform: translate(-50%, -50%);
         }
+
 
         .map-node.hole-sold .hole-num {
             color: #94a3b8;
