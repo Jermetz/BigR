@@ -1953,7 +1953,7 @@
             letter-spacing: 1px;
             font-weight: bold;
         }
-/* Shrink pins on mobile to prevent heavy overlapping */
+        /* Shrink pins on mobile to prevent heavy overlapping */
         @media (max-width: 768px) {
             .map-node {
                 width: 32px; 
@@ -1962,10 +1962,18 @@
             .map-node .hole-num {
                 font-size: 14px;
             }
-            .map-node .hole-label {
-                font-size: 7px;
+            /* Hide the word 'OPEN' on mobile to reduce clutter, but keep 'SOLD' */
+            .map-node:not(.hole-sold) .hole-label {
+                display: none; 
+            }
+            .map-node:not(.hole-sold) .hole-num {
+                margin-bottom: 0; /* Centers the number perfectly when label is hidden */
+            }
+            .map-node.hole-sold .hole-label {
+                font-size: 8px; /* Keeps the 'SOLD' label readable */
             }
         }
+
 
         /* Remove connector lines on the edges for responsiveness */
         @media (min-width: 769px) {
