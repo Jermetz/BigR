@@ -7280,16 +7280,25 @@ function moderatePhoto(rowIndex, decision) {
             // X (left) and Y (top) percentages for each hole. 
             // You can easily tweak these numbers to perfectly align with your background image.
             const holeCoords = [
-                { hole: 1, top: 80, left: 15 }, { hole: 2, top: 65, left: 10 },
-                { hole: 3, top: 45, left: 15 }, { hole: 4, top: 30, left: 25 },
-                { hole: 5, top: 15, left: 40 }, { hole: 6, top: 25, left: 55 },
-                { hole: 7, top: 10, left: 75 }, { hole: 8, top: 35, left: 80 },
-                { hole: 9, top: 50, left: 65 }, { hole: 10, top: 85, left: 50 },
-                { hole: 11, top: 75, left: 70 }, { hole: 12, top: 60, left: 85 },
-                { hole: 13, top: 45, left: 95 }, { hole: 14, top: 65, left: 55 },
-                { hole: 15, top: 70, left: 35 }, { hole: 16, top: 55, left: 30 },
-                { hole: 17, top: 40, left: 45 }, { hole: 18, top: 85, left: 30 }
-            ];
+    { hole: 1, top: 33.0, left: 94.0 },
+    { hole: 2, top: 63.5, left: 82.7 },
+    { hole: 3, top: 73.6, left: 50.2 },
+    { hole: 4, top: 48.9, left: 55.8 },
+    { hole: 5, top: 29.7, left: 50.9 },
+    { hole: 6, top: 54.0, left: 70.3 },
+    { hole: 7, top: 72.8, left: 55.9 },
+    { hole: 8, top: 42.9, left: 78.1 },
+    { hole: 9, top: 25.7, left: 59.3 },
+    { hole: 10, top: 32.0, left: 86.7 },
+    { hole: 11, top: 22.5, left: 65.1 },
+    { hole: 12, top: 48.6, left: 43.8 },
+    { hole: 13, top: 86.9, left: 29.6 },
+    { hole: 14, top: 99.3, left: 32.2 },
+    { hole: 15, top: 66.0, left: 7.6 },
+    { hole: 16, top: 31.3, left: 37.4 },
+    { hole: 17, top: 2.0, left: 43.2 },
+    { hole: 18, top: 1.2, left: 75.9 }
+];
 
             let html = '';
             holeCoords.forEach(coord => {
