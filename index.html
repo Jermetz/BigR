@@ -160,7 +160,107 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
     border-radius: 1px;
 }
-
+/* =================================================================
+   RECENT DONORS STRIP — social proof on the donate page
+   ================================================================= */
+.recent-donors-strip {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.08), rgba(243, 156, 18, 0.06));
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 25px;
+    animation: recentDonorsFadeIn 0.6s ease-out;
+}
+@keyframes recentDonorsFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.recent-donors-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.recent-donors-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e74c3c;
+    box-shadow: 0 0 8px #e74c3c;
+    animation: recentDonorsPulse 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes recentDonorsPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+.recent-donors-label {
+    font-size: 11px;
+    color: #e74c3c;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+.recent-donors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.recent-donor-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    font-size: 13px;
+    transition: background 0.2s ease;
+    opacity: 0;
+    animation: recentDonorSlideIn 0.4s ease-out forwards;
+}
+.recent-donor-item:nth-child(1) { animation-delay: 0.05s; }
+.recent-donor-item:nth-child(2) { animation-delay: 0.15s; }
+.recent-donor-item:nth-child(3) { animation-delay: 0.25s; }
+.recent-donor-item:nth-child(4) { animation-delay: 0.35s; }
+.recent-donor-item:nth-child(5) { animation-delay: 0.45s; }
+@keyframes recentDonorSlideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.recent-donor-item:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+.recent-donor-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+.recent-donor-text {
+    color: #f8fafc;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.recent-donor-time {
+    color: #94a3b8;
+    font-size: 11px;
+    font-style: italic;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.recent-donors-thanks {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+}
+@media (max-width: 480px) {
+    .recent-donor-time { display: none; }
+    .recent-donor-item { font-size: 12px; }
+}
 /* Year ribbon */
 .memory-year-badge {
     display: inline-block;
@@ -897,7 +997,28 @@
             box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
             white-space: nowrap; 
         }
-
+/* Register Now — price hint that sits below the CTA */
+.register-price-hint {
+    text-align: center;
+    margin-top: 12px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    line-height: 1.3;
+}
+.register-price-hint .price-tag {
+    color: #2ecc71;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+}
+.register-price-hint .price-includes {
+    color: #cbd5e1;
+    font-size: 12px;
+    font-style: italic;
+}
         .event-date {
             color: #3498db;
             text-transform: uppercase;
@@ -3468,10 +3589,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <a href="https://www.google.com/maps/search/?api=1&query=The+Bucks+Club,+2600+York+Rd,+Jamison,+PA+18929" target="_blank" class="secondary-btn maps-btn">🗺️ Get Directions</a>
                 <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
             </div>
-            
-                     <div class="action-buttons" style="margin-top: 20px;">
-                <button class="primary-btn" onclick="goToSignup(4)" style="margin-top: 0;">Register Now</button>
-            </div>
+            <div class="action-buttons" style="margin-top: 20px;">
+    <button class="primary-btn" onclick="goToSignup(4)" style="margin-top: 0;">Register Now</button>
+</div>
+<p class="register-price-hint">
+    <span class="price-tag">$175 per player</span>
+    <span class="price-includes">Includes lunch, drinks &amp; awards</span>
+</p>
 
             <div style="margin-top: 10px;">
                 <button class="primary-btn" onclick="goToSponsorOnly()" style="background-color: #f1c40f; color: #111; margin-top: 0;">Sponsor Us</button>
@@ -3702,11 +3826,20 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
         </section>
 
-        <section id="section-donate" class="content-section">
-            <div id="donate-form-container">
-                <img src="Big R Logo.png" alt="Big R Invitational Logo" class="main-logo">
-                <h2>Make a Donation</h2>
-                <p style="margin-bottom: 25px; text-align: center;">Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
+<section id="section-donate" class="content-section">
+    <div id="donate-form-container">
+        <img src="Big R Logo.png" alt="Big R Invitational Logo" class="main-logo">
+        <h2>Make a Donation</h2>
+        <p style="margin-bottom: 20px; text-align: center;">Your contributions help us support mitochondrial disease research and honor Ryan's legacy.</p>
+
+        <!-- Recent donors social-proof strip (populated by JS; hidden if no recent donations) -->
+        <div id="recent-donors-strip" class="recent-donors-strip" style="display: none;">
+            <div class="recent-donors-header">
+                <span class="recent-donors-pulse"></span>
+                <span class="recent-donors-label">Recent Donors</span>
+            </div>
+            <div id="recent-donors-list" class="recent-donors-list"></div>
+        </div>
                 
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Donor Information</h3>
@@ -4711,6 +4844,9 @@ if (sectionId === 'leaderboard') {
 } else {
     stopLeaderboardPolling();
 }
+     if (sectionId === 'donate') {
+    renderRecentDonors();
+}
         }
 
                 let selectedHoleNum = null;
@@ -5086,10 +5222,15 @@ if (data && data.eventPhotos) {
                         console.log("📦 Raw sponsor data from script:", data.sponsors);
                         updateSponsorShowcase(data.sponsors);
                     }
-                    if (data && data.recentActivity) {
-                        liveActivityCache = data.recentActivity;
-                        console.log("📡 Live activity feed:", liveActivityCache.length, "recent items");
-                    }
+           if (data && data.recentActivity) {
+    liveActivityCache = data.recentActivity;
+    console.log("📡 Live activity feed:", liveActivityCache.length, "recent items");
+    // If the donate page is currently visible, refresh the recent-donors strip
+    const donateSection = document.getElementById('section-donate');
+    if (donateSection && donateSection.classList.contains('active')) {
+        renderRecentDonors();
+    }
+}
                     if (data && data.tributes) {
                         renderTributeWall(data.tributes);
                         console.log("💝 Tribute wall:", data.tributes.length, "approved tributes");
@@ -6716,6 +6857,7 @@ if (paymentType === 'Credit/Debit Card') {
                   [toastShuffleQueue[i], toastShuffleQueue[j]] = [toastShuffleQueue[j], toastShuffleQueue[i]];
               }
           }
+            
           const item = toastShuffleQueue.pop();
           if (!item) return;
 
@@ -6750,7 +6892,48 @@ if (paymentType === 'Credit/Debit Card') {
                 setTimeout(() => toast.remove(), 500);
             }, 5500);
         }
+        // =================================================================
+// RECENT DONORS STRIP — social proof on the donate page
+// Reuses liveActivityCache (populated by fetchGlobalData).
+// Apps Script anonymizes names server-side and intentionally OMITS amounts.
+// =================================================================
+function renderRecentDonors() {
+    const strip = document.getElementById('recent-donors-strip');
+    const list = document.getElementById('recent-donors-list');
+    if (!strip || !list) return;
 
+    // Filter cache for donation events using the structured `type` field
+    const donations = (liveActivityCache || []).filter(item => item && item.type === 'donation');
+
+    if (donations.length === 0) {
+        strip.style.display = 'none';
+        return;
+    }
+
+    // Show up to 5 most recent (cache is already sorted newest-first server-side)
+    const recent = donations.slice(0, 5);
+    strip.style.display = 'block';
+
+    list.innerHTML = recent.map(item => {
+        const safeText = escapeToastHtml(item.text || 'Someone made a generous donation');
+        const safeTime = humanizeTime(item.timestamp);
+        const icon = item.icon || '❤️';
+
+        return `
+            <div class="recent-donor-item">
+                <span class="recent-donor-icon">${icon}</span>
+                <span class="recent-donor-text">${safeText}</span>
+                <span class="recent-donor-time">${safeTime}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Remove any existing thank-you line, then add a fresh one
+    strip.querySelectorAll('.recent-donors-thanks').forEach(el => el.remove());
+    list.insertAdjacentHTML('afterend',
+        '<div class="recent-donors-thanks">Thank you to everyone supporting Ryan\'s legacy ❤️</div>'
+    );
+}
         function startToastEngine() {
             // Initial delay so the page can settle before the first toast appears
             setTimeout(() => {
@@ -7493,7 +7676,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
     </script>
 <!-- Mobile CTA -->
-<button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none;">Register Now</button>
+<button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none; flex-direction: column; line-height: 1.2; padding: 10px 20px;">
+    <span style="font-size: 16px; font-weight: 700;">Register Now</span>
+    <span style="font-size: 11px; opacity: 0.9; font-weight: 500; margin-top: 2px;">$175/player · Includes lunch &amp; drinks</span>
+</button>
 
 <!-- Social Footer -->
 <footer id="site-footer" style="background: rgba(0,0,0,0.55); border-top: 1px solid rgba(255,255,255,0.18); padding: 32px 24px 40px; text-align: center; color: #cbd5e1; box-sizing: border-box; margin-left: 60px; width: calc(100% - 60px);">
