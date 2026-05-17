@@ -10,11 +10,118 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+    if (localStorage.getItem('introPlayed') === 'true') {
+        document.documentElement.style.setProperty('--splash-display', 'none');
+    }
+</script>
     
     <style>
         /* =================================================================
    MEMORY WALL — scrapbook-style memorial archive for Ryan
    ================================================================= */
+        .payment-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.payment-card {
+    padding: 16px 12px;
+    background: rgba(15,23,42,0.6);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+}
+.payment-card:hover {
+    background: rgba(30,41,59,0.8);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+.payment-card.active {
+    background: rgba(52,152,219,0.15);
+    border-color: #3498db;
+    box-shadow: 0 0 15px rgba(52,152,219,0.3);
+}
+.payment-card-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+.payment-card-name { font-size: 14px; font-weight: 700; color: #f8fafc; }
+.payment-card-when { font-size: 11px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+@media (max-width: 480px) {
+    .payment-card-icon { font-size: 22px; }
+    .payment-card-name { font-size: 13px; }
+}
+        .step1-card-with-badge {
+    position: relative;
+    padding-top: 36px !important;
+}
+.step1-card-with-badge::before {
+    content: attr(data-badge);
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3498db;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 50px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(52,152,219,0.4);
+}
+.step1-card-with-badge.q2::before {
+    background: #2ecc71;
+    box-shadow: 0 2px 8px rgba(46,204,113,0.4);
+}
+        .share-event-row {
+    background: rgba(52,152,219,0.08);
+    border: 1px solid rgba(52,152,219,0.2);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 30px auto;
+    max-width: 600px;
+    text-align: center;
+}
+.share-event-row h4 {
+    color: #3498db;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+.share-btn-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.share-btn {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 14px;
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #f8fafc;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.share-btn:hover {
+    background: rgba(52,152,219,0.2);
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
 .memory-wall-section {
     margin-top: 50px;
     padding-top: 30px;
@@ -679,7 +786,8 @@
             color: #f8fafc; 
             background-color: #111;
         }
-
+:root { --splash-display: flex; }
+#splash-screen { display: var(--splash-display); }
         /* --- Intro Splash Screen Gate --- */
         #splash-screen {
             position: fixed;
@@ -3352,10 +3460,17 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <h2 id="success-header">⛳ Registration Success!</h2>
            <p id="success-body">Thank you for signing up for the Big R Invitational Golf Outing. We've recorded your details and look forward to seeing you on October 9th!</p>
             <div id="success-payment-instructions" style="margin-bottom: 20px; font-weight: bold; color: #f1c40f;"></div>
-            <div id="tell-foursome-container" style="margin-bottom: 20px;">
-                <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Tell your foursome:</p>
-                <a href="sms:?body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20www.bigrgolf.com" class="secondary-btn" style="text-decoration: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; display: inline-block;">📱 Text Them The Link</a>
-            </div>
+<div id="tell-foursome-container" style="margin-bottom: 20px;">
+    <div style="background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3); border-radius: 12px; padding: 16px;">
+        <p style="font-size: 14px; color: #3498db; font-weight: 700; margin-bottom: 4px;">🎉 Spread the word!</p>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">Invite your foursome to register too:</p>
+        <div class="share-btn-grid">
+            <a class="share-btn" href="sms:?body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20https://bigrgolf.com">📱 Text</a>
+            <a class="share-btn" href="mailto:?subject=Join%20me%20at%20Big%20R&body=I%20just%20registered%20for%20the%20Big%20R%20Invitational!%20Join%20me:%20https://bigrgolf.com">✉️ Email</a>
+            <a class="share-btn" href="https://www.facebook.com/sharer/sharer.php?u=https://bigrgolf.com" target="_blank" rel="noopener">📘 Facebook</a>
+        </div>
+    </div>
+</div>
             <button class="primary-btn" onclick="closeSuccessAndGoHome()">Back to Home</button>
         </div>
     </div>
@@ -3627,6 +3742,15 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
 
             <!-- KEPT: Marquee for "all sponsors" -->
+            <div class="share-event-row">
+    <h4>📣 Spread the Word</h4>
+    <div class="share-btn-grid">
+        <a class="share-btn" href="sms:?body=Join%20me%20at%20the%20Big%20R%20Invitational%20Golf%20Outing!%20https://bigrgolf.com">📱 Text</a>
+        <a class="share-btn" href="mailto:?subject=Big%20R%20Invitational&body=Join%20me%20at%20the%20Big%20R%20Invitational%20Golf%20Outing!%20https://bigrgolf.com">✉️ Email</a>
+        <a class="share-btn" href="https://www.facebook.com/sharer/sharer.php?u=https://bigrgolf.com" target="_blank" rel="noopener">📘 Facebook</a>
+        <button class="share-btn" onclick="copyEventLink(this)">🔗 Copy Link</button>
+    </div>
+</div>
             <div class="sponsor-marquee-container">
                 <p class="marquee-title" style="margin-bottom: 5px;">Thank You To All Our Sponsors</p>
                 <div style="text-align: center; margin-bottom: 15px;">
@@ -3651,18 +3775,19 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 
                                <form id="golf-signup-form">
                     <!-- Progress Bar -->
-                    <div class="wizard-progress">
-                        <div class="progress-step active" id="indicator-1">1</div>
-                        <div class="progress-step" id="indicator-2">2</div>
-                        <div class="progress-step" id="indicator-3">3</div>
-                        <div class="progress-step" id="indicator-4">4</div>
-                    </div>
+<div class="wizard-progress">
+    <div class="progress-step active" id="indicator-1">1</div>
+    <div class="progress-step" id="indicator-2">2</div>
+    <div class="progress-step" id="indicator-3">3</div>
+    <div class="progress-step" id="indicator-4">4</div>
+    <div class="progress-step" id="indicator-5">5</div>
+</div>
 
                     <!-- Step 1: Team setup -->
                                         <div class="wizard-step-content active" id="wizard-step-1">
                         
-                        <div class="player-card" style="text-align: center; display: block; width: 100%;">
-                            <h3 style="margin-bottom: 5px; text-align: center;">Registration Type</h3>
+                       <div class="player-card step1-card-with-badge" data-badge="Question 1 of 2" style="text-align: center; display: block; width: 100%;">
+    <h3 style="margin-bottom: 5px; text-align: center;">Registration Type</h3>
                             <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Are you playing golf, or just looking to sponsor?</p>
                             <div id="sponsor-intent-container" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
                                 <div style="display: flex; gap: 10px; width: 100%;">
@@ -3672,8 +3797,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             </div>
                         </div>
                         
-                        <div class="player-card" id="team-size-selectors" style="text-align: center; display: block; width: 100%;">
-                            <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
+                      <div class="player-card step1-card-with-badge q2" id="team-size-selectors" data-badge="Question 2 of 2" style="text-align: center; display: block; width: 100%;">
+    <h3 style="margin-bottom: 15px; text-align: center;">Select Your Group Size</h3>
                             <div id="spots-remaining-bar" style="display:none; margin-bottom: 18px;">
     <div class="spots-bar-track">
         <div class="spots-bar-fill" id="spots-bar-fill"></div>
@@ -3797,30 +3922,66 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         <div class="player-card">
                             <h3>Payment Information</h3>
                             <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                                <select id="payment-type" required onchange="updatePaymentNote(); updateCostDisplay();">
-                                    <option value="" disabled selected>Select Payment Type *</option>
-                                    <option value="Credit/Debit Card">Credit/Debit Card</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Check">Check</option>
-                                    <option value="Venmo">Venmo</option>
-                                </select>
+                         <select id="payment-type" required onchange="updatePaymentNote(); updateCostDisplay();" style="display:none;">
+    <option value="" disabled selected>Select Payment Type *</option>
+    <option value="Credit/Debit Card">Credit/Debit Card</option>
+    <option value="Cash">Cash</option>
+    <option value="Check">Check</option>
+    <option value="Venmo">Venmo</option>
+</select>
+<div class="payment-card-grid">
+    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
+        <span class="payment-card-icon">💳</span>
+        <div class="payment-card-name">Card</div>
+        <div class="payment-card-when">Pay Now</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Venmo')">
+        <span class="payment-card-icon">📱</span>
+        <div class="payment-card-name">Venmo</div>
+        <div class="payment-card-when">Pay Later</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Cash')">
+        <span class="payment-card-icon">💵</span>
+        <div class="payment-card-name">Cash</div>
+        <div class="payment-card-when">At Event</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Check')">
+        <span class="payment-card-icon">📝</span>
+        <div class="payment-card-name">Check</div>
+        <div class="payment-card-when">At Event</div>
+    </div>
+</div>
                                 <p id="payment-note" class="payment-note"></p>
                                 <div id="sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                                <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
-                              <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
-                            </label>
-                        </div>
-
-                        <div class="wizard-navigation">
-                            <button type="button" class="secondary-btn" onclick="prevWizardStep(3)">⬅️ Back</button>
-                            <button type="submit" id="submit-btn" class="primary-btn" style="background-color: #27ae60;">Submit Registration</button>
-                        </div>
+                      <div class="wizard-navigation">
+    <button type="button" class="secondary-btn" onclick="prevWizardStep(3)">⬅️ Back</button>
+    <button type="button" class="primary-btn" onclick="goToReviewStep()">Next: Review ➡️</button>
+</div>
                     </div>
+                                   <!-- Step 5: Review & Submit -->
+<div class="wizard-step-content" id="wizard-step-5">
+    <h3 style="text-align:center; color:#f8fafc; margin-bottom:8px;">Review Your Registration</h3>
+    <p style="text-align:center; color:#94a3b8; font-size:13px; margin-bottom:20px;">Double-check everything below, then submit.</p>
+
+    <div id="review-summary" style="background:rgba(0,0,0,0.3); border-radius:12px; padding:20px; margin-bottom:20px;">
+        <!-- Filled in by JS -->
+    </div>
+
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label style="color: #cbd5e1; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="terms-checkbox-signup" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;">
+            <span>I have read and agree to the <a href="javascript:void(0);" onclick="showSection('terms')" style="color: #3498db; text-decoration: underline;">Terms & Conditions and Privacy Policy</a>.</span>
+        </label>
+    </div>
+
+    <div class="wizard-navigation">
+        <button type="button" class="secondary-btn" onclick="prevWizardStep(4)">⬅️ Back</button>
+        <button type="submit" id="submit-btn" class="primary-btn" style="background-color: #27ae60;">✓ Submit Registration</button>
+    </div>
+</div>
                 </form>
 
             </div>
@@ -3857,9 +4018,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             <input type="text" id="donate-last" placeholder="Last Name *" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <input type="email" id="donate-email" placeholder="Email Address *" required>
-                    </div>
+                <div class="form-group">
+    <input type="email" id="donate-email" placeholder="Email Address *" required>
+</div>
+<p style="font-size: 12px; color: #94a3b8; margin-top: -8px; margin-bottom: 12px; font-style: italic; padding-left: 4px;">
+    📧 We'll email your tax receipt here
+</p>
                 </div>
 
                 <div class="player-card">
@@ -3887,13 +4051,35 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
                     <div class="form-group" style="flex-direction: column;">
-                        <select id="donate-payment-type" required onchange="updateDonatePaymentNote(); updateDonationDisplay();">
-                            <option value="" disabled selected>Select Payment Type *</option>
-                            <option value="Credit/Debit Card">Credit/Debit Card</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Venmo">Venmo</option>
-                        </select>
+                      <select id="donate-payment-type" required onchange="updateDonatePaymentNote(); updateDonationDisplay();" style="display:none;">
+    <option value="" disabled selected>Select Payment Type *</option>
+    <option value="Credit/Debit Card">Credit/Debit Card</option>
+    <option value="Cash">Cash</option>
+    <option value="Check">Check</option>
+    <option value="Venmo">Venmo</option>
+</select>
+<div class="payment-card-grid">
+    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Credit/Debit Card')">
+        <span class="payment-card-icon">💳</span>
+        <div class="payment-card-name">Card</div>
+        <div class="payment-card-when">Pay Now</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Venmo')">
+        <span class="payment-card-icon">📱</span>
+        <div class="payment-card-name">Venmo</div>
+        <div class="payment-card-when">Pay Later</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Cash')">
+        <span class="payment-card-icon">💵</span>
+        <div class="payment-card-name">Cash</div>
+        <div class="payment-card-when">At Event</div>
+    </div>
+    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Check')">
+        <span class="payment-card-icon">📝</span>
+        <div class="payment-card-name">Check</div>
+        <div class="payment-card-when">At Event</div>
+    </div>
+</div>
                         <p id="donate-payment-note" class="payment-note"></p>
                         <div id="donate-sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                     </div>
@@ -4103,7 +4289,11 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
         </section>
     </main>
-  
+  <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"
+    style="position:fixed; bottom:90px; right:20px; width:44px; height:44px; border-radius:50%;
+    background:rgba(52,152,219,0.9); color:white; border:none; font-size:20px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4); z-index:998; opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease;">↑</button>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
@@ -4116,6 +4306,15 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         let signupCard;
         let donateCard;
         
+        function selectPaymentCard(cardEl, selectId, value) {
+    // Highlight only this card in its grid
+    cardEl.parentElement.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
+    cardEl.classList.add('active');
+    // Set the hidden <select> and fire its existing change handler
+    const select = document.getElementById(selectId);
+    select.value = value;
+    select.dispatchEvent(new Event('change'));
+}
         // --- Validation Modal Logic ---
         function showValidationModal(message) {
             document.getElementById('validation-message').innerText = message;
@@ -4911,7 +5110,100 @@ if (sectionId === 'leaderboard') {
     let errorMessage = "Please fill out all required fields before proceeding.";
     const currentContainer = document.getElementById('wizard-step-' + currentStep);
     const inputs = currentContainer.querySelectorAll('input[required]');
-    
+    // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const url = 'https://bigrgolf.com';
+    const done = () => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+    };
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+    } else {
+        fallbackCopy(url, done);
+    }
+}
+        function goToReviewStep() {
+    // Validate Step 4 first — payment type must be picked
+    const paymentType = document.getElementById('payment-type').value;
+    if (!paymentType) {
+        showValidationModal("Please select a payment method before continuing.");
+        return;
+    }
+    renderReviewSummary();
+    nextWizardStep(5);
+}
+
+function renderReviewSummary() {
+    const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+    const teamName = document.getElementById('team-name')?.value.trim() || '';
+    const sponsorDropdown = document.getElementById('sponsorship-level');
+    const sponsorAmount = sponsorDropdown ? (parseInt(sponsorDropdown.value) || 0) : 0;
+    const sponsorLabel = sponsorDropdown && sponsorDropdown.value
+        ? sponsorDropdown.options[sponsorDropdown.selectedIndex].text
+        : '';
+    const paymentType = document.getElementById('payment-type').value;
+    const total = document.getElementById('total-amount').innerText;
+
+    // Collect player names
+    let playersHtml = '';
+    if (!isSponsorOnly) {
+        for (let i = 1; i <= playerCount; i++) {
+            const first = document.getElementById(`p${i}-first`)?.value.trim() || '';
+            const last = document.getElementById(`p${i}-last`)?.value.trim() || '';
+            const name = (first + ' ' + last).trim();
+            if (name) {
+                playersHtml += `<div style="padding:6px 0; color:#f8fafc; font-size:14px;">
+                    ${i === 1 ? '⭐' : (i + '.')} ${name}${i === 1 ? ' <span style="color:#3498db; font-size:11px; font-weight:600;">PRIMARY</span>' : ''}
+                </div>`;
+            }
+        }
+    }
+
+    const reviewEl = document.getElementById('review-summary');
+    reviewEl.innerHTML = `
+        ${teamName ? `<div style="color:#f1c40f; font-size:16px; font-weight:700; text-align:center; margin-bottom:14px;">🏌️ ${teamName}</div>` : ''}
+
+        ${!isSponsorOnly ? `
+        <div style="margin-bottom:14px;">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Players (${playerCount}) <a href="javascript:void(0)" onclick="prevWizardStep(2)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            ${playersHtml || '<div style="color:#e74c3c; font-size:13px;">⚠️ No players entered</div>'}
+        </div>
+        ` : ''}
+
+        ${sponsorAmount > 0 ? `
+        <div style="margin-bottom:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Sponsorship <a href="javascript:void(0)" onclick="prevWizardStep(3)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            <div style="color:#f8fafc; font-size:14px;">${sponsorLabel}</div>
+        </div>
+        ` : ''}
+
+        <div style="padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Payment <a href="javascript:void(0)" onclick="prevWizardStep(4)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#f8fafc; font-size:14px;">${paymentType}</span>
+                <span style="color:#2ecc71; font-size:20px; font-weight:800;">${total}</span>
+            </div>
+        </div>
+    `;
+}
+function fallbackCopy(text, callback) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(ta);
+}
     // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
     const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -4964,6 +5256,102 @@ if (isValid) {
     } else {
         showValidationModal(errorMessage);
     }
+}
+        // =================================================================
+// Share / Copy / Review helpers (must be at top level, not nested)
+// =================================================================
+function copyEventLink(btn) {
+    const url = 'https://bigrgolf.com';
+    const done = () => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+    };
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+    } else {
+        fallbackCopy(url, done);
+    }
+}
+
+function fallbackCopy(text, callback) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(ta);
+}
+
+function goToReviewStep() {
+    const paymentType = document.getElementById('payment-type').value;
+    if (!paymentType) {
+        showValidationModal("Please select a payment method before continuing.");
+        return;
+    }
+    renderReviewSummary();
+    nextWizardStep(5);
+}
+
+function renderReviewSummary() {
+    const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+    const teamName = document.getElementById('team-name')?.value.trim() || '';
+    const sponsorDropdown = document.getElementById('sponsorship-level');
+    const sponsorAmount = sponsorDropdown ? (parseInt(sponsorDropdown.value) || 0) : 0;
+    const sponsorLabel = sponsorDropdown && sponsorDropdown.value
+        ? sponsorDropdown.options[sponsorDropdown.selectedIndex].text
+        : '';
+    const paymentType = document.getElementById('payment-type').value;
+    const total = document.getElementById('total-amount').innerText;
+
+    let playersHtml = '';
+    if (!isSponsorOnly) {
+        for (let i = 1; i <= playerCount; i++) {
+            const first = document.getElementById(`p${i}-first`)?.value.trim() || '';
+            const last = document.getElementById(`p${i}-last`)?.value.trim() || '';
+            const name = (first + ' ' + last).trim();
+            if (name) {
+                playersHtml += `<div style="padding:6px 0; color:#f8fafc; font-size:14px;">
+                    ${i === 1 ? '⭐' : (i + '.')} ${name}${i === 1 ? ' <span style="color:#3498db; font-size:11px; font-weight:600;">PRIMARY</span>' : ''}
+                </div>`;
+            }
+        }
+    }
+
+    const reviewEl = document.getElementById('review-summary');
+    reviewEl.innerHTML = `
+        ${teamName ? `<div style="color:#f1c40f; font-size:16px; font-weight:700; text-align:center; margin-bottom:14px;">🏌️ ${teamName}</div>` : ''}
+
+        ${!isSponsorOnly ? `
+        <div style="margin-bottom:14px;">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Players (${playerCount}) <a href="javascript:void(0)" onclick="prevWizardStep(2)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            ${playersHtml || '<div style="color:#e74c3c; font-size:13px;">⚠️ No players entered</div>'}
+        </div>
+        ` : ''}
+
+        ${sponsorAmount > 0 ? `
+        <div style="margin-bottom:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Sponsorship <a href="javascript:void(0)" onclick="prevWizardStep(3)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            <div style="color:#f8fafc; font-size:14px;">${sponsorLabel}</div>
+        </div>
+        ` : ''}
+
+        <div style="padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
+                Payment <a href="javascript:void(0)" onclick="prevWizardStep(4)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#f8fafc; font-size:14px;">${paymentType}</span>
+                <span style="color:#2ecc71; font-size:20px; font-weight:800;">${total}</span>
+            </div>
+        </div>
+    `;
 }
 
 // =================================================================
@@ -7640,6 +8028,15 @@ function moderatePhoto(rowIndex, decision) {
 
             mapContainer.innerHTML = html;
         }
+        window.addEventListener('scroll', () => {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    const showIt = window.scrollY > 600 &&
+                   !document.getElementById('section-signup').classList.contains('active') &&
+                   !document.getElementById('section-donate').classList.contains('active');
+    btn.style.opacity = showIt ? '1' : '0';
+    btn.style.pointerEvents = showIt ? 'auto' : 'none';
+});
 document.addEventListener("DOMContentLoaded", () => {
     if (window.Square) {
         const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
