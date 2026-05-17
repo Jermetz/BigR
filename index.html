@@ -10,11 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script>
-    if (localStorage.getItem('introPlayed') === 'true') {
-        document.documentElement.style.setProperty('--splash-display', 'none');
-    }
-</script>
+
     
     <style>
         /* =================================================================
@@ -786,23 +782,22 @@
             color: #f8fafc; 
             background-color: #111;
         }
-:root { --splash-display: flex; }
-#splash-screen { display: var(--splash-display); }
+
         /* --- Intro Splash Screen Gate --- */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #000;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-        }
+      #splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+}
 
         #gate-content {
             position: absolute;
