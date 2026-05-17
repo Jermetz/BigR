@@ -3590,7 +3590,14 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 </div>
                 <div id="admin-sponsor-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 50px;"></div>
             </div>
+            <div class="admin-section">
+    <label>📋 Event Day Roster</label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Download a CSV of every registered player — team, name, email, phone, payment status. Open it in Excel or print directly for check-in.</p>
+    <button class="primary-btn" onclick="downloadPlayersCSV()" style="background-color: #2ecc71;">⬇️ Download Players CSV</button>
+    <p id="csv-download-status" style="font-size: 12px; color: #94a3b8; margin-top: 8px; min-height: 16px;"></p>
+</div>
                 <div class="admin-section">
+                    
                 <label>Email Blast to All Players</label>
                 <input type="text" id="admin-email-subject" placeholder="Subject (e.g., Rain Delay, Rules)" style="width: 100%; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; background-color: rgba(255, 255, 255, 0.9);">
                 <textarea id="admin-email-body" placeholder="Type your message here..." style="width: 100%; height: 80px; margin-bottom: 10px; padding: 10px; font-size: 14px; border-radius: 4px; border: none; resize: vertical; background-color: rgba(255, 255, 255, 0.9); font-family: 'Inter', sans-serif;"></textarea>
@@ -4297,6 +4304,27 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
+        // =================================================================
+// Route native alert() and confirm() through styled modals
+// Lets us keep all existing alert("...") calls but show pretty UI
+// =================================================================
+window.alert = function(message) {
+    if (typeof showValidationModal === 'function') {
+        showValidationModal(String(message));
+    } else {
+        // Modal not ready yet (very early page load) — fall back to native
+        window.__nativeAlert(String(message));
+    }
+};
+
+// Preserve a reference to the original in case we ever need it
+window.__nativeAlert = Window.prototype.alert || function(){};
+
+// For confirm() — we need to keep it synchronous because lots of code does
+// `if (!confirm(...)) return;` — so we keep a styled version that uses
+// the browser's native confirm under the hood, but only show it after the
+// user explicitly clicks something (so it never feels like a hijack).
+// If you want fully custom confirms later, this is where to swap them in.
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqvZkqLpfwwlSzq8t8kc7a2_h6KI9rbZ-mDpPQMJ_gP8eMHEBlZphzLVPhGc3HiuB9DA/exec';
         const FUNDRAISING_GOAL = 30000;
         const SQUARE_APP_ID = 'sq0idp-isV5KoeAa_SNzX-6BzC_Cw';
@@ -4366,7 +4394,67 @@ function submitAdminCapacity() {
                 document.querySelectorAll('.map-node.tooltip-active').forEach(n => n.classList.remove('tooltip-active'));
             }
         });
+function downloadPlayersCSV() {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) {
+        alert("Please enter the Admin Password.");
+        return;
+    }
 
+    const statusEl = document.getElementById('csv-download-status');
+    statusEl.innerHTML = '<span style="color: #f1c40f;">⚙️ Fetching player data...</span>';
+
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "export_players", password: password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result !== 'success') {
+            throw new Error(data.error || 'Backend error');
+        }
+        if (!data.players || data.players.length === 0) {
+            statusEl.innerHTML = '<span style="color: #94a3b8;">No players registered yet.</span>';
+            return;
+        }
+
+        // Build CSV from the rows the server sent back
+        const headers = ['Team Name', 'Player Name', 'Email', 'Phone', 'Payment Type', 'Amount', 'Sponsorship', 'Registered'];
+        const rows = data.players.map(p => [
+            p.teamName || '',
+            (p.firstName || '') + ' ' + (p.lastName || ''),
+            p.email || '',
+            p.phone || '',
+            p.paymentType || '',
+            p.totalCost || '',
+            p.sponsorship || '',
+            p.timestamp || ''
+        ]);
+
+        const csv = [headers, ...rows].map(row =>
+            row.map(cell => {
+                const str = String(cell).replace(/"/g, '""');
+                return /[",\n\r]/.test(str) ? `"${str}"` : str;
+            }).join(',')
+        ).join('\n');
+
+        // Trigger browser download
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `big-r-roster-${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        statusEl.innerHTML = `<span style="color: #2ecc71;">✅ Downloaded ${data.players.length} player${data.players.length !== 1 ? 's' : ''}.</span>`;
+    })
+    .catch(err => {
+        statusEl.innerHTML = '<span style="color: #e74c3c;">❌ ' + err.message + '</span>';
+    });
+}
         // --- Sponsorship Segmented Control Logic ---
         function setSponsorIntent(isSponsorOnly) {
     const checkbox = document.getElementById('sponsor-only-checkbox');
