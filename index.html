@@ -7618,11 +7618,29 @@ const geModal = document.getElementById('grand-entrance');
 if (geModal) {
     // Populate team name
     const geTeamName = document.getElementById('ge-team-name');
-    const displayName = teamName && teamName.trim() ? teamName.trim() : (document.getElementById('p1-first').value + ' ' + document.getElementById('p1-last').value).trim();
-    geTeamName.textContent = displayName || 'Welcome';
+let displayName = '';
+if (teamName && teamName.trim()) {
+    displayName = teamName.trim();
+} else {
+    const p1First = document.getElementById('p1-first');
+    const p1Last = document.getElementById('p1-last');
+    const firstName = p1First ? p1First.value.trim() : '';
+    const lastName = p1Last ? p1Last.value.trim() : '';
+    displayName = (firstName + ' ' + lastName).trim();
+}
+// For sponsor-only with no name, show a friendlier fallback
+if (!displayName) {
+    displayName = isSponsorOnly ? 'Sponsor' : 'Welcome';
+}
+geTeamName.textContent = displayName;
     
     // Populate player count
-    document.getElementById('ge-player-count').textContent = isSponsorOnly ? 'Sponsor Only' : (playerCount + (playerCount === 1 ? ' Player' : ' Players'));
+  const playerCountEl = document.getElementById('ge-player-count');
+if (playerCountEl) {
+    playerCountEl.textContent = isSponsorOnly 
+        ? 'Sponsorship' 
+        : (playerCount + (playerCount === 1 ? ' Player' : ' Players'));
+}
     
     // Populate total
     document.getElementById('ge-total').textContent = '$' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
