@@ -1114,20 +1114,69 @@
             text-align: center;
         }
           
-        .anniversary-badge {
-            background: linear-gradient(135deg, #f39c12, #f1c40f);
-            color: #000;
-            display: inline-block;
-            padding: 10px 20px; 
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: clamp(12px, 4vw, 20px); 
-            text-transform: uppercase;
-            letter-spacing: 0.5px; 
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-            white-space: nowrap; 
-        }
+       .anniversary-badge {
+    /* Circular wax-seal style medallion */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 40%),
+        linear-gradient(135deg, #d4a017 0%, #f1c40f 40%, #b8860b 100%);
+    color: #4a2e08;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 auto 28px;
+    box-shadow:
+        0 6px 20px rgba(184, 134, 11, 0.5),
+        inset 0 -3px 8px rgba(74, 46, 8, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    transform: rotate(-4deg);
+    position: relative;
+    border: 2px solid rgba(74, 46, 8, 0.3);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.anniversary-badge:hover {
+    transform: rotate(0deg) scale(1.05);
+}
+/* Decorative outer ring like a coin */
+.anniversary-badge::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(74, 46, 8, 0.35);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.anniversary-badge .reverent-icon {
+    color: #4a2e08;
+    stroke-width: 2;
+    margin: 0;
+    width: 1.4em;
+    height: 1.4em;
+}
+.anniversary-badge .badge-label {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #4a2e08;
+    margin-top: -2px;
+}
+.anniversary-badge .badge-year {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1;
+    color: #2a1804;
+}
 /* Register Now — price hint that sits below the CTA */
 .register-price-hint {
     text-align: center;
@@ -1462,73 +1511,157 @@
 
 
         /* --- Drive to the Green Meter --- */
-        .fundraiser-meter-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .meter-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .meter-header h3 {
-            color: #2ecc71;
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-        #meter-text {
-            font-weight: bold;
-            color: #f8fafc;
-            font-size: 14px;
-        }
-        .meter-track {
-            width: 100%;
-            height: 24px;
-            background-color: #144d29; 
-            border-radius: 50px;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .meter-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71); 
-            border-radius: 50px;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .meter-ball {
-               position: absolute;
-               top: 50%;
-               left: 0%;
-               /* The transform now handles the starting position, but we add an animation for the roll */
-               transform: translate(-50%, -50%);
-               font-size: 20px;
-               transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
-               filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
-               z-index: 2;
-               animation: rollBall 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-           }
-
-           @keyframes rollBall {
-               0% { transform: translate(-50%, -50%) rotate(0deg); }
-               100% { transform: translate(-50%, -50%) rotate(720deg); }
-           }
-        .meter-flag {
-            position: absolute;
-            top: 50%;
-            right: -5px;
-            transform: translateY(-50%);
-            font-size: 24px;
-            z-index: 1;
-        }
+ .fundraiser-meter-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto 40px auto;
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.08) 0%, rgba(0, 0, 0, 0.4) 100%);
+    padding: 28px 30px 36px;
+    border-radius: 16px;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+.meter-header h3 {
+    color: #2ecc71;
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 3px;
+    font-weight: 700;
+}
+#meter-text {
+    font-weight: 700;
+    color: #f8fafc;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+.meter-track {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(180deg, #0a2818 0%, #144d29 100%);
+    border-radius: 50px;
+    position: relative;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+    overflow: visible;
+}
+.meter-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #27ae60 0%, #2ecc71 50%, #58d68d 100%);
+    border-radius: 50px;
+    transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+}
+/* Animated shimmer on the filled portion */
+.meter-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.25) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: meterShimmer 3s linear infinite;
+    border-radius: 50px;
+}
+@keyframes meterShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+/* Glowing ball with comet trail */
+.meter-ball {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle at 30% 30%, #ffffff 0%, #f8fafc 40%, #cbd5e1 100%);
+    border-radius: 50%;
+    font-size: 0;
+    transition: left 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+    box-shadow:
+        0 0 12px rgba(255,255,255,0.8),
+        0 0 24px rgba(46, 204, 113, 0.6),
+        0 2px 4px rgba(0,0,0,0.4);
+    animation: ballGlow 2s ease-in-out infinite;
+}
+@keyframes ballGlow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(46, 204, 113, 0.6), 0 2px 4px rgba(0,0,0,0.4); }
+    50% { box-shadow: 0 0 18px rgba(255,255,255,1), 0 0 36px rgba(46, 204, 113, 0.9), 0 2px 4px rgba(0,0,0,0.4); }
+}
+/* Comet trail behind the ball */
+.meter-ball::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 6px;
+    background: linear-gradient(to left, rgba(255,255,255,0.8) 0%, transparent 100%);
+    border-radius: 0 50px 50px 0;
+    pointer-events: none;
+}
+.meter-flag {
+    position: absolute;
+    top: 50%;
+    right: -2px;
+    transform: translateY(-50%);
+    font-size: 28px;
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+/* Milestone markers along the track */
+.meter-milestones {
+    position: relative;
+    width: 100%;
+    height: 28px;
+    margin-top: 10px;
+}
+.meter-milestone {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 10px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: color 0.5s ease, transform 0.5s ease;
+}
+.meter-milestone::before {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 8px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 auto 4px;
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+.meter-milestone.reached {
+    color: #2ecc71;
+    font-weight: 700;
+    transform: translateX(-50%) translateY(-2px);
+}
+.meter-milestone.reached::before {
+    background: #2ecc71;
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.8);
+    height: 10px;
+}
        /* --- Wizard Progress Bar (Flight Itinerary Style) --- */
 .wizard-progress {
     display: flex;
@@ -2059,32 +2192,96 @@ color: #74b9ff;
         }
 
         /* Countdown Timer */
-        #countdown-timer {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .time-box {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 80px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .time-box span {
-            font-size: 28px;
-            font-weight: bold;
-            display: block;
-            color: #3498db;
-        }
-        .time-box p {
-            margin: 5px 0 0 0;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+#countdown-timer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 8px;
+    margin: 35px auto;
+    padding: 28px 24px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(15, 23, 42, 0.5) 100%);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+    max-width: 580px;
+}
+/* Subtle gradient sweep across the countdown every few seconds */
+#countdown-timer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(52, 152, 219, 0.08) 50%,
+        transparent 100%
+    );
+    animation: countdownSweep 7s linear infinite;
+    pointer-events: none;
+}
+@keyframes countdownSweep {
+    0% { left: -100%; }
+    60% { left: 150%; }
+    100% { left: 150%; }
+}
+.time-box {
+    background: transparent;
+    padding: 0 4px;
+    border: none;
+    min-width: 0;
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+.time-box + .time-box::before {
+    content: ':';
+    position: absolute;
+    left: -8px;
+    top: 6px;
+    color: rgba(52, 152, 219, 0.4);
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 200;
+    line-height: 1;
+}
+.time-box span {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(42px, 11vw, 72px);
+    font-weight: 700;
+    display: block;
+    color: #f8fafc;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+    font-variant-numeric: tabular-nums;
+}
+.time-box p {
+    margin: 8px 0 0 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+/* Pulse the seconds digit */
+.time-box:last-child span {
+    animation: secondsPulse 1s ease-in-out infinite;
+    color: #3498db;
+}
+@keyframes secondsPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(0.98); }
+}
+/* Mobile tightening */
+@media (max-width: 480px) {
+    #countdown-timer { padding: 20px 12px; gap: 4px; }
+    .time-box + .time-box::before { left: -4px; font-size: 32px; }
+    .time-box p { font-size: 9px; letter-spacing: 1.5px; }
+}
 
         /* Sponsor Section Enhancements */
         .sponsor-tier {
@@ -3778,6 +3975,97 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     .ge-check-svg { width: 38px; height: 38px; }
     .ge-details { padding: 18px 20px; }
 }
+        /* =================================================================
+   UNIFIED EVENT INFO — itinerary + location side-by-side
+   ================================================================= */
+.event-info-card {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.06) 0%, rgba(0,0,0,0.4) 100%);
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.event-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+.event-info-pane {
+    padding: 26px 24px;
+    text-align: left;
+}
+.event-info-pane.itinerary-pane {
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+.event-info-pane h3 {
+    color: #3498db;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-bottom: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+}
+.event-info-pane .itinerary-list {
+    margin-left: 4px;
+}
+.location-pane .location-name {
+    color: #f8fafc;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-family: 'Playfair Display', Georgia, serif;
+}
+.location-pane .location-address {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+.location-pane .location-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.location-pane .location-buttons a {
+    padding: 10px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.location-pane .location-buttons a:hover {
+    transform: translateY(-1px);
+}
+.location-pane .btn-directions {
+    background: rgba(52, 152, 219, 0.15);
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    color: #74b9ff;
+}
+.location-pane .btn-calendar {
+    background: rgba(243, 156, 18, 0.15);
+    border: 1px solid rgba(243, 156, 18, 0.4);
+    color: #f39c12;
+}
+/* Stack on mobile */
+@media (max-width: 600px) {
+    .event-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .event-info-pane.itinerary-pane {
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+}
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
@@ -4073,14 +4361,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <img src="Big R Logo.png" alt="Big R Memorial Golf Outing Logo" class="main-logo">
             
             <h1 onclick="handleSecretAdminClick()" style="cursor: pointer; user-select: none;">Welcome to the Big R Golf Outing</h1>
-           <div class="anniversary-badge">
+<div class="anniversary-badge" title="1st Memorial Outing — In Honor of Ryan Thomas">
     <svg class="reverent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 3.5 L13.8 9.2 L19.8 9.2 L14.9 12.8 L16.8 18.5 L12 14.9 L7.2 18.5 L9.1 12.8 L4.2 9.2 L10.2 9.2 Z"/>
     </svg>
-    1st Memorial
-    <svg class="reverent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3.5 L13.8 9.2 L19.8 9.2 L14.9 12.8 L16.8 18.5 L12 14.9 L7.2 18.5 L9.1 12.8 L4.2 9.2 L10.2 9.2 Z"/>
-    </svg>
+    <span class="badge-year">1st</span>
+    <span class="badge-label">Memorial</span>
 </div>
             
             <h3 class="event-date">Friday, October 9th, '26</h3>
@@ -4093,33 +4379,46 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>
             </div>
 
-            <div class="fundraiser-meter-container">
-                <div class="meter-header">
-                    <h3>Drive to the Goal</h3>
-                    <span id="meter-text">$0 Raised / $30,000 Goal</span>
-                </div>
-                <div class="meter-track">
-                    <div id="meter-fill" class="meter-fill"></div>
-                    <div id="meter-ball" class="meter-ball">⚪</div>
-                    <div class="meter-flag">⛳</div>
-                </div>
-            </div>
+         <div class="fundraiser-meter-container">
+    <div class="meter-header">
+        <h3>Drive to the Goal</h3>
+        <span id="meter-text">$0 Raised / $30,000 Goal</span>
+    </div>
+    <div class="meter-track">
+        <div id="meter-fill" class="meter-fill"></div>
+        <div id="meter-ball" class="meter-ball"></div>
+        <div class="meter-flag">⛳</div>
+    </div>
+    <div class="meter-milestones">
+        <div class="meter-milestone" id="milestone-5k" style="left: 16.67%;">$5K</div>
+        <div class="meter-milestone" id="milestone-10k" style="left: 33.33%;">$10K</div>
+        <div class="meter-milestone" id="milestone-15k" style="left: 50%;">$15K</div>
+        <div class="meter-milestone" id="milestone-20k" style="left: 66.67%;">$20K</div>
+        <div class="meter-milestone" id="milestone-25k" style="left: 83.33%;">$25K</div>
+    </div>
+</div>
 
-            <div class="itinerary-container">
-                <h3>🏌️‍♂️ Event Itinerary</h3>
-                <ul class="itinerary-list">
-                    <li><span class="itinerary-time">8:00 AM</span> <span class="itinerary-event">Registration</span></li>
-                    <li><span class="itinerary-time">9:30 AM</span> <span class="itinerary-event">Shotgun Start</span></li>
-                    <li><span class="itinerary-time">2:30 PM</span> <span class="itinerary-event">Lunch, Drinks & Awards</span></li>
-                </ul>
+     <div class="event-info-card">
+    <div class="event-info-grid">
+        <div class="event-info-pane itinerary-pane">
+            <h3>🏌️‍♂️ Itinerary</h3>
+            <ul class="itinerary-list">
+                <li><span class="itinerary-time">8:00 AM</span> <span class="itinerary-event">Registration</span></li>
+                <li><span class="itinerary-time">9:30 AM</span> <span class="itinerary-event">Shotgun Start</span></li>
+                <li><span class="itinerary-time">2:30 PM</span> <span class="itinerary-event">Lunch & Awards</span></li>
+            </ul>
+        </div>
+        <div class="event-info-pane location-pane">
+            <h3>📍 Location</h3>
+            <div class="location-name">The Bucks Club</div>
+            <div class="location-address">2600 York Rd<br>Jamison, PA 18929</div>
+            <div class="location-buttons">
+                <a href="https://www.google.com/maps/search/?api=1&query=The+Bucks+Club,+2600+York+Rd,+Jamison,+PA+18929" target="_blank" class="btn-directions">🗺️ Get Directions</a>
+                <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Memorial%20Golf%20Outing&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="btn-calendar">📅 Add to Calendar</a>
             </div>
-
-            <div class="event-details">
-                <h3>📍 Location</h3>
-                <p>The Bucks Club<br>2600 York Rd, Jamison, PA 18929</p>
-                <a href="https://www.google.com/maps/search/?api=1&query=The+Bucks+Club,+2600+York+Rd,+Jamison,+PA+18929" target="_blank" class="secondary-btn maps-btn">🗺️ Get Directions</a>
-                <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Memorial%20%Golf%20%Outing&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="secondary-btn maps-btn" style="background-color: #f39c12; margin-left: 10px;">📅 Add to Calendar</a>
-            </div>
+        </div>
+    </div>
+</div>
             <div class="action-buttons" style="margin-top: 20px;">
     <button class="primary-btn" onclick="goToSignup(4)" style="margin-top: 0;">Register Now</button>
 </div>
@@ -6125,6 +6424,22 @@ if (data && data.eventPhotos) {
                 };
                 window.requestAnimationFrame(step);
             }
+           const milestones = [
+            { id: 'milestone-5k', threshold: 5000 },
+            { id: 'milestone-10k', threshold: 10000 },
+            { id: 'milestone-15k', threshold: 15000 },
+            { id: 'milestone-20k', threshold: 20000 },
+            { id: 'milestone-25k', threshold: 25000 }
+        ];
+        milestones.forEach(function(m) {
+            const el = document.getElementById(m.id);
+            if (!el) return;
+            if (currentTotal >= m.threshold) {
+                el.classList.add('reached');
+            } else {
+                el.classList.remove('reached');
+            }
+        });
         }
 function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
     const bar = document.getElementById('spots-remaining-bar');
