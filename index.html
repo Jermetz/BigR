@@ -7246,21 +7246,52 @@ if (paymentType === 'Credit/Debit Card') {
         }
 
         function startExperience() {
-            const introVideo = document.getElementById('intro-video');
-            const splashScreen = document.getElementById('splash-screen');
-            const gateContent = document.getElementById('gate-content');
-            if (introVideo && splashScreen) {
-                gateContent.style.display = 'none';
-                introVideo.style.display = 'block';
-                introVideo.muted = videoIsMuted; 
-                introVideo.play();
-                introVideo.addEventListener('ended', () => {
-                    localStorage.setItem('introPlayed', 'true');
-                    splashScreen.classList.add('splash-fade-zoom');
-                    setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
-                });
-            }
-        }
+    const introVideo = document.getElementById('intro-video');
+    const splashScreen = document.getElementById('splash-screen');
+    const gateContent = document.getElementById('gate-content');
+
+    if (!splashScreen) return;
+
+    // Helper that dismisses the splash — used by every code path below
+    const dismissSplash = () => {
+        try { localStorage.setItem('introPlayed', 'true'); } catch (e) {}
+        splashScreen.classList.add('splash-fade-zoom');
+        setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
+    };
+
+    // No video element at all? Just dismiss.
+    if (!introVideo) {
+        dismissSplash();
+        return;
+    }
+
+    if (gateContent) gateContent.style.display = 'none';
+    introVideo.style.display = 'block';
+    introVideo.muted = videoIsMuted;
+
+    // Dismiss when the video ends naturally
+    introVideo.addEventListener('ended', dismissSplash, { once: true });
+
+    // Safety net: if the video errors out (file missing, decode failure, network)
+    introVideo.addEventListener('error', dismissSplash, { once: true });
+
+    // Hard timeout: if the video doesn't finish within 15 seconds, dismiss anyway.
+    // Real intro video should be ~5-8 seconds. This catches "stuck loading" cases.
+    const timeoutId = setTimeout(dismissSplash, 15000);
+    introVideo.addEventListener('ended', () => clearTimeout(timeoutId), { once: true });
+
+    // Try to play. If play() returns a rejected promise (autoplay blocked,
+    // file missing, codec issue, etc.), dismiss the splash immediately
+    // so the user isn't stranded.
+    const playPromise = introVideo.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(err => {
+            console.warn('Intro video failed to play:', err);
+            clearTimeout(timeoutId);
+            dismissSplash();
+        });
+    }
+}
 
         function skipIntro() {
             localStorage.setItem('introPlayed', 'true');
