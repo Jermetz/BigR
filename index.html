@@ -1529,49 +1529,115 @@
             font-size: 24px;
             z-index: 1;
         }
-        /* --- Wizard Progress Bar --- */
-        .wizard-progress {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        .wizard-progress::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.2);
-            z-index: 1;
-        }
-        .progress-step {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #1e293b;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #cbd5e1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
-        .progress-step.active {
-            background: #3498db;
-            border-color: #3498db;
-            color: white;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-        .progress-step.completed {
-            background: #27ae60;
-            border-color: #27ae60;
-            color: white;
-        }
+       /* --- Wizard Progress Bar (Flight Itinerary Style) --- */
+.wizard-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 35px;
+    margin-top: 10px;
+    position: relative;
+    padding: 0 14px;
+}
+/* The dashed "flight path" line behind the dots */
+.wizard-progress::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 28px;
+    right: 28px;
+    height: 2px;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.25) 50%, transparent 50%);
+    background-size: 8px 2px;
+    background-repeat: repeat-x;
+    z-index: 1;
+}
+/* The "completed" progress line — animates as steps complete */
+.wizard-progress::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 28px;
+    width: calc(var(--progress-fill, 0%) - 0%);
+    max-width: calc(100% - 56px);
+    height: 2px;
+    background: linear-gradient(to right, #27ae60, #3498db);
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+    z-index: 1;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Wrapper so dot + label stack vertically */
+.progress-step-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+    flex: 1;
+    position: relative;
+}
+.progress-step {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    color: #94a3b8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+.progress-step-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    font-weight: 600;
+    transition: color 0.35s ease;
+    white-space: nowrap;
+}
+.progress-step.active {
+    background: #3498db;
+    border-color: #3498db;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2), 0 0 15px rgba(52, 152, 219, 0.5);
+    transform: scale(1.15);
+}
+.progress-step-wrap.active .progress-step-label {
+    color: #3498db;
+    font-weight: 700;
+}
+.progress-step.completed {
+    background: #27ae60;
+    border-color: #27ae60;
+    color: white;
+}
+.progress-step.completed::after {
+    content: '✓';
+    font-size: 14px;
+    font-weight: 900;
+}
+.progress-step-wrap.completed .progress-step-label {
+    color: #27ae60;
+}
+/* Hide the original number when completed (the checkmark replaces it) */
+.progress-step.completed {
+    font-size: 0;
+}
+.progress-step.completed::after {
+    font-size: 14px;
+}
+/* Mobile: shrink labels to single-letter abbreviations or hide */
+@media (max-width: 480px) {
+    .progress-step-label {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+}
                .wizard-step-content {
             display: none;
             width: 100%;
@@ -3451,6 +3517,267 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+        /* =================================================================
+   GRAND ENTRANCE — full-screen success takeover
+   ================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+#grand-entrance {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: radial-gradient(ellipse at center, #1e293b 0%, #0a0f1c 100%);
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px 20px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+#grand-entrance.show {
+    display: flex;
+    opacity: 1;
+}
+
+/* Decorative top + bottom rules — like an invitation card */
+#grand-entrance::before,
+#grand-entrance::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 400px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(241, 196, 15, 0.6), transparent);
+    opacity: 0;
+    animation: ge-line-fade 1.2s ease-out 0.3s forwards;
+}
+#grand-entrance::before { top: 60px; }
+#grand-entrance::after { bottom: 60px; }
+
+@keyframes ge-line-fade {
+    to { opacity: 1; }
+}
+
+.ge-inner {
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+/* The animated check */
+.ge-check-wrap {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    background: rgba(39, 174, 96, 0.1);
+    border: 2px solid #27ae60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.6);
+    animation: ge-check-pop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s forwards;
+    box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4);
+}
+@keyframes ge-check-pop {
+    0% { opacity: 0; transform: scale(0.6); }
+    100% { opacity: 1; transform: scale(1); box-shadow: 0 0 40px 5px rgba(39, 174, 96, 0.25); }
+}
+.ge-check-svg {
+    width: 50px;
+    height: 50px;
+    stroke: #27ae60;
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.ge-check-svg path {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: ge-check-draw 0.6s ease-out 0.9s forwards;
+}
+@keyframes ge-check-draw {
+    to { stroke-dashoffset: 0; }
+}
+
+/* "You're in." headline */
+.ge-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(48px, 9vw, 76px);
+    color: #f8fafc;
+    line-height: 1;
+    margin-bottom: 18px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: ge-fade-up 0.8s ease-out 0.7s forwards;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    letter-spacing: -0.02em;
+}
+
+/* Subtle decorative flourish */
+.ge-flourish {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto 20px;
+    opacity: 0;
+    animation: ge-fade-up 0.8s ease-out 1s forwards;
+}
+.ge-flourish-line {
+    width: 40px;
+    height: 1px;
+    background: rgba(241, 196, 15, 0.5);
+}
+.ge-flourish-diamond {
+    width: 6px;
+    height: 6px;
+    background: #f1c40f;
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px rgba(241, 196, 15, 0.6);
+}
+
+/* Team name */
+.ge-team-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(22px, 4.5vw, 32px);
+    color: #f1c40f;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: ge-fade-up 0.8s ease-out 1.2s forwards;
+    letter-spacing: 0.5px;
+    word-break: break-word;
+    padding: 0 10px;
+}
+
+/* Event line */
+.ge-event-line {
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: ge-fade-up 0.8s ease-out 1.4s forwards;
+    font-weight: 600;
+}
+
+/* Detail card */
+.ge-details {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(241, 196, 15, 0.15);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: ge-fade-up 0.8s ease-out 1.6s forwards;
+    backdrop-filter: blur(10px);
+}
+.ge-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ge-detail-row:last-child { border-bottom: none; }
+.ge-detail-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+.ge-detail-value {
+    font-size: 14px;
+    color: #f8fafc;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Payment instructions */
+.ge-payment-note {
+    opacity: 0;
+    animation: ge-fade-up 0.8s ease-out 1.8s forwards;
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: #f1c40f;
+    line-height: 1.6;
+}
+.ge-payment-note a {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+/* Action buttons */
+.ge-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    animation: ge-fade-up 0.8s ease-out 2s forwards;
+}
+.ge-actions button,
+.ge-actions a {
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-block;
+    text-align: center;
+}
+.ge-primary-action {
+    background: linear-gradient(135deg, #f1c40f, #d4a017);
+    color: #1e293b;
+    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.3);
+}
+.ge-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(241, 196, 15, 0.5);
+}
+.ge-secondary-action {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #cbd5e1;
+}
+.ge-secondary-action:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+}
+
+@keyframes ge-fade-up {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile tightening */
+@media (max-width: 480px) {
+    #grand-entrance { padding: 20px 15px; }
+    #grand-entrance::before { top: 30px; }
+    #grand-entrance::after { bottom: 30px; }
+    .ge-check-wrap { width: 70px; height: 70px; margin-bottom: 20px; }
+    .ge-check-svg { width: 38px; height: 38px; }
+    .ge-details { padding: 18px 20px; }
+}
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
@@ -3477,7 +3804,53 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         </div>
     </div>
 </div>
-    
+    <!-- Grand Entrance: full-screen registration takeover -->
+<div id="grand-entrance">
+    <div class="ge-inner">
+        <div class="ge-check-wrap">
+            <svg class="ge-check-svg" viewBox="0 0 50 50">
+                <path d="M10 26 L22 38 L40 14"/>
+            </svg>
+        </div>
+        
+        <h1 class="ge-headline">You're in.</h1>
+        
+        <div class="ge-flourish">
+            <div class="ge-flourish-line"></div>
+            <div class="ge-flourish-diamond"></div>
+            <div class="ge-flourish-line"></div>
+        </div>
+        
+        <div class="ge-team-name" id="ge-team-name">Welcome</div>
+        <div class="ge-event-line">Big R Memorial &middot; October 9, 2026</div>
+        
+        <div class="ge-details">
+            <div class="ge-detail-row">
+                <span class="ge-detail-label">Players</span>
+                <span class="ge-detail-value" id="ge-player-count">—</span>
+            </div>
+            <div class="ge-detail-row">
+                <span class="ge-detail-label">Total</span>
+                <span class="ge-detail-value" id="ge-total">—</span>
+            </div>
+            <div class="ge-detail-row">
+                <span class="ge-detail-label">Tee Time</span>
+                <span class="ge-detail-value">9:30 AM Shotgun</span>
+            </div>
+            <div class="ge-detail-row">
+                <span class="ge-detail-label">Venue</span>
+                <span class="ge-detail-value">The Bucks Club</span>
+            </div>
+        </div>
+        
+        <div class="ge-payment-note" id="ge-payment-note"></div>
+        
+        <div class="ge-actions">
+            <a href="https://calndr.link/d/event/?service=google&start=2026-10-09T09:30:00-04:00&end=2026-10-09T17:00:00-04:00&title=Big%20R%20Invitational&location=The%20Bucks%20Club,%202600%20York%20Rd,%20Jamison,%20PA%2018929" target="_blank" class="ge-primary-action">📅 Add to Calendar</a>
+            <button class="ge-secondary-action" onclick="closeGrandEntrance()">Back to Home</button>
+        </div>
+    </div>
+</div>
     <div id="success-overlay" class="fullscreen-overlay">
         <div class="overlay-card success-card">
             <h2 id="success-header">⛳ Registration Success!</h2>
@@ -3817,13 +4190,28 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <p id="form-subtitle" style="margin-bottom: 25px; text-align: center;">Register up to 4 players for your team ($175 per person). The primary player must provide an email.</p>
                 
                                <form id="golf-signup-form">
-                    <!-- Progress Bar -->
-<div class="wizard-progress">
-    <div class="progress-step active" id="indicator-1">1</div>
-    <div class="progress-step" id="indicator-2">2</div>
-    <div class="progress-step" id="indicator-3">3</div>
-    <div class="progress-step" id="indicator-4">4</div>
-    <div class="progress-step" id="indicator-5">5</div>
+<!-- Progress Bar (Flight Itinerary Style) -->
+<div class="wizard-progress" id="wizard-progress-bar">
+    <div class="progress-step-wrap active" id="wrap-1">
+        <div class="progress-step active" id="indicator-1">1</div>
+        <div class="progress-step-label">Setup</div>
+    </div>
+    <div class="progress-step-wrap" id="wrap-2">
+        <div class="progress-step" id="indicator-2">2</div>
+        <div class="progress-step-label">Players</div>
+    </div>
+    <div class="progress-step-wrap" id="wrap-3">
+        <div class="progress-step" id="indicator-3">3</div>
+        <div class="progress-step-label">Sponsor</div>
+    </div>
+    <div class="progress-step-wrap" id="wrap-4">
+        <div class="progress-step" id="indicator-4">4</div>
+        <div class="progress-step-label">Payment</div>
+    </div>
+    <div class="progress-step-wrap" id="wrap-5">
+        <div class="progress-step" id="indicator-5">5</div>
+        <div class="progress-step-label">Review</div>
+    </div>
 </div>
 
                     <!-- Step 1: Team setup -->
@@ -5223,24 +5611,43 @@ if (sectionId === 'leaderboard') {
         // --- Wizard Logic ---
         let currentWizardStep = 1;
 
-        function nextWizardStep(step) {
-            document.querySelectorAll('.wizard-step-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('wizard-step-' + step).classList.add('active');
-            
-            document.querySelectorAll('.progress-step').forEach((el, index) => {
-                if (index + 1 < step) {
-                    el.classList.add('completed');
-                    el.classList.remove('active');
-                } else if (index + 1 === step) {
-                    el.classList.add('active');
-                    el.classList.remove('completed');
-                } else {
-                    el.classList.remove('active', 'completed');
-                }
-            });
-            currentWizardStep = step;
-            window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
+   function nextWizardStep(step) {
+    document.querySelectorAll('.wizard-step-content').forEach(el => el.classList.remove('active'));
+    document.getElementById('wizard-step-' + step).classList.add('active');
+    
+    // Update dots
+    document.querySelectorAll('.progress-step').forEach((el, index) => {
+        if (index + 1 < step) {
+            el.classList.add('completed');
+            el.classList.remove('active');
+        } else if (index + 1 === step) {
+            el.classList.add('active');
+            el.classList.remove('completed');
+        } else {
+            el.classList.remove('active', 'completed');
         }
+    });
+    
+    // Update label wrappers (for the colored labels)
+    document.querySelectorAll('.progress-step-wrap').forEach((el, index) => {
+        el.classList.remove('active', 'completed');
+        if (index + 1 < step) el.classList.add('completed');
+        else if (index + 1 === step) el.classList.add('active');
+    });
+    
+    // Draw the flight path line — fills based on which step we're on
+    const progressBar = document.getElementById('wizard-progress-bar');
+    if (progressBar) {
+        // 5 steps means 4 segments between dots; each completed segment = 25%
+        const fillPct = ((step - 1) / 4) * 100;
+        progressBar.style.setProperty('--progress-fill', fillPct + '%');
+        // Set width via inline style on ::after using a CSS variable
+        progressBar.style.cssText = `--progress-fill: ${fillPct}%`;
+    }
+    
+    currentWizardStep = step;
+    window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
+}
 
         function prevWizardStep(step) {
             nextWizardStep(step);
@@ -6893,6 +7300,69 @@ body: JSON.stringify({
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
+                    // === GRAND ENTRANCE — show the full-screen takeover ===
+const geModal = document.getElementById('grand-entrance');
+if (geModal) {
+    // Populate team name
+    const geTeamName = document.getElementById('ge-team-name');
+    const displayName = teamName && teamName.trim() ? teamName.trim() : (document.getElementById('p1-first').value + ' ' + document.getElementById('p1-last').value).trim();
+    geTeamName.textContent = displayName || 'Welcome';
+    
+    // Populate player count
+    document.getElementById('ge-player-count').textContent = isSponsorOnly ? 'Sponsor Only' : (playerCount + (playerCount === 1 ? ' Player' : ' Players'));
+    
+    // Populate total
+    document.getElementById('ge-total').textContent = '$' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+    
+    // Payment note
+    const gePaymentNote = document.getElementById('ge-payment-note');
+    if (selectedPaymentType === 'Venmo') {
+        gePaymentNote.innerHTML = `Complete your $${finalTotal} payment via Venmo:<br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
+    } else if (selectedPaymentType === 'Check') {
+        gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. Bring to the event.';
+    } else if (selectedPaymentType === 'Cash') {
+        gePaymentNote.innerHTML = 'Bring your cash payment to the event on October 9th.';
+    } else {
+        gePaymentNote.innerHTML = 'A confirmation email is on its way.';
+    }
+    
+    // Show it
+    document.getElementById('signup-form-container').style.display = 'none';
+    geModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Confetti burst (extended for the moment)
+    if (typeof confetti === 'function') {
+        const fireConfetti = () => {
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                zIndex: 100001,
+                colors: ['#f1c40f', '#27ae60', '#ffffff', '#d4a017']
+            });
+        };
+        fireConfetti();
+        setTimeout(fireConfetti, 600);
+        setTimeout(fireConfetti, 1200);
+    }
+    
+    // Play the clap
+    if (window.clapAudio) {
+        window.clapAudio.play().catch(err => console.log('Playback failed:', err));
+        setTimeout(() => { window.clapAudio.pause(); window.clapAudio.currentTime = 0; }, 3500);
+    }
+    
+    // Refresh global data and clear wizard state in the background
+    fetchGlobalData();
+    document.getElementById('golf-signup-form').reset();
+    clearWizardProgress();
+    const p1Email = document.getElementById('p1-email');
+    if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase());
+    
+    return; // Skip the old success overlay entirely
+}
+// === END GRAND ENTRANCE ===
                                         const paymentDiv = document.getElementById('success-payment-instructions');
                     if (selectedPaymentType === 'Venmo') {
                         paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
@@ -6964,6 +7434,19 @@ if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.tri
             submitBtn.innerText = "Submit Registration";
             showSection('home');
         }
+        function closeGrandEntrance() {
+    const ge = document.getElementById('grand-entrance');
+    if (ge) {
+        ge.classList.remove('show');
+        setTimeout(() => { ge.style.display = 'none'; }, 600);
+    }
+    document.getElementById('signup-form-container').style.display = 'block';
+    document.body.style.overflow = '';
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Registration";
+    showSection('home');
+}
 // --- Donation Logic ---
       function toggleAnonymous() {
             const isAnon = document.getElementById('anon-donation-checkbox').checked;
