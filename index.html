@@ -5945,9 +5945,13 @@ if (sectionId === 'leaderboard') {
     window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
 }
 
-        function prevWizardStep(step) {
-            nextWizardStep(step);
-        }
+function prevWizardStep(step) {
+    if (step === 4 && window.__cachedSquareToken) {
+        window.__cachedSquareToken = null;
+        window.__cachedSquareTokenTime = null;
+    }
+    nextWizardStep(step);
+}
 
 function validateAndNextStep(currentStep, nextStep) {
         let isValid = true;
@@ -6034,12 +6038,61 @@ function fallbackCopy(text, callback) {
     document.body.removeChild(ta);
 }
 
-function goToReviewStep() {
+async function goToReviewStep() {
     const paymentType = document.getElementById('payment-type').value;
     if (!paymentType) {
         showValidationModal("Please select a payment method before continuing.");
         return;
     }
+
+    if (paymentType === 'Credit/Debit Card') {
+        if (!signupCard) {
+            showValidationModal("The card payment system hasn't finished loading. Please wait a moment and try again — or refresh the page if this persists. Ad-blockers can sometimes block Square's payment library.");
+            return;
+        }
+
+        const reviewBtn = document.querySelector('#wizard-step-4 .primary-btn');
+        const originalLabel = reviewBtn ? reviewBtn.innerText : '';
+        if (reviewBtn) {
+            reviewBtn.disabled = true;
+            reviewBtn.innerText = '⏳ Validating card...';
+        }
+
+        try {
+            const result = await signupCard.tokenize();
+            if (result.status !== 'OK') {
+                let msg = "Please check your card details — something doesn't look right.";
+                if (result.errors && result.errors.length > 0) {
+                    const reasons = result.errors.map(e => e.message || e.detail).filter(Boolean);
+                    if (reasons.length > 0) msg = reasons.join(' ');
+                }
+                showValidationModal(msg);
+                if (reviewBtn) {
+                    reviewBtn.disabled = false;
+                    reviewBtn.innerText = originalLabel;
+                }
+                return;
+            }
+            window.__cachedSquareToken = result.token;
+            window.__cachedSquareTokenTime = Date.now();
+        } catch (err) {
+            showValidationModal("Card validation failed: " + (err.message || "Please check your card details and try again."));
+            if (reviewBtn) {
+                reviewBtn.disabled = false;
+                reviewBtn.innerText = originalLabel;
+            }
+            return;
+        }
+
+        if (reviewBtn) {
+            reviewBtn.disabled = false;
+            reviewBtn.innerText = originalLabel;
+        }
+    } else {
+        window.__cachedSquareToken = null;
+        window.__cachedSquareTokenTime = null;
+    }
+
     renderReviewSummary();
     nextWizardStep(5);
 }
@@ -7440,10 +7493,12 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             updateCostDisplay();
         }
 
-        function updatePaymentNote() {
+    function updatePaymentNote() {
+            window.__cachedSquareToken = null;
+            window.__cachedSquareTokenTime = null;
+
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
-
             if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
             else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
@@ -7561,15 +7616,34 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                     submitBtn.innerText = "Submit Registration";
                     return;
                 }
-                const result = await signupCard.tokenize();
-                if (result.status === 'OK') {
-                    squareToken = result.token;
+
+                const TOKEN_MAX_AGE_MS = 20 * 60 * 1000;
+                const cachedToken = window.__cachedSquareToken;
+                const cachedAge = window.__cachedSquareTokenTime
+                    ? (Date.now() - window.__cachedSquareTokenTime)
+                    : Infinity;
+
+                if (cachedToken && cachedAge < TOKEN_MAX_AGE_MS) {
+                    squareToken = cachedToken;
                 } else {
-                    alert("Card processing failed. Please check your details.");
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Submit Registration";
-                    return;
+                    const result = await signupCard.tokenize();
+                    if (result.status === 'OK') {
+                        squareToken = result.token;
+                    } else {
+                        let msg = "Card processing failed. Please check your details.";
+                        if (result.errors && result.errors.length > 0) {
+                            const reasons = result.errors.map(e => e.message || e.detail).filter(Boolean);
+                            if (reasons.length > 0) msg = reasons.join(' ');
+                        }
+                        alert(msg);
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Submit Registration";
+                        return;
+                    }
                 }
+
+                window.__cachedSquareToken = null;
+                window.__cachedSquareTokenTime = null;
             }
            // Capture SMS consent (Twilio audit trail requirement)
             const smsConsentCheckbox = document.getElementById('p1-sms-consent');
