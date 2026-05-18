@@ -5188,158 +5188,63 @@ if (sectionId === 'leaderboard') {
             nextWizardStep(step);
         }
 
-    function validateAndNextStep(currentStep, nextStep) {
-    let isValid = true;
-    let errorMessage = "Please fill out all required fields before proceeding.";
-    const currentContainer = document.getElementById('wizard-step-' + currentStep);
-    const inputs = currentContainer.querySelectorAll('input[required]');
-    // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const url = 'https://bigrgolf.com';
-    const done = () => {
-        const original = btn.innerHTML;
-        btn.innerHTML = '✓ Copied!';
-        setTimeout(() => { btn.innerHTML = original; }, 2000);
-    };
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
-    } else {
-        fallbackCopy(url, done);
-    }
-}
-        function goToReviewStep() {
-    // Validate Step 4 first — payment type must be picked
-    const paymentType = document.getElementById('payment-type').value;
-    if (!paymentType) {
-        showValidationModal("Please select a payment method before continuing.");
-        return;
-    }
-    renderReviewSummary();
-    nextWizardStep(5);
-}
+function validateAndNextStep(currentStep, nextStep) {
+        let isValid = true;
+        let errorMessage = "Please fill out all required fields before proceeding.";
+        const currentContainer = document.getElementById('wizard-step-' + currentStep);
+        const inputs = currentContainer.querySelectorAll('input[required]');
+        // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function renderReviewSummary() {
-    const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
-    const teamName = document.getElementById('team-name')?.value.trim() || '';
-    const sponsorDropdown = document.getElementById('sponsorship-level');
-    const sponsorAmount = sponsorDropdown ? (parseInt(sponsorDropdown.value) || 0) : 0;
-    const sponsorLabel = sponsorDropdown && sponsorDropdown.value
-        ? sponsorDropdown.options[sponsorDropdown.selectedIndex].text
-        : '';
-    const paymentType = document.getElementById('payment-type').value;
-    const total = document.getElementById('total-amount').innerText;
-
-    // Collect player names
-    let playersHtml = '';
-    if (!isSponsorOnly) {
-        for (let i = 1; i <= playerCount; i++) {
-            const first = document.getElementById(`p${i}-first`)?.value.trim() || '';
-            const last = document.getElementById(`p${i}-last`)?.value.trim() || '';
-            const name = (first + ' ' + last).trim();
-            if (name) {
-                playersHtml += `<div style="padding:6px 0; color:#f8fafc; font-size:14px;">
-                    ${i === 1 ? '⭐' : (i + '.')} ${name}${i === 1 ? ' <span style="color:#3498db; font-size:11px; font-weight:600;">PRIMARY</span>' : ''}
-                </div>`;
-            }
-        }
-    }
-
-    const reviewEl = document.getElementById('review-summary');
-    reviewEl.innerHTML = `
-        ${teamName ? `<div style="color:#f1c40f; font-size:16px; font-weight:700; text-align:center; margin-bottom:14px;">🏌️ ${teamName}</div>` : ''}
-
-        ${!isSponsorOnly ? `
-        <div style="margin-bottom:14px;">
-            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
-                Players (${playerCount}) <a href="javascript:void(0)" onclick="prevWizardStep(2)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
-            </div>
-            ${playersHtml || '<div style="color:#e74c3c; font-size:13px;">⚠️ No players entered</div>'}
-        </div>
-        ` : ''}
-
-        ${sponsorAmount > 0 ? `
-        <div style="margin-bottom:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
-            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
-                Sponsorship <a href="javascript:void(0)" onclick="prevWizardStep(3)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
-            </div>
-            <div style="color:#f8fafc; font-size:14px;">${sponsorLabel}</div>
-        </div>
-        ` : ''}
-
-        <div style="padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
-            <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">
-                Payment <a href="javascript:void(0)" onclick="prevWizardStep(4)" style="float:right; color:#3498db; text-transform:none; letter-spacing:0; font-weight:600;">Edit</a>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#f8fafc; font-size:14px;">${paymentType}</span>
-                <span style="color:#2ecc71; font-size:20px; font-weight:800;">${total}</span>
-            </div>
-        </div>
-    `;
-}
-function fallbackCopy(text, callback) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); callback(); } catch (e) {}
-    document.body.removeChild(ta);
-}
-    // Email regex — pragmatic, not RFC-perfect. Catches all real-world typos.
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    inputs.forEach(input => {
-        // Empty check first
-        if (!input.value || !input.value.trim()) {
-            isValid = false;
-            input.style.borderColor = '#e74c3c';
-            return;
-        }
-
-        // Email format check
-        if (input.type === 'email' && !EMAIL_REGEX.test(input.value.trim())) {
-            isValid = false;
-            input.style.borderColor = '#e74c3c';
-            errorMessage = "Please enter a valid email address (e.g., name@example.com).";
-            return;
-        }
-
-        // Phone format check — must have at least 10 digits
-        if (input.type === 'tel') {
-            const digitsOnly = input.value.replace(/\D/g, '');
-            if (digitsOnly.length < 10) {
+        inputs.forEach(input => {
+            // Empty check first
+            if (!input.value || !input.value.trim()) {
                 isValid = false;
                 input.style.borderColor = '#e74c3c';
-                errorMessage = "Please enter a valid 10-digit mobile number.";
                 return;
             }
-        }
 
-input.style.borderColor = 'transparent';
-    });
+            // Email format check
+            if (input.type === 'email' && !EMAIL_REGEX.test(input.value.trim())) {
+                isValid = false;
+                input.style.borderColor = '#e74c3c';
+                errorMessage = "Please enter a valid email address (e.g., name@example.com).";
+                return;
+            }
 
-    // Also validate any OPTIONAL email fields (teammate emails) — empty is fine, but bad format is not
-    const optionalEmails = currentContainer.querySelectorAll('input[type="email"]:not([required])');
-    optionalEmails.forEach(input => {
-        if (input.value && input.value.trim() && !EMAIL_REGEX.test(input.value.trim())) {
-            isValid = false;
-            input.style.borderColor = '#e74c3c';
-            errorMessage = "One or more teammate emails is invalid — please fix or leave blank.";
-        } else if (input.value && input.value.trim()) {
+            // Phone format check — must have at least 10 digits
+            if (input.type === 'tel') {
+                const digitsOnly = input.value.replace(/\D/g, '');
+                if (digitsOnly.length < 10) {
+                    isValid = false;
+                    input.style.borderColor = '#e74c3c';
+                    errorMessage = "Please enter a valid 10-digit mobile number.";
+                    return;
+                }
+            }
+
             input.style.borderColor = 'transparent';
-        }
-    });
+        });
 
-if (isValid) {
-        // Persist progress now that this step is valid
-        if (typeof saveWizardProgress === 'function') saveWizardProgress();
-        nextWizardStep(nextStep);
-    } else {
-        showValidationModal(errorMessage);
+        // Also validate any OPTIONAL email fields (teammate emails)
+        const optionalEmails = currentContainer.querySelectorAll('input[type="email"]:not([required])');
+        optionalEmails.forEach(input => {
+            if (input.value && input.value.trim() && !EMAIL_REGEX.test(input.value.trim())) {
+                isValid = false;
+                input.style.borderColor = '#e74c3c';
+                errorMessage = "One or more teammate emails is invalid — please fix or leave blank.";
+            } else if (input.value && input.value.trim()) {
+                input.style.borderColor = 'transparent';
+            }
+        });
+
+        if (isValid) {
+            if (typeof saveWizardProgress === 'function') saveWizardProgress();
+            nextWizardStep(nextStep);
+        } else {
+            showValidationModal(errorMessage);
+        }
     }
-}
         // =================================================================
 // Share / Copy / Review helpers (must be at top level, not nested)
 // =================================================================
@@ -7245,19 +7150,40 @@ if (paymentType === 'Credit/Debit Card') {
             if (muteBtn) muteBtn.innerHTML = videoIsMuted ? "🔇 Muted" : "🔊 Unmuted";
         }
 
-        function startExperience() {
+function startExperience() {
     const introVideo = document.getElementById('intro-video');
     const splashScreen = document.getElementById('splash-screen');
     const gateContent = document.getElementById('gate-content');
 
     if (!splashScreen) return;
 
-    // Helper that dismisses the splash — used by every code path below
     const dismissSplash = () => {
         try { localStorage.setItem('introPlayed', 'true'); } catch (e) {}
         splashScreen.classList.add('splash-fade-zoom');
         setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
     };
+
+    if (!introVideo) { dismissSplash(); return; }
+
+    if (gateContent) gateContent.style.display = 'none';
+    introVideo.style.display = 'block';
+    introVideo.muted = videoIsMuted;
+
+    introVideo.addEventListener('ended', dismissSplash, { once: true });
+    introVideo.addEventListener('error', dismissSplash, { once: true });
+
+    const timeoutId = setTimeout(dismissSplash, 15000);
+    introVideo.addEventListener('ended', () => clearTimeout(timeoutId), { once: true });
+
+    const playPromise = introVideo.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(err => {
+            console.warn('Intro video failed to play:', err);
+            clearTimeout(timeoutId);
+            dismissSplash();
+        });
+    }
+}
 
     // No video element at all? Just dismiss.
     if (!introVideo) {
