@@ -5107,15 +5107,7 @@ function removePlayer() {
                 nextWizardStep(1);
             }
 
-            
-            const mobileCta = document.getElementById('mobile-cta');
-            if (mobileCta) {
-                if (sectionId === 'signup') {
-                    mobileCta.style.setProperty('display', 'none', 'important');
-                } else {
-                    mobileCta.style.display = 'none'; 
-                }
-            }
+        
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
@@ -8080,11 +8072,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
     </script>
-<!-- Mobile CTA -->
-<button id="mobile-cta" class="primary-btn" onclick="goToSignup(4)" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: none; flex-direction: column; line-height: 1.2; padding: 10px 20px;">
-    <span style="font-size: 16px; font-weight: 700;">Register Now</span>
-    <span style="font-size: 11px; opacity: 0.9; font-weight: 500; margin-top: 2px;">$175/player · Includes lunch &amp; drinks</span>
-</button>
+
 
 <!-- Social Footer -->
 <footer id="site-footer" style="background: rgba(0,0,0,0.55); border-top: 1px solid rgba(255,255,255,0.18); padding: 32px 24px 40px; text-align: center; color: #cbd5e1; box-sizing: border-box; margin-left: 60px; width: calc(100% - 60px);">
