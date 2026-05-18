@@ -4101,7 +4101,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </svg>
         </div>
         
-        <h1 class="ge-headline">You're in.</h1>
+        <h1 class="ge-headline" id="ge-headline">You're in.</h1>
         
         <div class="ge-flourish">
             <div class="ge-flourish-line"></div>
@@ -4112,24 +4112,24 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <div class="ge-team-name" id="ge-team-name">Welcome</div>
         <div class="ge-event-line">Big R Memorial &middot; October 9, 2026</div>
         
-        <div class="ge-details">
-            <div class="ge-detail-row">
-                <span class="ge-detail-label">Players</span>
-                <span class="ge-detail-value" id="ge-player-count">—</span>
-            </div>
-            <div class="ge-detail-row">
-                <span class="ge-detail-label">Total</span>
-                <span class="ge-detail-value" id="ge-total">—</span>
-            </div>
-            <div class="ge-detail-row">
-                <span class="ge-detail-label">Tee Time</span>
-                <span class="ge-detail-value">9:30 AM Shotgun</span>
-            </div>
-            <div class="ge-detail-row">
-                <span class="ge-detail-label">Venue</span>
-                <span class="ge-detail-value">The Bucks Club</span>
-            </div>
-        </div>
+      <div class="ge-details">
+    <div class="ge-detail-row" id="ge-row-players">
+        <span class="ge-detail-label" id="ge-label-players">Players</span>
+        <span class="ge-detail-value" id="ge-player-count">—</span>
+    </div>
+    <div class="ge-detail-row">
+        <span class="ge-detail-label">Total</span>
+        <span class="ge-detail-value" id="ge-total">—</span>
+    </div>
+    <div class="ge-detail-row" id="ge-row-teetime">
+        <span class="ge-detail-label">Tee Time</span>
+        <span class="ge-detail-value">9:30 AM Shotgun</span>
+    </div>
+    <div class="ge-detail-row" id="ge-row-venue">
+        <span class="ge-detail-label">Venue</span>
+        <span class="ge-detail-value">The Bucks Club</span>
+    </div>
+</div>
         
         <div class="ge-payment-note" id="ge-payment-note"></div>
         
@@ -7629,24 +7629,55 @@ if (teamName && teamName.trim()) {
     displayName = (firstName + ' ' + lastName).trim();
 }
 // For sponsor-only with no name, show a friendlier fallback
-if (!displayName) {
-    displayName = isSponsorOnly ? 'Sponsor' : 'Welcome';
-}
-geTeamName.textContent = displayName;
-    
-    // Populate player count
-  const playerCountEl = document.getElementById('ge-player-count');
-if (playerCountEl) {
-    playerCountEl.textContent = isSponsorOnly 
-        ? 'Sponsorship' 
-        : (playerCount + (playerCount === 1 ? ' Player' : ' Players'));
+geTeamName.textContent = displayName || 'Welcome';
+
+// Customize the modal based on whether this is sponsor-only or a player registration
+const geHeadline = document.getElementById('ge-headline');
+const geLabelPlayers = document.getElementById('ge-label-players');
+const gePlayerCount = document.getElementById('ge-player-count');
+const geRowTeeTime = document.getElementById('ge-row-teetime');
+const geRowVenue = document.getElementById('ge-row-venue');
+
+if (isSponsorOnly) {
+    // Sponsor-only: change headline, swap player row for sponsorship tier, hide tee time + venue
+    if (geHeadline) geHeadline.textContent = 'Thank you.';
+    if (geLabelPlayers) geLabelPlayers.textContent = 'Sponsorship';
+    // Get the readable sponsorship label (e.g., "Silver Sponsor — $1,000")
+    const sponsorDropdown = document.getElementById('sponsorship-level');
+    const sponsorLabel = sponsorDropdown && sponsorDropdown.value
+        ? sponsorDropdown.options[sponsorDropdown.selectedIndex].text
+        : 'Sponsorship';
+    if (gePlayerCount) gePlayerCount.textContent = sponsorLabel;
+    // Hide event-day specifics — they're irrelevant for a sponsor
+    if (geRowTeeTime) geRowTeeTime.style.display = 'none';
+    if (geRowVenue) geRowVenue.style.display = 'none';
+} else {
+    // Player registration: restore defaults (in case a previous sponsor-only submission left them hidden)
+    if (geHeadline) geHeadline.textContent = "You're in.";
+    if (geLabelPlayers) geLabelPlayers.textContent = 'Players';
+    if (gePlayerCount) gePlayerCount.textContent = playerCount + (playerCount === 1 ? ' Player' : ' Players');
+    if (geRowTeeTime) geRowTeeTime.style.display = '';
+    if (geRowVenue) geRowVenue.style.display = '';
 }
     
     // Populate total
     document.getElementById('ge-total').textContent = '$' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
     
     // Payment note
-    const gePaymentNote = document.getElementById('ge-payment-note');
+  const gePaymentNote = document.getElementById('ge-payment-note');
+if (isSponsorOnly) {
+    // Sponsor-only: focus on what happens next, not payment logistics
+    if (selectedPaymentType === 'Venmo') {
+        gePaymentNote.innerHTML = `Complete your $${finalTotal} sponsorship via Venmo, then we'll be in touch about your logo placement.<br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
+    } else if (selectedPaymentType === 'Check') {
+        gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. We\'ll reach out shortly about your logo and sponsorship details.';
+    } else if (selectedPaymentType === 'Cash') {
+        gePaymentNote.innerHTML = 'We\'ll reach out shortly about your logo and sponsorship details. Cash can be brought to the event on October 9th.';
+    } else {
+        gePaymentNote.innerHTML = 'A confirmation email is on its way. We\'ll reach out shortly about your logo and sponsorship details.';
+    }
+} else {
+    // Player registration
     if (selectedPaymentType === 'Venmo') {
         gePaymentNote.innerHTML = `Complete your $${finalTotal} payment via Venmo:<br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
     } else if (selectedPaymentType === 'Check') {
@@ -7656,6 +7687,7 @@ if (playerCountEl) {
     } else {
         gePaymentNote.innerHTML = 'A confirmation email is on its way.';
     }
+}
     
     // Show it
     document.getElementById('signup-form-container').style.display = 'none';
