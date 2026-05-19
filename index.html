@@ -4621,7 +4621,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 
         </section>
 
-        <section id="section-signup" class="content-section">
+       <section id="section-signup" class="content-section" data-hide-back-to-top="true">
             <div id="signup-form-container">
                 <img src="Big R Logo.png" alt="Big R Memorial Golf Outing Logo" class="main-logo">
                 <h2 id="form-main-title">Golf Outing Sign Up</h2>
@@ -4860,7 +4860,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
         </section>
 
-<section id="section-donate" class="content-section">
+<section id="section-donate" class="content-section" data-hide-back-to-top="true">
     <div id="donate-form-container">
         <img src="Big R Logo.png" alt="Big R Memorial Golf Outing Logo" class="main-logo">
         <h2>Make a Donation</h2>
@@ -5017,7 +5017,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <p>Text your score from your registered phone in this format:</p>
         <div class="sms-example">team# hole# strokes</div>
         <p style="margin-top: 10px;">Example: <strong style="color:#2ecc71;">3 7 5</strong> = Team 3, Hole 7, 5 strokes</p>
-      <span class="sms-number" id="sms-number-display">Text to: (888) 621-5658</span>
+   <span class="sms-number" id="sms-number-display">Text to: —</span>
         <p style="font-size: 11px; color: #94a3b8; margin-top: 10px;">Only the primary contact's phone can submit scores for a team. Resending a hole replaces the previous score.</p>
     </div>
 
@@ -5216,6 +5216,7 @@ window.__nativeAlert = Window.prototype.alert || function(){};
 // user explicitly clicks something (so it never feels like a hijack).
 // If you want fully custom confirms later, this is where to swap them in.
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqvZkqLpfwwlSzq8t8kc7a2_h6KI9rbZ-mDpPQMJ_gP8eMHEBlZphzLVPhGc3HiuB9DA/exec';
+        const TWILIO_SCORING_NUMBER = '(888) 621-5658';
         const FUNDRAISING_GOAL = 30000;
         const SQUARE_APP_ID = 'sq0idp-isV5KoeAa_SNzX-6BzC_Cw';
         const SQUARE_LOCATION_ID = 'LJSKDTFSMA0CY';
@@ -9001,8 +9002,7 @@ let leaderboardPollTimer = null;
 let lastKnownTeamIds = new Set();
 let lastKnownScoreSignatures = new Map();  // teamId -> "total|holes" signature, for change detection
 
-// EDIT THIS: Your Twilio number for scoring
-const SCORING_PHONE_NUMBER = "(888) 621-5658";
+
 
 function renderLeaderboard(data) {
   const podiumContainer = document.getElementById('leaderboard-podium-container');
@@ -9012,7 +9012,7 @@ function renderLeaderboard(data) {
   const updateEl = document.getElementById('lb-last-update');
   const smsDisplay = document.getElementById('sms-number-display');
 
-  if (smsDisplay) smsDisplay.textContent = 'Text to: ' + SCORING_PHONE_NUMBER;
+if (smsDisplay) smsDisplay.textContent = 'Text to: ' + TWILIO_SCORING_NUMBER;
 
   if (!data || !data.teams || data.teams.length === 0) {
     if (podiumContainer) podiumContainer.innerHTML = '';
@@ -9449,14 +9449,21 @@ function moderatePhoto(rowIndex, decision) {
 
             mapContainer.innerHTML = html;
         }
-        window.addEventListener('scroll', () => {
-    const btn = document.getElementById('back-to-top');
-    if (!btn) return;
-    const showIt = window.scrollY > 600 &&
-                   !document.getElementById('section-signup').classList.contains('active') &&
-                   !document.getElementById('section-donate').classList.contains('active');
-    btn.style.opacity = showIt ? '1' : '0';
-    btn.style.pointerEvents = showIt ? 'auto' : 'none';
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+        const btn = document.getElementById('back-to-top');
+        if (btn) {
+            const activeSection = document.querySelector('.content-section.active');
+            const hideButton = activeSection && activeSection.dataset.hideBackToTop === 'true';
+            const showIt = window.scrollY > 600 && !hideButton;
+            btn.style.opacity = showIt ? '1' : '0';
+            btn.style.pointerEvents = showIt ? 'auto' : 'none';
+        }
+        scrollTicking = false;
+    });
 });
 document.addEventListener("DOMContentLoaded", () => {
     if (window.Square) {
@@ -9472,6 +9479,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     initCountdown();
     showSection('home');
+    const footerYear = document.getElementById('footer-year');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
     renderCourseMap();
     fetchGlobalData(); 
     initTimelineObserver();
@@ -9504,7 +9513,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <path d="M12 3 C12 3 8 7 8 11.5 C8 14.5 10 16.5 12 16.5 C14 16.5 16 14.5 16 11.5 C16 9 14 7.5 13 6 C12.5 7 12 8 12 8 Z"/>
         <line x1="12" y1="18" x2="12" y2="21"/>
     </svg>
-    Honoring Ryan Thomas &middot; In Memoriam · 2025
+    Honoring Ryan Thomas &middot; In Loving Memory
 </p>
 
   <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 24px;">
@@ -9566,7 +9575,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </a>
 </nav>
 
-  <p style="font-size: 12px; color: #64748b; margin: 0;">&copy; 2026 Big R Memorial Golf Outing &middot; All rights reserved &middot; Benefiting mitochondrial disease research</p>
+  <p style="font-size: 12px; color: #64748b; margin: 0;">&copy; <span id="footer-year"></span> Big R Memorial Golf Outing &middot; All rights reserved &middot; Benefiting mitochondrial disease research</p>
 
 </footer>
 <style>
