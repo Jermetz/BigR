@@ -5182,9 +5182,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     </main>
   <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"
     style="position:fixed; bottom:90px; right:20px; width:44px; height:44px; border-radius:50%;
-    background:rgba(52,152,219,0.9); color:white; border:none; font-size:20px; cursor:pointer;
+    background:rgba(52,152,219,0.9); color:white; border:none; font-size:24px; cursor:pointer;
     box-shadow:0 4px 12px rgba(0,0,0,0.4); z-index:998; opacity:0; pointer-events:none;
-    transition:opacity 0.3s ease;">↑</button>
+    transition:opacity 0.3s ease; display:flex; justify-content:center; align-items:center; padding-bottom:3px;">↑</button>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
@@ -8069,12 +8069,12 @@ async function generateShareCard(opts) {
     canvas.height = SIZE;
     const ctx = canvas.getContext('2d');
 
-    // Wait for fonts AND logo in parallel
-    const [_, logo] = await Promise.all([
+  // Wait for fonts, logo, AND badge in parallel
+    const [_, logo, badge] = await Promise.all([
         (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(() => null) : Promise.resolve(),
-        loadCardLogo()
+        loadCardLogo(),
+        new Promise(res => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = () => res(null); i.src = '1stMem.png'; })
     ]);
-
     // -- Background gradient --
     const bgGrad = ctx.createRadialGradient(SIZE/2, SIZE/2, 100, SIZE/2, SIZE/2, SIZE*0.8);
     bgGrad.addColorStop(0, '#1e293b');
@@ -8212,7 +8212,14 @@ async function generateShareCard(opts) {
     ctx.font = '600 22px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('bigrgolf.com  ·  Honoring Ryan Thomas', SIZE/2, 1020);
-
+// -- 1st Memorial Badge --
+    if (badge) {
+        const badgeW = 160; // Size of the badge (adjust if you want it bigger/smaller)
+        const badgeRatio = badgeW / badge.width;
+        const badgeH = badge.height * badgeRatio;
+        // Draw in the top-right corner, perfectly inset within the gold border
+        ctx.drawImage(badge, SIZE - badgeW - 60, 60, badgeW, badgeH);
+    }
     return new Promise(resolve => {
         canvas.toBlob(blob => {
             __shareCardBlob = blob;
