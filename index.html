@@ -7733,8 +7733,34 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
        document.getElementById('golf-signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const clapAudio = new Audio('golf-clap.mp3');
-            clapAudio.volume = 0.5;
+ window.clapAudio = new Audio('golf-clap.mp3');
+    window.clapAudio.volume = 0.5;
+    ```
+
+### 2. Prevent a Fatal Form Crash (`selectedHoleNum`)
+JavaScript is strictly evaluating `selectedHoleNum` in your `if` statement. If this variable isn't defined globally on the page (for instance, if the user isn't interacting with a hole-sponsor specific flow), checking it directly will throw a `ReferenceError` and immediately stop the form from submitting. 
+
+*   **How to find it:** Search for `selectedHoleNum` or look around line 15.
+*   **Code to highlight and replace:**
+    
+```javascript
+    if (sponsorCost === 250 && selectedHoleNum) {
+    ```
+*   **Replace it with:**
+    
+```javascript
+    if (sponsorCost === 250 && typeof selectedHoleNum !== 'undefined' && selectedHoleNum) {
+    ```
+
+---
+
+### A Quick Heads-Up on Global Variables
+I see a few variables being used in this block that aren't defined inside it:
+*   `playerCount`
+*   `COST_PER_PERSON`
+*   `signupCard`
+
+As long as these are defined globally outside of this event listener (e.g., higher up in your `<script>` tag or in another file loaded before this one), your code is perfectly fine. If they *aren't* defined elsewhere, you'll need to pull them from the DOM just like you did with `sponsorCost` and `teamName`.
             
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
@@ -7896,7 +7922,6 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                 label: 'registration'
             })
             .then(data => {
-                if (true) {
                     // === GRAND ENTRANCE — show the full-screen takeover ===
 const geModal = document.getElementById('grand-entrance');
 if (geModal) {
@@ -8013,79 +8038,25 @@ if (isSponsorOnly) {
     }
     
     // Refresh global data and clear wizard state in the background
-    fetchGlobalData();
+fetchGlobalData();
     document.getElementById('golf-signup-form').reset();
     clearWizardProgress();
     const p1Email = document.getElementById('p1-email');
     if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase());
     
     return; // Skip the old success overlay entirely
-}
+    }
 // === END GRAND ENTRANCE ===
-                                        const paymentDiv = document.getElementById('success-payment-instructions');
-                    if (selectedPaymentType === 'Venmo') {
-                        paymentDiv.innerHTML = `Please complete your $${finalTotal} payment via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Pay with Venmo</a>`;
-                    } else {
-                        paymentDiv.innerHTML = "";
-                    }
-
-                    const successHeader = document.getElementById('success-header');
-                    const successBody = document.getElementById('success-body');
-                    const foursomeContainer = document.getElementById('tell-foursome-container');
-
-                    if (isSponsorOnly) {
-                        successHeader.innerHTML = '🤝 Sponsorship Confirmed!';
-                        successBody.innerHTML = "Thank you so much for your generous sponsorship! Your support means the world to us. We'll be in touch soon regarding your logo and sponsorship details.";
-                        if (foursomeContainer) foursomeContainer.style.display = 'none';
-                    } else if (sponsorCost > 0) {
-                        successHeader.innerHTML = '⛳ Registration & Sponsorship Success!';
-                        successBody.innerHTML = "Thank you for registering to play AND for your generous sponsorship! We've recorded your details and look forward to seeing you on October 9th. We will be in touch soon regarding your sponsorship details.";
-                        if (foursomeContainer) foursomeContainer.style.display = 'block';
-                    } else {
-                        successHeader.innerHTML = '⛳ Registration Success!';
-                        successBody.innerHTML = "Thank you for signing up for the Big R Memorial Golf Outing. We've recorded your details and look forward to seeing you on October 9th!";
-                        if (foursomeContainer) foursomeContainer.style.display = 'block';
-                    }
-
-                    if (typeof confetti === 'function') {
-    confetti({ 
-                           particleCount: 150, 
-                           spread: 80, 
-                           origin: { y: 0.6 }, 
-                           zIndex: 10001,
-                           colors: ['#27ae60', '#f1c40f', '#ffffff'] 
-                       });
-}
-
-                    if (window.clapAudio) {
-                        window.clapAudio.play().catch(err => console.log('Playback failed:', err));
-                        setTimeout(() => {
-                            window.clapAudio.pause();
-                            window.clapAudio.currentTime = 0; 
-                        }, 3000);
-                    }
-                    
-                    fetchGlobalData(); 
-                    
-                    document.getElementById('signup-form-container').style.display = 'none';
-                    document.getElementById('success-overlay').style.display = 'flex';
-                    document.getElementById('golf-signup-form').reset();
-                    clearWizardProgress();  // ← ADD THIS LINE
-                    // Remember this email so a duplicate submission on the same device is caught
-const p1Email = document.getElementById('p1-email');
-if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase());
-             } else {
-                    throw new Error(data.error || 'Unknown Server Error');
-                }
             })
 .catch(error => {
                 const wasSaved = selectedPaymentType !== 'Credit/Debit Card';
                 alert(wasSaved
                     ? `We couldn't reach the server, but your registration is saved on this device and we'll retry automatically next time you visit. If no confirmation email arrives within 24 hours, email bigrgolfinvitational@gmail.com.`
                     : `Card payment failed: ${error.message}\n\nNo charge was made. Please try again.`);
-                submitBtn.disabled = false;
+ submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
             });
+        });
 
         function closeSuccessAndGoHome() {
             document.getElementById('success-overlay').style.display = 'none';
@@ -8551,7 +8522,6 @@ submitWithRetry({
                 label: 'donation'
             })
             .then(data => {
-                if (true) {
                     document.getElementById('section-donate').style.display = 'none';
                     
                     const paymentDiv = document.getElementById('donate-payment-instructions');
@@ -8587,10 +8557,7 @@ submitWithRetry({
                     document.getElementById('donate-payment-note').innerText = '';
                     updateDonationDisplay();
                     
-                    fetchGlobalData();
-                } else {
-                    throw new Error(data.error || 'Unknown Server Error');
-                }
+fetchGlobalData();
             })
         .catch(error => {
                 const wasSaved = paymentType !== 'Credit/Debit Card';
