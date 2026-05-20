@@ -2278,11 +2278,12 @@ color: #74b9ff;
 }
 /* Mobile tightening */
 @media (max-width: 480px) {
-    #countdown-timer { padding: 20px 12px; gap: 4px; }
-    .time-box + .time-box::before { left: -4px; font-size: 32px; }
+    #countdown-timer { padding: 20px 10px; gap: 16px; }
+    .time-box { min-width: 0 !important; padding: 0 !important; }
+    .time-box + .time-box::before { left: -12px; font-size: 32px; top: 6px; }
     .time-box p { font-size: 9px; letter-spacing: 1.5px; }
+    .time-box span { font-size: clamp(32px, 10vw, 50px); }
 }
-
         /* Sponsor Section Enhancements */
         .sponsor-tier {
             margin-bottom: 30px;
@@ -3158,8 +3159,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             .action-buttons {
                 flex-direction: column; 
             }
-            #countdown-timer { gap: 10px; }
-            .time-box { min-width: 65px; padding: 10px; }
+#countdown-timer { gap: 20px; }
+        .time-box { min-width: 55px; padding: 5px; }
+        .time-box + .time-box::before { left: -14px; }
         }
                   
         .size-btn {
