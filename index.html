@@ -7778,7 +7778,8 @@ const primaryEmailInput = document.getElementById('p1-email');
 if (primaryEmailInput && primaryEmailInput.value) {
   const emailLower = primaryEmailInput.value.trim().toLowerCase();
   // Store last submitted email in sessionStorage so refreshing the page also warns
-  const lastSubmitted = sessionStorage.getItem('bigR_lastSubmittedEmail');
+ let lastSubmitted = null;
+try { lastSubmitted = sessionStorage.getItem('bigR_lastSubmittedEmail'); } catch(e) {}
   if (lastSubmitted && lastSubmitted === emailLower) {
     const proceed = confirm(
       "⚠️ It looks like this email may have already been submitted this session.\n\n" +
@@ -8016,7 +8017,7 @@ fetchGlobalData();
     document.getElementById('golf-signup-form').reset();
     clearWizardProgress();
     const p1Email = document.getElementById('p1-email');
-    if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase());
+   if (p1Email) { try { sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase()); } catch(e) {} }
     
     return; // Skip the old success overlay entirely
     }
@@ -8541,6 +8542,7 @@ fetchGlobalData();
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Donation";
             });
+    }
         function closeDonateSuccess() {
             document.getElementById('donate-success-overlay').style.display = 'none';
             document.getElementById('section-donate').style.display = 'block';
@@ -8620,7 +8622,7 @@ function startExperience() {
 
 
         function skipIntro() {
-            localStorage.setItem('introPlayed', 'true');
+            try { localStorage.setItem('introPlayed', 'true'); } catch (e) {}
             const splashScreen = document.getElementById('splash-screen');
             const introVideo = document.getElementById('intro-video');
             if (introVideo) introVideo.pause();
@@ -9515,10 +9517,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(attachWizardAutosave, 1500);
     }
 
-    if (localStorage.getItem('introPlayed') === 'true') {
-        const splashScreen = document.getElementById('splash-screen');
-        if (splashScreen) splashScreen.style.display = 'none';
-    }
+  try {
+        if (localStorage.getItem('introPlayed') === 'true') {
+            const splashScreen = document.getElementById('splash-screen');
+            if (splashScreen) splashScreen.style.display = 'none';
+        }
+    } catch(e) {}
 });
     </script>
 
