@@ -5210,6 +5210,79 @@ window.__nativeAlert = Window.prototype.alert || function(){};
 // user explicitly clicks something (so it never feels like a hijack).
 // If you want fully custom confirms later, this is where to swap them in.
         const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqvZkqLpfwwlSzq8t8kc7a2_h6KI9rbZ-mDpPQMJ_gP8eMHEBlZphzLVPhGc3HiuB9DA/exec';
+        // =================================================================
+// RETRY-WITH-STORAGE WRAPPER
+// =================================================================
+const FAILED_SUBMISSIONS_KEY = 'bigR_failedSubmissions';
+
+async function submitWithRetry(payload, options = {}) {
+    const { canRetry = true, label = 'submission' } = options;
+    const maxAttempts = canRetry ? 3 : 1;
+    const delays = [1000, 2500, 5000];
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 90000);
+            const response = await fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('Server returned HTTP ' + response.status);
+            const data = await response.json();
+            if (data.result === 'success') return data;
+            throw new Error(data.error || 'Unknown server error');
+        } catch (err) {
+            lastError = err;
+            console.warn(`[${label}] Attempt ${attempt}/${maxAttempts} failed:`, err.message);
+            if (attempt === maxAttempts) {
+                if (canRetry) {
+                    try {
+                        const failed = JSON.parse(localStorage.getItem(FAILED_SUBMISSIONS_KEY) || '[]');
+                        failed.push({ payload, label, error: err.message, timestamp: Date.now() });
+                        if (failed.length > 10) failed.shift();
+                        localStorage.setItem(FAILED_SUBMISSIONS_KEY, JSON.stringify(failed));
+                    } catch {}
+                }
+                throw err;
+            }
+            await new Promise(resolve => setTimeout(resolve, delays[attempt - 1]));
+        }
+    }
+    throw lastError;
+}
+
+async function checkForFailedSubmissions() {
+    let failed = [];
+    try { failed = JSON.parse(localStorage.getItem(FAILED_SUBMISSIONS_KEY) || '[]'); } catch {}
+    if (failed.length === 0) return;
+
+    const message = failed.length === 1
+        ? `We noticed your previous ${failed[0].label} didn't go through. Retry it now?`
+        : `We noticed ${failed.length} submissions didn't go through. Retry them now?`;
+    if (!confirm(message)) return;
+
+    let succeeded = 0;
+    const stillFailed = [];
+    for (const item of failed) {
+        try {
+            await submitWithRetry(item.payload, { canRetry: false, label: 'recovery' });
+            succeeded++;
+        } catch {
+            stillFailed.push(item);
+        }
+    }
+    localStorage.setItem(FAILED_SUBMISSIONS_KEY, JSON.stringify(stillFailed));
+    if (succeeded > 0) {
+        alert(`✅ Successfully recovered ${succeeded} submission${succeeded > 1 ? 's' : ''}! Confirmation email coming shortly.`);
+        fetchGlobalData();
+    } else {
+        alert(`Still couldn't reach the server. Your submissions are saved and we'll try again next time.`);
+    }
+}
         const TWILIO_SCORING_NUMBER = '(888) 621-5658';
         const FUNDRAISING_GOAL = 30000;
         const SQUARE_APP_ID = 'sq0idp-isV5KoeAa_SNzX-6BzC_Cw';
@@ -7806,9 +7879,8 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                 });
             }
 
-            fetch(GOOGLE_APP_SCRIPT_URL, {
-                method: 'POST',
-body: JSON.stringify({ 
+           submitWithRetry({
+    
                     action: "signup", 
                     teamName: teamName,
                     players: players,
@@ -7819,11 +7891,12 @@ body: JSON.stringify({
                     isSponsorOnly: isSponsorOnly,
                     transactionId: transactionId,
                     squareToken: squareToken
-                })
+       }, {
+                canRetry: selectedPaymentType !== 'Credit/Debit Card',
+                label: 'registration'
             })
-            .then(response => response.json())
             .then(data => {
-                if (data.result === 'success') {
+                if (true) {
                     // === GRAND ENTRANCE — show the full-screen takeover ===
 const geModal = document.getElementById('grand-entrance');
 if (geModal) {
@@ -8005,12 +8078,14 @@ if (p1Email) sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.tri
                     throw new Error(data.error || 'Unknown Server Error');
                 }
             })
-            .catch(error => {
-                alert("Backend Error: " + error.message);
+.catch(error => {
+                const wasSaved = selectedPaymentType !== 'Credit/Debit Card';
+                alert(wasSaved
+                    ? `We couldn't reach the server, but your registration is saved on this device and we'll retry automatically next time you visit. If no confirmation email arrives within 24 hours, email bigrgolfinvitational@gmail.com.`
+                    : `Card payment failed: ${error.message}\n\nNo charge was made. Please try again.`);
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Registration";
             });
-        });
 
         function closeSuccessAndGoHome() {
             document.getElementById('success-overlay').style.display = 'none';
@@ -8461,9 +8536,7 @@ if (paymentType === 'Credit/Debit Card') {
             const tributeEl = document.getElementById('donate-tribute');
             const tributeText = tributeEl ? tributeEl.value.trim() : "";
             
-            fetch(GOOGLE_APP_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ 
+submitWithRetry({
                     action: "donate", 
                     firstName: firstName,
                     lastName: lastName,
@@ -8473,11 +8546,12 @@ if (paymentType === 'Credit/Debit Card') {
                     squareToken: squareToken,
                     transactionId: transactionId,
                     tribute: tributeText
-                })
+   }, {
+                canRetry: paymentType !== 'Credit/Debit Card',
+                label: 'donation'
             })
-            .then(response => response.json())
             .then(data => {
-                if (data.result === 'success') {
+                if (true) {
                     document.getElementById('section-donate').style.display = 'none';
                     
                     const paymentDiv = document.getElementById('donate-payment-instructions');
@@ -8518,12 +8592,14 @@ if (paymentType === 'Credit/Debit Card') {
                     throw new Error(data.error || 'Unknown Server Error');
                 }
             })
-            .catch(error => {
-                alert("Backend Error: " + error.message);
+        .catch(error => {
+                const wasSaved = paymentType !== 'Credit/Debit Card';
+                alert(wasSaved
+                    ? `We couldn't reach the server, but your donation is saved on this device and we'll retry automatically next time you visit.`
+                    : `Card payment failed: ${error.message}\n\nNo charge was made. Please try again.`);
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Submit Donation";
             });
-        }
         function closeDonateSuccess() {
             document.getElementById('donate-success-overlay').style.display = 'none';
             document.getElementById('section-donate').style.display = 'block';
@@ -9484,6 +9560,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (footerYear) footerYear.textContent = new Date().getFullYear();
     renderCourseMap();
     fetchGlobalData(); 
+    setTimeout(checkForFailedSubmissions, 3000);
     initTimelineObserver();
     startToastEngine();
 
