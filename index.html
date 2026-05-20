@@ -7735,46 +7735,20 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             
  window.clapAudio = new Audio('golf-clap.mp3');
     window.clapAudio.volume = 0.5;
-    ```
+const submitBtn = document.getElementById('submit-btn');
+submitBtn.disabled = true;
+submitBtn.innerText = "Submitting Registration...";
 
-### 2. Prevent a Fatal Form Crash (`selectedHoleNum`)
-JavaScript is strictly evaluating `selectedHoleNum` in your `if` statement. If this variable isn't defined globally on the page (for instance, if the user isn't interacting with a hole-sponsor specific flow), checking it directly will throw a `ReferenceError` and immediately stop the form from submitting. 
+const selectedPaymentType = document.getElementById('payment-type').value;
 
-*   **How to find it:** Search for `selectedHoleNum` or look around line 15.
-*   **Code to highlight and replace:**
-    
-```javascript
-    if (sponsorCost === 250 && selectedHoleNum) {
-    ```
-*   **Replace it with:**
-    
-```javascript
-    if (sponsorCost === 250 && typeof selectedHoleNum !== 'undefined' && selectedHoleNum) {
-    ```
+const sponsorLevelSelect = document.getElementById('sponsorship-level');
+const sponsorCost = sponsorLevelSelect ? (parseInt(sponsorLevelSelect.value) || 0) : 0;
+let sponsorName = (sponsorLevelSelect && sponsorLevelSelect.value) ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
 
----
-
-### A Quick Heads-Up on Global Variables
-I see a few variables being used in this block that aren't defined inside it:
-*   `playerCount`
-*   `COST_PER_PERSON`
-*   `signupCard`
-
-As long as these are defined globally outside of this event listener (e.g., higher up in your `<script>` tag or in another file loaded before this one), your code is perfectly fine. If they *aren't* defined elsewhere, you'll need to pull them from the DOM just like you did with `sponsorCost` and `teamName`.
-            
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Submitting Registration...";
-
-            const selectedPaymentType = document.getElementById('payment-type').value;
-            
-            const sponsorLevelSelect = document.getElementById('sponsorship-level');
-            const sponsorCost = sponsorLevelSelect ? (parseInt(sponsorLevelSelect.value) || 0) : 0;
-            let sponsorName = (sponsorLevelSelect && sponsorLevelSelect.value) ? sponsorLevelSelect.options[sponsorLevelSelect.selectedIndex].text : "None";
-            
-           if (sponsorCost === 250 && selectedHoleNum) {
-                sponsorName = "Assigned Hole #" + selectedHoleNum + " — $250";
-            }
+// Safely check if this is a $250 hole sponsor and append the assigned hole
+if (sponsorCost === 250 && typeof selectedHoleNum !== 'undefined' && selectedHoleNum) {
+    sponsorName = "Assigned Hole #" + selectedHoleNum + " — $250";
+}
             
             const displayInput = document.getElementById('sponsor-display-name');
             if (displayInput && displayInput.value.trim()) {
