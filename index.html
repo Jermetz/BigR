@@ -1081,10 +1081,11 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
             transition: transform 0.3s ease;
             z-index: 10;
+            cursor: pointer; /* This line makes the mouse turn into a hand */
         }
         
         .memorial-badge:hover {
-            transform: scale(1.08);
+            transform: scale(1.3);
         }
         
         @media (max-width: 768px) {
@@ -4531,7 +4532,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <img src="Big R Logo.png" alt="Big R Memorial Golf Outing Logo" class="main-logo">
             
             <h1 onclick="handleSecretAdminClick()" style="cursor: pointer; user-select: none;">Welcome to the Big R Golf Outing</h1>
-<img src="1stMem.png" alt="1st Memorial Outing — In Honor of Ryan Thomas" class="memorial-badge">
+<img src="1stMem.png" alt="1st Memorial Outing — In Honor of Ryan Thomas" class="memorial-badge" onclick="openLightbox(this.src)">
             
             <h3 class="event-date">Friday, October 9th, '26</h3>
             <p class="home-subtitle">Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>
