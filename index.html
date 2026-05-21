@@ -6,6 +6,7 @@
     <title>Big R Golf</title>
     <link rel="apple-touch-icon" href="BigRAppleIcon.png">
     <link rel="icon" href="BigRIcontab.png">
+    <link rel="preload" as="video" href="NewLogoIntro.mp4">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5000,7 +5001,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <h2>Photos</h2>
     <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>
     <div class="photo-grid" style="text-align: center;">
-        <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" loading="lazy" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
     </div>
 
     <!-- Live event upload — only meaningful on event day, but works year-round -->
@@ -5826,7 +5827,7 @@ function renderPendingMemories(pending) {
         let photosHtml = '';
         if (m.photoUrls && m.photoUrls.length > 0) {
             photosHtml = '<div class="pm-photos">' +
-                m.photoUrls.map(url => `<img src="${url.thumb}" onclick="openLightbox('${url.full}')" alt="Pending memory photo">`).join('') +
+       m.photoUrls.map(url => `<img src="${url.thumb}" loading="lazy" onclick="openLightbox('${url.full}')" alt="Pending memory photo">`).join('') +
                 '</div>';
         }
  
