@@ -2231,6 +2231,158 @@ color: #74b9ff;
     overflow: hidden;
     max-width: 580px;
 }
+        /* =================================================================
+   SOCIAL PROOF STATS — three cards under the countdown
+   ================================================================= */
+.social-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 580px;
+    width: 100%;
+    margin: 0 auto 35px;
+}
+.social-stat-card {
+    background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(15,23,42,0.4) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 18px 10px 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: socialStatFadeIn 0.6s ease-out forwards;
+}
+.social-stat-card:nth-child(1) { animation-delay: 0.1s; }
+.social-stat-card:nth-child(2) { animation-delay: 0.25s; }
+.social-stat-card:nth-child(3) { animation-delay: 0.4s; }
+@keyframes socialStatFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+.social-stat-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(241, 196, 15, 0.35);
+}
+/* Subtle top accent line in the brand gold */
+.social-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(241, 196, 15, 0.6), transparent);
+}
+.social-stat-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(28px, 6vw, 38px);
+    font-weight: 700;
+    color: #f1c40f;
+    line-height: 1;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 12px rgba(241, 196, 15, 0.25);
+}
+.social-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    font-weight: 600;
+    line-height: 1.3;
+}
+.social-stat-card.is-zero .social-stat-value {
+    color: #cbd5e1;
+    text-shadow: none;
+}
+@media (max-width: 480px) {
+    .social-stats-row { gap: 8px; }
+    .social-stat-card { padding: 14px 6px 12px; }
+    .social-stat-label { font-size: 9px; letter-spacing: 1px; }
+}
+
+/* =================================================================
+   STICKY MOBILE/SCROLL CTA BAR
+   ================================================================= */
+#sticky-cta-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 997;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(241, 196, 15, 0.25);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    gap: 10px;
+    transform: translateY(110%);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+#sticky-cta-bar.visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+#sticky-cta-bar .sticky-cta-inner {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+#sticky-cta-bar button {
+    flex: 1;
+    padding: 13px 14px;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 46px;
+}
+#sticky-cta-bar .cta-register {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: white;
+    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.35);
+}
+#sticky-cta-bar .cta-register:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.5);
+}
+#sticky-cta-bar .cta-donate {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    box-shadow: 0 4px 14px rgba(231, 76, 60, 0.35);
+}
+#sticky-cta-bar .cta-donate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(231, 76, 60, 0.5);
+}
+/* When the sticky bar is visible, lift the floating widgets so they don't overlap */
+body.sticky-cta-visible #back-to-top {
+    bottom: 160px;
+}
+body.sticky-cta-visible #contact-widget {
+    bottom: 95px;
+}
+@media (max-width: 480px) {
+    #sticky-cta-bar button { font-size: 13px; padding: 12px 10px; }
+}
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    #sticky-cta-bar { transition: none; }
+    .social-stat-card { animation: none; opacity: 1; transform: none; }
+}
 /* Subtle gradient sweep across the countdown every few seconds */
 #countdown-timer::after {
     content: '';
@@ -4544,7 +4696,21 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="time-box"><span id="minutes">00</span><p>Minutes</p></div>
                 <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>
             </div>
-
+<!-- Social proof: live event stats -->
+            <div class="social-stats-row" id="social-stats-row">
+                <div class="social-stat-card is-zero" id="stat-players-card">
+                    <div class="social-stat-value" id="stat-players">0</div>
+                    <div class="social-stat-label">Players<br>Registered</div>
+                </div>
+                <div class="social-stat-card is-zero" id="stat-raised-card">
+                    <div class="social-stat-value" id="stat-raised">$0</div>
+                    <div class="social-stat-label">Raised<br>So Far</div>
+                </div>
+                <div class="social-stat-card is-zero" id="stat-holes-card">
+                    <div class="social-stat-value" id="stat-holes">0</div>
+                    <div class="social-stat-label">Holes<br>Sponsored</div>
+                </div>
+            </div>
          <div class="fundraiser-meter-container">
     <div class="meter-header">
         <h3>Drive to the Goal</h3>
@@ -6662,6 +6828,7 @@ function debounceWizardSave() {
                 .then(data => {
                     if (data && data.total !== undefined) {
                         updateMeterUI(data.total);
+                        updateSocialStats(data);
                     }
                     if (data && data.isSoldOut) {
                         document.getElementById('sold-out-banner').style.display = 'block';
@@ -8727,7 +8894,115 @@ function startExperience() {
             if (hours < 24) return hours + (hours === 1 ? " hour ago" : " hours ago");
             return days + (days === 1 ? " day ago" : " days ago");
         }
+// =================================================================
+// SOCIAL PROOF STATS — animated count-up under the countdown
+// Pulls live data from fetchGlobalData() responses.
+// =================================================================
+let socialStatsAnimated = { players: false, raised: false, holes: false };
 
+function animateStatCount(el, targetValue, formatter, duration = 1400) {
+    if (!el) return;
+    let startTimestamp = null;
+    const startValue = 0;
+
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // easeOutQuart — matches the existing meter animation feel
+        const eased = 1 - Math.pow(1 - progress, 4);
+        const current = Math.floor(startValue + eased * (targetValue - startValue));
+        el.textContent = formatter(current);
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            el.textContent = formatter(targetValue);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+function updateSocialStats(data) {
+    if (!data) return;
+
+    // Players registered = max capacity - spots remaining (fall back to 0)
+    const maxCap = parseInt(data.maxCapacity) || 144;
+    const spotsLeft = (typeof data.spotsRemaining === 'number') ? data.spotsRemaining : maxCap;
+    const playersRegistered = Math.max(0, maxCap - spotsLeft);
+
+    // Total raised — already exposed
+    const totalRaised = parseInt(data.total) || 0;
+
+    // Holes sponsored — array length
+    const holesSponsored = Array.isArray(data.soldHoles) ? data.soldHoles.length : 0;
+
+    // Players card
+    const pEl = document.getElementById('stat-players');
+    const pCard = document.getElementById('stat-players-card');
+    if (pEl && pCard) {
+        pCard.classList.toggle('is-zero', playersRegistered === 0);
+        if (!socialStatsAnimated.players) {
+            animateStatCount(pEl, playersRegistered, v => v.toLocaleString());
+            socialStatsAnimated.players = true;
+        } else {
+            pEl.textContent = playersRegistered.toLocaleString();
+        }
+    }
+
+    // Raised card
+    const rEl = document.getElementById('stat-raised');
+    const rCard = document.getElementById('stat-raised-card');
+    if (rEl && rCard) {
+        rCard.classList.toggle('is-zero', totalRaised === 0);
+        if (!socialStatsAnimated.raised) {
+            animateStatCount(rEl, totalRaised, v => '$' + v.toLocaleString());
+            socialStatsAnimated.raised = true;
+        } else {
+            rEl.textContent = '$' + totalRaised.toLocaleString();
+        }
+    }
+
+    // Holes card
+    const hEl = document.getElementById('stat-holes');
+    const hCard = document.getElementById('stat-holes-card');
+    if (hEl && hCard) {
+        hCard.classList.toggle('is-zero', holesSponsored === 0);
+        const formatter = v => v + ' / 18';
+        if (!socialStatsAnimated.holes) {
+            animateStatCount(hEl, holesSponsored, formatter);
+            socialStatsAnimated.holes = true;
+        } else {
+            hEl.textContent = formatter(holesSponsored);
+        }
+    }
+}
+
+// =================================================================
+// STICKY SCROLL CTA BAR
+// Shows after 1000px scroll, hides on signup/donate pages and
+// any section flagged with data-hide-back-to-top="true".
+// =================================================================
+function updateStickyCtaBar() {
+    const bar = document.getElementById('sticky-cta-bar');
+    if (!bar) return;
+
+    const activeSection = document.querySelector('.content-section.active');
+    const sectionId = activeSection ? activeSection.id : '';
+    // Hide on the signup, donate, and any future opt-out section
+    const isFormPage = activeSection && activeSection.dataset.hideBackToTop === 'true';
+    // Also hide if a fullscreen overlay is open (success, admin, etc.)
+    const overlayOpen = Array.from(document.querySelectorAll('.fullscreen-overlay'))
+        .some(o => o.style.display === 'flex');
+
+    const shouldShow = window.scrollY > 1000 && !isFormPage && !overlayOpen;
+
+    if (shouldShow) {
+        bar.classList.add('visible');
+        document.body.classList.add('sticky-cta-visible');
+    } else {
+        bar.classList.remove('visible');
+        document.body.classList.remove('sticky-cta-visible');
+    }
+}
         // HTML-escape — defense against weird characters in team names being interpreted as markup
         function escapeToastHtml(str) {
             const div = document.createElement('div');
@@ -9546,9 +9821,19 @@ window.addEventListener('scroll', () => {
             btn.style.opacity = showIt ? '1' : '0';
             btn.style.pointerEvents = showIt ? 'auto' : 'none';
         }
+        updateStickyCtaBar();
         scrollTicking = false;
     });
 });
+
+// Also re-evaluate when switching sections (scrollY resets to 0 on showSection)
+const _originalShowSection = window.showSection;
+if (typeof _originalShowSection === 'function') {
+    window.showSection = function(sectionId) {
+        _originalShowSection(sectionId);
+        setTimeout(updateStickyCtaBar, 100);
+    };
+}
 document.addEventListener("DOMContentLoaded", () => {
     if (window.Square) {
         const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
@@ -9674,6 +9959,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 </style>
+    <!-- Sticky scroll CTA bar -->
+<div id="sticky-cta-bar" role="region" aria-label="Quick actions">
+    <div class="sticky-cta-inner">
+        <button class="cta-register" onclick="goToSignup(4)" aria-label="Register for the tournament">⛳ Register</button>
+        <button class="cta-donate" onclick="showSection('donate')" aria-label="Make a donation">❤️ Donate</button>
+    </div>
+</div>
 <!-- Floating Contact Button -->
 <a href="mailto:bigrgolfinvitational@gmail.com" id="contact-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 60px; height: 60px; background: #3498db; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; text-decoration: none;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Email Us">
   <span style="color: white; font-size: 28px;">✉️</span>
