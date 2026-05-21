@@ -6431,7 +6431,8 @@ function removePlayer() {
         }
 
  function showSection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(section => {
+            console.log("Navigating to:", sectionId);
+     document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none'; 
             });
@@ -8936,11 +8937,12 @@ fetchGlobalData();
             showSection('home');
         }
         function initCountdown() {
-            const teeTime = new Date(Date.UTC(2026, 9, 9, 13, 30, 0)).getTime();
+          const teeTime = new Date('2026-10-09T13:30:00Z').getTime();
             
             function updateTimer() {
                 const now = new Date().getTime();
                 const distance = teeTime - now;
+                console.log("Countdown Check: Tee Time:", teeTime, "Now:", now, "Distance:", distance);
                 
                 if (distance < 0) return;
                 
@@ -9152,7 +9154,7 @@ function updateStickyCtaBar() {
     const overlayOpen = Array.from(document.querySelectorAll('.fullscreen-overlay'))
         .some(o => o.style.display === 'flex');
 
-    const shouldShow = window.scrollY > 1000 && !isFormPage && !overlayOpen;
+    const shouldShow = window.scrollY > 200 && !isFormPage && !overlayOpen;
 
     if (shouldShow) {
         bar.classList.add('visible');
