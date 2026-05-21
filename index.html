@@ -4659,6 +4659,11 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <button class="primary-btn" onclick="sendSmsBlast()" style="background-color: #9b59b6; color: white;">Blast Text Message</button>
                 <p id="admin-sms-loader" class="admin-loader" style="color: #9b59b6;">📱 Sending text messages...</p>
             </div>
+            <div class="admin-section">
+                <label>🛠️ Developer Tools</label>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Clear local browser storage (failed submissions, wizard state, and duplicate email warnings). Useful for testing.</p>
+                <button class="secondary-btn" onclick="clearAdminCache()" style="width: 100%; border: 1px solid #e74c3c; color: #e74c3c; background: transparent;">🗑️ Clear Local Form Cache</button>
+            </div>
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>
         </div>
     </div>
@@ -7671,6 +7676,19 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             document.getElementById('admin-overlay').style.display = 'none';
             document.body.style.overflow = '';
         }
+        javascript
+    function clearAdminCache() {
+        if (!confirm("Are you sure you want to clear local form cache? This will reset your current sign-up progress and any failed submissions pending retry.")) return;
+        try {
+            localStorage.removeItem('bigR_failedSubmissions');
+            sessionStorage.removeItem('bigRWizardState');
+            sessionStorage.removeItem('bigR_lastSubmittedEmail');
+            alert("Cache cleared successfully! The page will now reload to apply changes.");
+            window.location.reload();
+        } catch(e) {
+            alert("Error clearing cache: " + e.message);
+        }
+    }
         
         // --- Photo Lightbox Logic ---
     let currentLightboxImages = [];
