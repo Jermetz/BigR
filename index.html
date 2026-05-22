@@ -1084,7 +1084,7 @@
         }
 
         /* Sidebar Navigation */
-        #sidebar {
+       #sidebar {
             position: fixed;
             top: 0;
             left: 0;
@@ -1096,11 +1096,9 @@
             transition: width 0.3s ease;
             overflow: hidden;
             z-index: 1000;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
         }
-
         #sidebar.expanded {
             width: 250px;
         }
@@ -4812,8 +4810,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         </video>
     </div>
 
-    <nav id="sidebar" class="collapsed" onclick="toggleMenu()">
-        <div class="menu-header">
+   <nav id="sidebar" class="collapsed">
+        <div class="menu-header" onclick="toggleMenu(event)" style="cursor: pointer;">
             <span class="hamburger">☰</span>
             <span class="menu-text">Menu</span>
         </div>
@@ -5863,18 +5861,25 @@ function submitAdminCapacity() {
     .catch(() => alert("Network Error: Could not connect to Google Script."));
 }
         // --- Navigation Logic ---
-        function toggleMenu() {
+    function toggleMenu(event) {
+            if (event) event.stopPropagation(); // Prevents the outside-click listener from firing immediately
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('expanded');
         }
 
+        // Close sidebar when clicking a navigation link (consistent for desktop & mobile)
         document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('expanded');
-                }
+            link.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('expanded');
             });
+        });
+
+        // Close sidebar when clicking outside of it (standard overlay behavior)
+        document.addEventListener('click', (event) => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('expanded') && !sidebar.contains(event.target)) {
+                sidebar.classList.remove('expanded');
+            }
         });
         // Close any open hole-sponsor tooltips when tapping outside a sold hole
         document.addEventListener('click', (e) => {
