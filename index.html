@@ -5227,15 +5227,14 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             <p id="selected-hole-indicator" style="display: none; color: #2ecc71; font-weight: bold; text-align: center; margin-bottom: 15px; background: rgba(46, 204, 113, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.3);">⛳ Sponsoring Hole #<span id="selected-hole-display"></span></p>
 
                             <div class="form-group">
-                              <select id="sponsorship-level" onchange="handleSponsorshipChange()">
-
-                                    <option value="" disabled selected>- Select a Sponsorship -</option>
-                                    <option value="0">No Sponsorship (Golf Only)</option>
-                                    <option value="250">Hole Sponsor — $250</option>
-                                    <option value="1000">Silver Sponsor — $1,000</option>
-                                    <option value="2500">Gold Sponsor — $2,500</option>
-                                    <option value="5000">Platinum Sponsor — $5,000</option>
-                                </select>
+                             <select id="sponsorship-level" onchange="handleSponsorshipChange()">
+    <option value="" disabled selected>- Select a Sponsorship -</option>
+    <option value="0">No Sponsorship (Golf Only)</option>
+    <option value="250">Hole Sponsor — $250</option>
+    <option value="1000" id="opt-silver">Silver Sponsor — $1,000</option>
+    <option value="2500" id="opt-gold">Gold Sponsor — $2,500</option>
+    <option value="5000" id="opt-platinum">Platinum Sponsor — $5,000</option>
+</select>
                             </div>
                             <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
                                 <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
@@ -5602,29 +5601,38 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <h2>Our Sponsors</h2>
             <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>
 
-                      <div class="sponsor-tier tier-platinum">
-                <div class="tier-title">Platinum Sponsors</div>
-                <div class="sponsor-logos">
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('5000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                </div>
-            </div>
+                    <div class="sponsor-tier tier-platinum">
+    <div class="tier-title">Platinum Sponsors</div>
+    <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Limited to 2 · Presenting Partners</p>
+    <div class="sponsor-logos">
+        <div class="sponsor-placeholder" onclick="selectSponsorship('5000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('5000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+    </div>
+</div>
 
-            <div class="sponsor-tier tier-gold">
-                <div class="tier-title">Gold Sponsors</div>
-                <div class="sponsor-logos">
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                </div>
-            </div>
+<div class="sponsor-tier tier-gold">
+    <div class="tier-title">Gold Sponsors</div>
+    <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Limited to 4 · Event Partners</p>
+    <div class="sponsor-logos">
+        <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+    </div>
+</div>
 
-            <div class="sponsor-tier tier-silver">
-                <div class="tier-title">Silver Sponsors</div>
-                <div class="sponsor-logos">
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
-                </div>
-            </div>
+<div class="sponsor-tier tier-silver">
+    <div class="tier-title">Silver Sponsors</div>
+    <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Multiple opportunities available · $1,000 each</p>
+    <div class="sponsor-logos">
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+        <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
+    </div>
+</div>
 
             <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
                         <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Tap an open hole on the map below to sponsor it.</p>
@@ -7308,6 +7316,9 @@ if (data && data.eventPhotos) {
                     if (data && data.soldPremium) {
                         updatePremiumSponsorsUI(data.soldPremium);
                     }
+                    if (data && data.tierCaps) {
+    updateTierDropdownAvailability(data.tierCaps);
+}
                     if (data && data.spotsRemaining !== undefined) {
                         const maxCap = parseInt(data.maxCapacity) || 144;
                         updateSpotsRemainingUI(data.spotsRemaining, maxCap);
@@ -7915,7 +7926,32 @@ function updateHoleSponsorsUI(soldHoles) {
                     placeholders[i].style.cursor = 'not-allowed';
                 }
             };
+function updateTierDropdownAvailability(tierCaps) {
+    var platOpt = document.getElementById('opt-platinum');
+    var goldOpt = document.getElementById('opt-gold');
 
+    if (platOpt && tierCaps.platinum) {
+        var pRem = tierCaps.platinum.remaining;
+        if (pRem <= 0) {
+            platOpt.textContent = 'Platinum Sponsor — SOLD OUT';
+            platOpt.disabled = true;
+        } else {
+            platOpt.textContent = 'Platinum Sponsor — $5,000 (' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left)';
+            platOpt.disabled = false;
+        }
+    }
+
+    if (goldOpt && tierCaps.gold) {
+        var gRem = tierCaps.gold.remaining;
+        if (gRem <= 0) {
+            goldOpt.textContent = 'Gold Sponsor — $2,500 — SOLD OUT';
+            goldOpt.disabled = true;
+        } else {
+            goldOpt.textContent = 'Gold Sponsor — $2,500 (' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left)';
+            goldOpt.disabled = false;
+        }
+    }
+}
             if (soldPremium) {
                 markSold('platinum', soldPremium.platinum);
                 markSold('gold', soldPremium.gold);
