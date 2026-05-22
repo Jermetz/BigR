@@ -10,7 +10,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     
     <style>
@@ -4040,7 +4040,6 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         /* =================================================================
    GRAND ENTRANCE — full-screen success takeover
    ================================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 #grand-entrance {
     display: none;
@@ -4610,7 +4609,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <div id="success-overlay" class="fullscreen-overlay">
         <div class="overlay-card success-card">
             <h2 id="success-header">⛳ Registration Success!</h2>
-           <p id="success-body">Thank you for signing up for the Big R Memorial Golf Outing Golf Outing. We've recorded your details and look forward to seeing you on October 9th!</p>
+           <p id="success-body">Thank you for signing up for the Big R Memorial Golf Outing. We've recorded your details and look forward to seeing you on October 9th!</p>
             <div id="success-payment-instructions" style="margin-bottom: 20px; font-weight: bold; color: #f1c40f;"></div>
 <div id="tell-foursome-container" style="margin-bottom: 20px;">
     <div style="background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3); border-radius: 12px; padding: 16px;">
@@ -7912,7 +7911,7 @@ function updateHoleSponsorsUI(soldHoles) {
             }
         }
 
-        function updatePremiumSponsorsUI(soldPremium) {
+ function updatePremiumSponsorsUI(soldPremium) {
             const markSold = (tierClass, soldCount) => {
                 const tierDiv = document.querySelector(`.tier-${tierClass} .sponsor-logos`);
                 if (!tierDiv) return;
@@ -7926,7 +7925,14 @@ function updateHoleSponsorsUI(soldHoles) {
                     placeholders[i].style.cursor = 'not-allowed';
                 }
             };
-function updateTierDropdownAvailability(tierCaps) {
+            if (soldPremium) {
+                markSold('platinum', soldPremium.platinum);
+                markSold('gold', soldPremium.gold);
+                markSold('silver', soldPremium.silver);
+            }
+        }
+
+        function updateTierDropdownAvailability(tierCaps) {
     var platOpt = document.getElementById('opt-platinum');
     var goldOpt = document.getElementById('opt-gold');
 
@@ -7952,12 +7958,7 @@ function updateTierDropdownAvailability(tierCaps) {
         }
     }
 }
-            if (soldPremium) {
-                markSold('platinum', soldPremium.platinum);
-                markSold('gold', soldPremium.gold);
-                markSold('silver', soldPremium.silver);
-            }
-        }
+
 
         // --- Secret Admin Dashboard Logic ---
         let secretClickCount = 0;
