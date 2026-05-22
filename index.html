@@ -14,6 +14,267 @@
 
     
     <style>
+
+       /* =================================================================
+   SPONSORSHIP COMPARISON TABLE
+   ================================================================= */
+.sponsor-compare-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto 30px;
+}
+.sponsor-compare-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.sponsor-compare-header h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 28px;
+    color: #f1c40f;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.sponsor-compare-header p {
+    color: #cbd5e1;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.sponsor-compare-wrap {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.sponsor-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #f8fafc;
+}
+.sponsor-compare-table th,
+.sponsor-compare-table td {
+    padding: 14px 16px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sponsor-compare-table th:first-child,
+.sponsor-compare-table td:first-child {
+    text-align: left;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(0,0,0,0.25);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    width: 38%;
+}
+.sponsor-compare-table tr:last-child td {
+    border-bottom: none;
+}
+.sponsor-compare-table thead th {
+    padding: 22px 12px 18px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+.sponsor-compare-table thead th .tier-tag {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 11px;
+    color: #cbd5e1;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+}
+.sponsor-compare-table thead th .tier-price {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    color: #2ecc71;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: 0;
+}
+
+/* Tier column accents */
+.col-silver { background: linear-gradient(180deg, rgba(192,192,192,0.08) 0%, rgba(192,192,192,0.02) 100%); }
+.col-silver thead th { color: #c0c0c0; border-top: 4px solid #c0c0c0; }
+.col-gold { background: linear-gradient(180deg, rgba(255,215,0,0.10) 0%, rgba(255,215,0,0.03) 100%); }
+.col-gold thead th { color: #ffd700; border-top: 4px solid #ffd700; }
+.col-platinum { background: linear-gradient(180deg, rgba(229,228,226,0.10) 0%, rgba(229,228,226,0.03) 100%); }
+.col-platinum thead th { color: #e5e4e2; border-top: 4px solid #e5e4e2; }
+
+/* Most-popular badge on Gold column */
+.most-popular-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ffd700, #d4a017);
+    color: #1e293b;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 3px 12px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 10px rgba(255,215,0,0.4);
+    white-space: nowrap;
+}
+
+/* Check / dash cells */
+.benefit-check {
+    color: #2ecc71;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+}
+.benefit-dash {
+    color: #475569;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+}
+.benefit-highlight {
+    color: #f1c40f;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.3;
+}
+.benefit-note {
+    display: block;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 3px;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+/* CTA row at the bottom */
+.sponsor-compare-table tfoot td {
+    padding: 20px 12px 22px;
+    border-bottom: none;
+}
+.compare-cta-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+.compare-cta-btn.silver-cta {
+    background: linear-gradient(135deg, #c0c0c0, #989898);
+    color: #1e293b;
+    box-shadow: 0 4px 12px rgba(192,192,192,0.25);
+}
+.compare-cta-btn.gold-cta {
+    background: linear-gradient(135deg, #ffd700, #d4a017);
+    color: #1e293b;
+    box-shadow: 0 4px 12px rgba(255,215,0,0.35);
+}
+.compare-cta-btn.platinum-cta {
+    background: linear-gradient(135deg, #e5e4e2, #b8b7b5);
+    color: #1e293b;
+    box-shadow: 0 4px 12px rgba(229,228,226,0.25);
+}
+.compare-cta-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Mobile: convert table to stacked cards */
+@media (max-width: 720px) {
+    .sponsor-compare-table thead {
+        display: none;
+    }
+    .sponsor-compare-table,
+    .sponsor-compare-table tbody,
+    .sponsor-compare-table tr,
+    .sponsor-compare-table td,
+    .sponsor-compare-table tfoot {
+        display: block;
+        width: 100%;
+    }
+    .sponsor-compare-wrap {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+    .sponsor-compare-table tr.benefit-row {
+        background: rgba(0,0,0,0.35);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 14px 14px 8px;
+    }
+    .sponsor-compare-table tr.benefit-row td {
+        text-align: left;
+        padding: 8px 4px;
+        border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+    .sponsor-compare-table tr.benefit-row td:first-child {
+        background: transparent;
+        font-weight: 700;
+        color: #f1c40f;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 14px;
+        text-align: left;
+        width: 100%;
+        padding-bottom: 10px;
+        border-right: none;
+        border-bottom: 1px solid rgba(241,196,15,0.2);
+        margin-bottom: 6px;
+        display: block;
+    }
+    .sponsor-compare-table tr.benefit-row td:last-child {
+        border-bottom: none;
+    }
+    /* Add tier labels before the values on mobile */
+    .sponsor-compare-table tr.benefit-row td:nth-child(2)::before { content: 'Silver'; color: #c0c0c0; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .sponsor-compare-table tr.benefit-row td:nth-child(3)::before { content: 'Gold'; color: #ffd700; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .sponsor-compare-table tr.benefit-row td:nth-child(4)::before { content: 'Platinum'; color: #e5e4e2; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .benefit-highlight { font-size: 12px; text-align: right; }
+    .benefit-note { font-size: 10px; }
+    .sponsor-compare-table tfoot tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        background: transparent;
+    }
+    .sponsor-compare-table tfoot td {
+        padding: 6px 0;
+        text-align: center;
+    }
+    .sponsor-compare-table tfoot td:first-child {
+        display: none;
+    }
+    .compare-cta-btn {
+        width: 100%;
+        padding: 14px;
+    }
+} 
         /* =================================================================
    MEMORY WALL — scrapbook-style memorial archive for Ryan
    ================================================================= */
@@ -5632,7 +5893,138 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <div class="sponsor-placeholder" onclick="selectSponsorship('1000')" style="cursor: pointer;">Available - Tap to Sponsor</div>
     </div>
 </div>
-
+<!-- Sponsorship comparison table -->
+<div class="sponsor-compare-section">
+    <div class="sponsor-compare-header">
+        <h3>Compare Sponsorship Tiers</h3>
+        <p>See at a glance what each level includes</p>
+    </div>
+    <div class="sponsor-compare-wrap">
+        <table class="sponsor-compare-table">
+            <thead>
+                <tr>
+                    <th>Benefit</th>
+                    <th class="col-silver">
+                        Silver
+                        <span class="tier-tag">"Recognized Supporter"</span>
+                        <span class="tier-price">$1,000</span>
+                    </th>
+                    <th class="col-gold">
+                        <span class="most-popular-badge">Most Popular</span>
+                        Gold
+                        <span class="tier-tag">"Event Partner"</span>
+                        <span class="tier-price">$2,500</span>
+                    </th>
+                    <th class="col-platinum">
+                        Platinum
+                        <span class="tier-tag">"Presenting Partner"</span>
+                        <span class="tier-price">$5,000</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="benefit-row">
+                    <td>Logo in scrolling marquee on bigrgolf.com</td>
+                    <td class="col-silver"><span class="benefit-check">✓</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Logo on event signage at registration &amp; lunch</td>
+                    <td class="col-silver"><span class="benefit-check">✓</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Recognition in event program</td>
+                    <td class="col-silver"><span class="benefit-check">✓</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Social media thank-you post</td>
+                    <td class="col-silver"><span class="benefit-check">✓</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Featured logo in HD spotlight rotation</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Dedicated hole sign with your logo</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Verbal recognition during awards ceremony</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Logo on event banner at lunch</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-check">✓</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Player spots included</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span><span class="benefit-note">Sponsorship only</span></td>
+                    <td class="col-gold"><span class="benefit-highlight">2 Players</span><span class="benefit-note">$350 value</span></td>
+                    <td class="col-platinum"><span class="benefit-highlight">Full Foursome</span><span class="benefit-note">$700 value</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>"Presented by [You]" on banner &amp; program cover</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-dash">—</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Address attendees at lunch (2–3 min)</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-dash">—</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Logo on golf carts or tee gift bags</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-dash">—</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>First right of refusal next year</td>
+                    <td class="col-silver"><span class="benefit-dash">—</span></td>
+                    <td class="col-gold"><span class="benefit-dash">—</span></td>
+                    <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                </tr>
+                <tr class="benefit-row">
+                    <td>Availability</td>
+                    <td class="col-silver"><span class="benefit-highlight" style="color:#2ecc71;">Multiple Open</span></td>
+                    <td class="col-gold"><span class="benefit-highlight">Limited to 4</span></td>
+                    <td class="col-platinum"><span class="benefit-highlight">Limited to 2</span></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td class="col-silver">
+                        <button class="compare-cta-btn silver-cta" onclick="selectSponsorship('1000')">Choose Silver</button>
+                    </td>
+                    <td class="col-gold">
+                        <button class="compare-cta-btn gold-cta" onclick="selectSponsorship('2500')">Choose Gold</button>
+                    </td>
+                    <td class="col-platinum">
+                        <button class="compare-cta-btn platinum-cta" onclick="selectSponsorship('5000')">Choose Platinum</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
             <h3 style="text-align: center; margin-top: 40px; color: #cbd5e1;">Hole Sponsors</h3>
                         <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Tap an open hole on the map below to sponsor it.</p>
 
