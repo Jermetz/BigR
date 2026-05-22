@@ -8575,7 +8575,7 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                     isWaitlist: document.getElementById('sold-out-banner').style.display === 'block',
                     isSponsorOnly: isSponsorOnly,
                     transactionId: transactionId,
-                    squareToken: squareToken
+                    squareToken: squareToken,
                     deviceType: getDeviceInfo()  
        }, {
                 canRetry: selectedPaymentType !== 'Credit/Debit Card',
@@ -9176,7 +9176,7 @@ submitWithRetry({
                     paymentType: paymentType,
                     squareToken: squareToken,
                     transactionId: transactionId,
-                    tribute: tributeText
+                    tribute: tributeText,
                     deviceType: getDeviceInfo()  
    }, {
                 canRetry: paymentType !== 'Credit/Debit Card',
