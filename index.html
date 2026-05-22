@@ -6656,6 +6656,11 @@ function removePlayer() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
+       // Defensive: always restore signup form visibility (Grand Entrance may have hidden it)
+const formContainer = document.getElementById('signup-form-container');
+if (formContainer) formContainer.style.display = 'block';
+// Also unlock body scroll in case a modal left it locked
+document.body.style.overflow = '';
      // Add at the bottom of showSection(), after the scrollTo:
 if (sectionId === 'leaderboard') {
     startLeaderboardPolling();
@@ -8453,7 +8458,13 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
 
        document.getElementById('golf-signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+            // Reset any leftover Grand Entrance state from a previous submission
+const ge = document.getElementById('grand-entrance');
+if (ge) {
+    ge.classList.remove('show');
+    ge.style.display = 'none';
+}
+document.body.style.overflow = '';
  window.clapAudio = new Audio('golf-clap.mp3');
     window.clapAudio.volume = 0.5;
 const submitBtn = document.getElementById('submit-btn');
@@ -8763,17 +8774,21 @@ fetchGlobalData();
             submitBtn.innerText = "Submit Registration";
             showSection('home');
         }
-  function closeGrandEntrance() {
+ function closeGrandEntrance() {
     const ge = document.getElementById('grand-entrance');
     if (ge) {
         ge.classList.remove('show');
         setTimeout(() => { ge.style.display = 'none'; }, 600);
     }
-    document.getElementById('signup-form-container').style.display = 'block';
+    // Always restore the signup form visibility, even if user navigates away
+    const formContainer = document.getElementById('signup-form-container');
+    if (formContainer) formContainer.style.display = 'block';
     document.body.style.overflow = '';
     const submitBtn = document.getElementById('submit-btn');
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Submit Registration";
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Registration";
+    }
     showSection('home');
 }
 
