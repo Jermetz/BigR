@@ -4683,6 +4683,16 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     </div>
 </div>
 <div id="toast-container"></div>
+    <div id="sms-preview-overlay" class="fullscreen-overlay" style="z-index: 100003;">
+        <div class="overlay-card admin-card" style="border-color: #9b59b6;">
+            <h2 style="color: #9b59b6; margin-bottom: 10px;">Review SMS Blast</h2>
+            <div id="sms-preview-details" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #cbd5e1;"></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="secondary-btn" onclick="document.getElementById('sms-preview-overlay').style.display='none'">Cancel</button>
+                <button class="primary-btn" id="sms-confirm-btn" style="background-color: #9b59b6;" onclick="executeSmsBlast()">Send Now</button>
+            </div>
+        </div>
+    </div>
     <div id="admin-overlay" class="fullscreen-overlay">
         <div class="overlay-card admin-card">
             <h2 style="color: #3498db; margin-bottom: 5px;">Admin Dashboard</h2>
@@ -4792,12 +4802,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <button id="enter-btn" onclick="startExperience()">Enter</button>
                       <button onclick="skipIntro()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #cbd5e1; padding: 8px 20px; font-size: 14px; border-radius: 50px; margin-top: 25px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#cbd5e1'">Skip Intro</button>
         </div>
-      <video id="intro-video" src="NewLogoIntro.mp4" preload="auto" muted playsinline style="opacity: 0; position: absolute; pointer-events: none;"></video>
+   <video id="intro-video" src="NewLogoIntro.mp4" preload="none" muted playsinline style="opacity: 0; position: absolute; pointer-events: none;"></video>
     </div>
 
     <div class="video-background">
         <div class="video-overlay"></div>
-        <video autoplay loop muted playsinline id="bg-video">
+        <video loop muted playsinline id="bg-video" preload="none">
             <source src="Golf-Background.mp4" type="video/mp4">
         </video>
     </div>
@@ -4912,7 +4922,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <h3 class="event-date">Friday, October 9th, '26</h3>
             <p class="home-subtitle">Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>
             
-            <div id="countdown-timer">
+<div id="countdown-timer" aria-live="off" aria-hidden="true">
                 <div class="time-box"><span id="days">00</span><p>Days</p></div>
                 <div class="time-box"><span id="hours">00</span><p>Hours</p></div>
                 <div class="time-box"><span id="minutes">00</span><p>Minutes</p></div>
@@ -6792,12 +6802,19 @@ function validateAndNextStep(currentStep, nextStep) {
                 input.style.borderColor = 'transparent';
             }
         });
-
-        if (isValid) {
+if (isValid) {
             if (typeof saveWizardProgress === 'function') saveWizardProgress();
             nextWizardStep(nextStep);
         } else {
             showValidationModal(errorMessage);
+            // Scroll to the first invalid element
+            const firstInvalid = Array.from(inputs).find(input => input.style.borderColor === 'rgb(231, 76, 60)' || input.style.borderColor === '#e74c3c');
+            if (firstInvalid) {
+                setTimeout(() => {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.focus();
+                }, 400); // Wait for modal to close if user dismisses it quickly
+            }
         }
     }
         // =================================================================
@@ -8109,45 +8126,55 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             });
         }
 
+       let pendingSmsPayload = null;
+
         function sendSmsBlast() {
             let password = document.getElementById('admin-pass').value;
             let phoneNumbers = document.getElementById('admin-sms-numbers').value;
             let body = document.getElementById('admin-sms-body').value;
-            // Ensure Twilio compliance: Append Sender ID and Opt-out language if the admin forgot it
-            if (!body.toLowerCase().includes('big r')) {
-                body = "Big R Golf: " + body;
-            }
-            if (!body.toLowerCase().includes('stop')) {
-                body = body + " Reply STOP to opt out.";
-            }
+            
+            if (!body.toLowerCase().includes('big r')) body = "Big R Golf: " + body;
+            if (!body.toLowerCase().includes('stop')) body = body + " Reply STOP to opt out.";
 
             if (!password) { alert("Please enter the Admin Password."); return; }
             if (!phoneNumbers.trim() || !body.trim()) { alert("Please enter both phone numbers and a message."); return; }
             
-            if (!confirm("Are you sure you want to blast this text message? Standard SMS rates may apply via Twilio.")) return;
+            // Calculate estimates
+            const phones = phoneNumbers.split(',').map(n => n.trim()).filter(Boolean);
+            const segments = Math.ceil(body.length / 160);
+            const totalSegments = phones.length * segments;
+            const estimatedCost = (totalSegments * 0.0079).toFixed(2); // Standard Twilio rate
 
+            document.getElementById('sms-preview-details').innerHTML = `
+                <p><strong>Recipients:</strong> ${phones.length}</p>
+                <p><strong>Segments per message:</strong> ${segments} (${body.length} chars)</p>
+                <p><strong>Estimated Twilio Cost:</strong> ~$${estimatedCost}</p>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <strong>Exact Message Payload:</strong><br>
+                    <span style="color: #2ecc71;">"${body}"</span>
+                </div>
+            `;
+
+            pendingSmsPayload = { action: "sms_blast", password: password, phoneNumbers: phoneNumbers, body: body };
+            document.getElementById('sms-preview-overlay').style.display = 'flex';
+        }
+
+        function executeSmsBlast() {
+            if (!pendingSmsPayload) return;
+            document.getElementById('sms-preview-overlay').style.display = 'none';
             document.getElementById('admin-sms-loader').style.display = 'block';
 
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ 
-                    action: "sms_blast", 
-                    password: password, 
-                    phoneNumbers: phoneNumbers,
-                    body: body
-                })
+                body: JSON.stringify(pendingSmsPayload)
             })
             .then(res => res.json())
             .then(data => {
                 document.getElementById('admin-sms-loader').style.display = 'none';
                 if(data.result === 'success') {
-                    if (data.count === 0) {
-                        alert("Warning: No valid phone numbers found. 0 texts were sent.");
-                    } else {
-                        alert("SMS broadcast sent successfully to " + data.count + " numbers!");
-                        document.getElementById('admin-sms-numbers').value = '';
-                        document.getElementById('admin-sms-body').value = '';
-                    }
+                    alert("SMS broadcast sent successfully to " + data.count + " numbers!");
+                    document.getElementById('admin-sms-numbers').value = '';
+                    document.getElementById('admin-sms-body').value = '';
                 } else { 
                     alert("Backend Error: " + (data.error ? data.error : "Check password or script deployment.")); 
                 }
@@ -9197,6 +9224,7 @@ function startExperience() {
         introVideo.style.position = 'relative';
         introVideo.style.pointerEvents = 'auto';
         introVideo.style.display = 'block';
+    document.getElementById('bg-video').play().catch(e => console.log('Autoplay prevented'));
         introVideo.muted = videoIsMuted;
     introVideo.addEventListener('ended', dismissSplash, { once: true });
     introVideo.addEventListener('error', dismissSplash, { once: true });
@@ -10199,6 +10227,15 @@ if (typeof _originalShowSection === 'function') {
     };
 }
 document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        if (!window.Square || !signupCard) {
+            const sqContainer = document.getElementById('sq-card-container');
+            if (sqContainer) {
+                sqContainer.style.display = 'block';
+                sqContainer.innerHTML = `<div style="padding: 15px; border: 1px dashed #e74c3c; border-radius: 8px; color: #e74c3c; font-size: 14px; text-align: center;"><strong>Card payments aren't loading.</strong><br>Please try refreshing the page or disabling your ad blocker. You can still use Venmo, Cash, or Check below.</div>`;
+            }
+        }
+    }, 5000);
     if (window.Square) {
         const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
         payments.card().then(card => {
