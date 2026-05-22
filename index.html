@@ -4522,11 +4522,11 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
 <body>
-        <div id="validation-overlay" class="fullscreen-overlay" style="z-index: 100001;">
-        <div class="overlay-card success-card" style="border-color: #f39c12;">
-            <h2 style="color: #f39c12; margin-bottom: 10px;">⚠️ Action Required</h2>
+<div id="validation-overlay" class="fullscreen-overlay" style="z-index: 100001;">
+        <div id="validation-card" class="overlay-card success-card" style="border-color: #f39c12;">
+            <h2 id="validation-title" style="color: #f39c12; margin-bottom: 10px;">⚠️ Action Required</h2>
             <p id="validation-message" style="margin-bottom: 25px; line-height: 1.5; color: #cbd5e1;"></p>
-            <button class="primary-btn" style="background-color: #f39c12; color: #111;" onclick="closeValidationModal()">Got It</button>
+            <button id="validation-btn" class="primary-btn" style="background-color: #f39c12; color: #111;" onclick="closeValidationModal()">Got It</button>
         </div>
     </div>
 <div id="restore-overlay" class="fullscreen-overlay" style="z-index: 100002;">
@@ -5701,7 +5701,10 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 // =================================================================
 window.alert = function(message) {
     if (typeof showValidationModal === 'function') {
-        showValidationModal(String(message));
+        const msgStr = String(message);
+        // Automatically detect if this is a success message
+        const isSuccess = msgStr.toLowerCase().includes('success') || msgStr.includes('✅');
+        showValidationModal(msgStr, isSuccess);
     } else {
         // Modal not ready yet (very early page load) — fall back to native
         window.__nativeAlert(String(message));
@@ -5808,8 +5811,27 @@ async function checkForFailedSubmissions() {
     select.value = value;
     select.dispatchEvent(new Event('change'));
 }
-        // --- Validation Modal Logic ---
-        function showValidationModal(message) {
+
+      // --- Validation Modal Logic ---
+        function showValidationModal(message, isSuccess = false) {
+            const card = document.getElementById('validation-card');
+            const title = document.getElementById('validation-title');
+            const btn = document.getElementById('validation-btn');
+            
+            if (isSuccess) {
+                card.style.borderColor = '#2ecc71';
+                title.style.color = '#2ecc71';
+                title.innerText = '✅ Success!';
+                btn.style.backgroundColor = '#2ecc71';
+                btn.style.color = '#fff';
+            } else {
+                card.style.borderColor = '#f39c12';
+                title.style.color = '#f39c12';
+                title.innerText = '⚠️ Action Required';
+                btn.style.backgroundColor = '#f39c12';
+                btn.style.color = '#111';
+            }
+
             document.getElementById('validation-message').innerText = message;
             document.getElementById('validation-overlay').style.display = 'flex';
         }
