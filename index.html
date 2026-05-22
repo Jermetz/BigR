@@ -5711,6 +5711,41 @@ window.alert = function(message) {
         window.__nativeAlert(String(message));
     }
 };
+    function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    let category = "Desktop";
+    let os = "Unknown";
+
+    // iPad detection — modern iPads on iPadOS 13+ report as Mac, so check touch points too
+    const isIPad = /iPad/.test(ua) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    if (isIPad) {
+        category = "Tablet";
+        os = "iPadOS";
+    } else if (/(tablet|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+        category = "Tablet";
+        os = /Android/i.test(ua) ? "Android" : "Other";
+    } else if (/iPhone|iPod/i.test(ua)) {
+        category = "Mobile";
+        os = "iOS";
+    } else if (/Android/i.test(ua)) {
+        category = "Mobile";
+        os = "Android";
+    } else if (/Mobile|IEMobile|BlackBerry|Kindle|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) {
+        category = "Mobile";
+        os = "Other Mobile";
+    } else if (/Macintosh|Mac OS X/i.test(ua)) {
+        os = "macOS";
+    } else if (/Windows/i.test(ua)) {
+        os = "Windows";
+    } else if (/Linux/i.test(ua)) {
+        os = "Linux";
+    }
+
+    // Return something like "Mobile (iOS)" or "Desktop (Windows)"
+    return category + " (" + os + ")";
+}
 
 // Preserve a reference to the original in case we ever need it
 window.__nativeAlert = Window.prototype.alert || function(){};
@@ -8541,6 +8576,7 @@ if (selectedPaymentType === 'Credit/Debit Card') {
                     isSponsorOnly: isSponsorOnly,
                     transactionId: transactionId,
                     squareToken: squareToken
+                    deviceType: getDeviceInfo()  
        }, {
                 canRetry: selectedPaymentType !== 'Credit/Debit Card',
                 label: 'registration'
@@ -9141,6 +9177,7 @@ submitWithRetry({
                     squareToken: squareToken,
                     transactionId: transactionId,
                     tribute: tributeText
+                    deviceType: getDeviceInfo()  
    }, {
                 canRetry: paymentType !== 'Credit/Debit Card',
                 label: 'donation'
