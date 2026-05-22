@@ -21,6 +21,7 @@
     text-align: center;
     margin: 30px auto 20px;
     max-width: 900px;
+    scroll-margin-top: 80px;
 }
 .sponsor-compare-toggle {
     background: linear-gradient(135deg, rgba(241, 196, 15, 0.12), rgba(0,0,0,0.4));
@@ -80,6 +81,7 @@
 }
 .sponsor-compare-collapsible-inner {
     overflow: hidden;
+    min-height: 0;
 }
 .sponsor-compare-collapsible.expanded .sponsor-compare-collapsible-inner {
     overflow: visible;
@@ -5588,6 +5590,148 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
                                 <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
                             </div> 
+                            <!-- Expandable Comparison Table for Wizard -->
+                            <div class="sponsor-compare-toggle-wrap" style="margin-top: 10px; margin-bottom: 5px;">
+                                <button type="button" class="sponsor-compare-toggle" id="wizard-sponsor-toggle" onclick="toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible')" aria-expanded="false" aria-controls="wizard-sponsor-collapsible" style="padding: 10px 20px; font-size: 11px;">
+                                    <span class="toggle-label-closed">📋 Compare Tiers</span>
+                                    <span class="toggle-label-open">✕ Hide Tiers</span>
+                                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="sponsor-compare-collapsible" id="wizard-sponsor-collapsible" aria-hidden="true">
+                                <div class="sponsor-compare-collapsible-inner">
+                                    <div class="sponsor-compare-section" style="margin-top: 15px; margin-bottom: 15px;">
+                                        <div class="sponsor-compare-wrap">
+                                            <table class="sponsor-compare-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Benefit</th>
+                                                        <th class="col-silver">
+                                                            Silver
+                                                            <span class="tier-tag">"Recognized Supporter"</span>
+                                                            <span class="tier-price">$1,000</span>
+                                                        </th>
+                                                        <th class="col-gold">
+                                                            <span class="most-popular-badge">Most Popular</span>
+                                                            Gold
+                                                            <span class="tier-tag">"Event Partner"</span>
+                                                            <span class="tier-price">$2,500</span>
+                                                        </th>
+                                                        <th class="col-platinum">
+                                                            Platinum
+                                                            <span class="tier-tag">"Presenting Partner"</span>
+                                                            <span class="tier-price">$5,000</span>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="benefit-row">
+                                                        <td>Logo in scrolling marquee on bigrgolf.com</td>
+                                                        <td class="col-silver"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Logo on event signage at registration &amp; lunch</td>
+                                                        <td class="col-silver"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Recognition in event program</td>
+                                                        <td class="col-silver"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Social media thank-you post</td>
+                                                        <td class="col-silver"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Featured logo in HD spotlight rotation</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Dedicated hole sign with your logo</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Verbal recognition during awards ceremony</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Logo on event banner at lunch</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-check">✓</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Player spots included</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span><span class="benefit-note">Sponsorship only</span></td>
+                                                        <td class="col-gold"><span class="benefit-highlight">2 Players</span><span class="benefit-note">$350 value</span></td>
+                                                        <td class="col-platinum"><span class="benefit-highlight">Full Foursome</span><span class="benefit-note">$700 value</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>"Presented by [You]" on banner &amp; program cover</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Address attendees at lunch (2–3 min)</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Logo on golf carts or tee gift bags</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>First right of refusal next year</td>
+                                                        <td class="col-silver"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-gold"><span class="benefit-dash">—</span></td>
+                                                        <td class="col-platinum"><span class="benefit-check">✓</span></td>
+                                                    </tr>
+                                                    <tr class="benefit-row">
+                                                        <td>Availability</td>
+                                                        <td class="col-silver"><span class="benefit-highlight" style="color:#2ecc71;">Multiple Open</span></td>
+                                                        <td class="col-gold"><span class="benefit-highlight">Limited to 4</span></td>
+                                                        <td class="col-platinum"><span class="benefit-highlight">Limited to 3</span></td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td class="col-silver">
+                                                            <button class="compare-cta-btn silver-cta" onclick="selectSponsorship('1000')">Choose Silver</button>
+                                                        </td>
+                                                        <td class="col-gold">
+                                                            <button class="compare-cta-btn gold-cta" onclick="selectSponsorship('2500')">Choose Gold</button>
+                                                        </td>
+                                                        <td class="col-platinum">
+                                                            <button class="compare-cta-btn platinum-cta" onclick="selectSponsorship('5000')">Choose Platinum</button>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         
                             <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
                         </div>
@@ -6080,7 +6224,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                             <td class="col-platinum"><span class="benefit-highlight">Full Foursome</span><span class="benefit-note">$700 value</span></td>
                         </tr>
                         <tr class="benefit-row">
-                            <td>"Presented by [You]" on banner &amp; program cover</td>
+                            <td>"Presented by [You]" on banner</td>
                             <td class="col-silver"><span class="benefit-dash">—</span></td>
                             <td class="col-gold"><span class="benefit-dash">—</span></td>
                             <td class="col-platinum"><span class="benefit-check">✓</span></td>
@@ -7243,10 +7387,8 @@ function selectSponsorship(levelValue, holeNum = null) {
     }
 
     if (checkbox && !checkbox.checked) {
-        setSponsorIntent(true);
-    } else {
-        updateCostDisplay();
-    }
+            setSponsorIntent(true);
+        }
 
     // Populate the context banner so user sees what they just selected
     const amount = parseInt(levelValue) || 0;
@@ -7271,10 +7413,32 @@ function selectSponsorship(levelValue, holeNum = null) {
         });
     }
 
-    showSection('signup');
+    // Auto-close the comparison table so the home page is tidy when they return
+        const compareCollapsible = document.getElementById('sponsor-compare-collapsible');
+        if (compareCollapsible && compareCollapsible.classList.contains('expanded')) {
+            toggleSponsorCompare();
+        }
+ showSection('signup');
 
-    // Skip Step 1 — user has already made the key decisions
-    setTimeout(() => nextWizardStep(2), 50);
+    // Auto-close the wizard comparison table if it's open
+    const wizardCollapsible = document.getElementById('wizard-sponsor-collapsible');
+    if (wizardCollapsible && wizardCollapsible.classList.contains('expanded')) {
+        toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible');
+    }
+
+    if (currentWizardStep === 3) {
+        // If already on Step 3, don't jump to Step 2. Just scroll to the name field.
+        setTimeout(() => {
+            const nameInput = document.getElementById('sponsor-name-container');
+            if (nameInput && nameInput.style.display !== 'none') {
+                nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('sponsor-display-name').focus();
+            }
+        }, 400); 
+    } else {
+        // Coming from Home page: Skip Step 1
+        setTimeout(() => nextWizardStep(2), 50);
+    }
 }
 
 
@@ -10892,9 +11056,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // =================================================================
 // SPONSORSHIP COMPARISON TABLE — expand/collapse toggle
 // =================================================================
-function toggleSponsorCompare() {
-    const toggle = document.getElementById('sponsor-compare-toggle');
-    const collapsible = document.getElementById('sponsor-compare-collapsible');
+function toggleSponsorCompare(toggleId = 'sponsor-compare-toggle', collapsibleId = 'sponsor-compare-collapsible') {
+    const toggle = document.getElementById(toggleId);
+    const collapsible = document.getElementById(collapsibleId);
     if (!toggle || !collapsible) return;
 
     const isOpen = collapsible.classList.toggle('expanded');
