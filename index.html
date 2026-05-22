@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">g
+<html lang="en">
 <head>
     <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -6692,36 +6692,6 @@ function selectSponsorship(levelValue, holeNum = null) {
     setTimeout(() => nextWizardStep(2), 50);
 }
 
-// Called when user taps "Change" inside the banner
-function changeSponsorSelection() {
-    // Jump them to Step 3 (sponsorship picker) so they can change tier
-    nextWizardStep(3);
-    // Scroll the sponsorship dropdown into view
-    setTimeout(() => {
-        const dropdown = document.getElementById('sponsorship-level');
-        if (dropdown) {
-            dropdown.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            dropdown.focus();
-        }
-    }, 400);
-}
-            if (holeIndicator && holeDisplay) {
-                if (holeNum) {
-                    holeDisplay.innerText = holeNum;
-                    holeIndicator.style.display = 'block';
-                } else {
-                    holeIndicator.style.display = 'none';
-                }
-            }
-            
-            if (checkbox && !checkbox.checked) {
-                setSponsorIntent(true); 
-            } else {
-                updateCostDisplay();
-            }
-            
-            showSection('signup');
-        }
 
         // --- Wizard Logic ---
         let currentWizardStep = 1;
