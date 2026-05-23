@@ -8677,23 +8677,41 @@ function updateHoleSponsorsUI(soldHoles) {
 
         if (platOpt && tierCaps.platinum) {
             var pRem = tierCaps.platinum.remaining;
+            var platCtas = document.querySelectorAll('.platinum-cta');
             if (pRem <= 0) {
                 platOpt.textContent = 'Platinum Sponsor — SOLD OUT';
                 platOpt.disabled = true;
+                platCtas.forEach(btn => {
+                    btn.textContent = 'Sold Out';
+                    btn.disabled = true;
+                });
             } else {
                 platOpt.textContent = 'Platinum Sponsor — $5,000 (' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left)';
                 platOpt.disabled = false;
+                platCtas.forEach(btn => {
+                    btn.textContent = 'Choose Platinum';
+                    btn.disabled = false;
+                });
             }
         }
 
         if (goldOpt && tierCaps.gold) {
             var gRem = tierCaps.gold.remaining;
+            var goldCtas = document.querySelectorAll('.gold-cta');
             if (gRem <= 0) {
                 goldOpt.textContent = 'Gold Sponsor — $2,500 — SOLD OUT';
                 goldOpt.disabled = true;
+                goldCtas.forEach(btn => {
+                    btn.textContent = 'Sold Out';
+                    btn.disabled = true;
+                });
             } else {
                 goldOpt.textContent = 'Gold Sponsor — $2,500 (' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left)';
                 goldOpt.disabled = false;
+                goldCtas.forEach(btn => {
+                    btn.textContent = 'Choose Gold';
+                    btn.disabled = false;
+                });
             }
         }
 
@@ -8708,7 +8726,6 @@ function updateHoleSponsorsUI(soldHoles) {
             }
         }
     }
-
 
         // --- Secret Admin Dashboard Logic ---
         let secretClickCount = 0;
