@@ -4425,7 +4425,6 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 }
 
 /* Decorative top + bottom rules — like an invitation card */
-#grand-entrance::before,
 #grand-entrance::after {
     content: '';
     position: absolute;
@@ -4437,10 +4436,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     background: linear-gradient(to right, transparent, rgba(241, 196, 15, 0.6), transparent);
     opacity: 0;
     animation: ge-line-fade 1.2s ease-out 0.3s forwards;
+    bottom: 60px;
 }
-#grand-entrance::before { top: 60px; }
-#grand-entrance::after { bottom: 60px; }
-
 @keyframes ge-line-fade {
     to { opacity: 1; }
 }
@@ -4940,10 +4937,14 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <span class="ge-detail-label">Tee Time</span>
         <span class="ge-detail-value">9:30 AM Shotgun</span>
     </div>
-    <div class="ge-detail-row" id="ge-row-venue">
-        <span class="ge-detail-label">Venue</span>
-        <span class="ge-detail-value">The Bucks Club</span>
-    </div>
+   <div class="ge-detail-row" id="ge-row-venue">
+    <span class="ge-detail-label">Venue</span>
+    <span class="ge-detail-value">The Bucks Club</span>
+</div>
+<div class="ge-detail-row" id="ge-row-sponsorship" style="display: none;">
+    <span class="ge-detail-label">Sponsorship</span>
+    <span class="ge-detail-value" id="ge-sponsorship-value" style="color: #f1c40f;">—</span>
+</div>
 </div>
         
     <div class="ge-payment-note" id="ge-payment-note"></div>
@@ -9470,8 +9471,26 @@ if (isSponsorOnly) {
     if (gePlayerCount) gePlayerCount.textContent = playerCount + (playerCount === 1 ? ' Player' : ' Players');
     if (geRowTeeTime) geRowTeeTime.style.display = '';
     if (geRowVenue) geRowVenue.style.display = '';
-}
     
+    // Show sponsorship row if player also purchased a Silver/Gold/Platinum sponsorship
+    const geRowSponsorship = document.getElementById('ge-row-sponsorship');
+    const geSponsorshipValue = document.getElementById('ge-sponsorship-value');
+    const sponsorAmount = sponsorCost || 0;
+    if (geRowSponsorship && geSponsorshipValue && sponsorAmount >= 1000) {
+        let tierLabel = '';
+        if (sponsorAmount === 5000) tierLabel = '💎 Platinum Sponsor';
+        else if (sponsorAmount === 2500) tierLabel = '🥇 Gold Sponsor';
+        else if (sponsorAmount === 1000) tierLabel = '🥈 Silver Sponsor';
+        else tierLabel = 'Sponsor';
+        geSponsorshipValue.textContent = tierLabel;
+        geRowSponsorship.style.display = '';
+        
+        // Also update the headline to acknowledge both
+        if (geHeadline) geHeadline.innerHTML = "You're in.<br><span style='font-size: 0.5em; color: #f1c40f; font-style: italic; font-weight: 400;'>And thank you for sponsoring.</span>";
+    } else if (geRowSponsorship) {
+        geRowSponsorship.style.display = 'none';
+    }
+}
     // Populate total
     document.getElementById('ge-total').textContent = '$' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
     
