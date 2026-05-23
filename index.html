@@ -7384,9 +7384,32 @@ function changeSponsorSelection() {
         }
     }, 400);
 }
-
+// Returns true if the user has typed anything into any player field.
+// Used to decide whether selecting a sponsorship should flip to sponsor-only mode.
+function checkAnyPlayerDataEntered() {
+    for (let i = 1; i <= playerCount; i++) {
+        const first = document.getElementById(`p${i}-first`);
+        const last = document.getElementById(`p${i}-last`);
+        const email = document.getElementById(`p${i}-email`);
+        if ((first && first.value.trim()) ||
+            (last && last.value.trim()) ||
+            (email && email.value.trim())) {
+            return true;
+        }
+    }
+    return false;
+}
 function selectSponsorship(levelValue, holeNum = null) {
     selectedHoleNum = holeNum;
+        // Collapse BOTH comparison tables immediately so the UI feels responsive.
+    const homeCollapsible = document.getElementById('sponsor-compare-collapsible');
+    if (homeCollapsible && homeCollapsible.classList.contains('expanded')) {
+        toggleSponsorCompare();
+    }
+    const wizardCollapsible = document.getElementById('wizard-sponsor-collapsible');
+    if (wizardCollapsible && wizardCollapsible.classList.contains('expanded')) {
+        toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible');
+    }
     const sponsorDropdown = document.getElementById('sponsorship-level');
     const checkbox = document.getElementById('sponsor-only-checkbox');
     const holeIndicator = document.getElementById('selected-hole-indicator');
@@ -9064,27 +9087,31 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
         const compSection = document.getElementById('complimentary-golfers-section');
         const compSelect = document.getElementById('comp-golfers-decision');
 
-        if (compSection && compSelect) {
-            if (sponsorTotal === 5000 || sponsorTotal === 2500) {
-                const spots = sponsorTotal === 5000 ? 4 : 2;
-                document.getElementById('comp-tier-name').innerText = sponsorTotal === 5000 ? 'Platinum' : 'Gold';
-                document.getElementById('comp-spots-count').innerText = spots;
-                compSection.style.display = 'block';
+  if (compSection && compSelect) {
+    if (sponsorTotal === 5000 || sponsorTotal === 2500) {
+        const spots = sponsorTotal === 5000 ? 4 : 2;
+        const tierNameEl = document.getElementById('comp-tier-name');
+        const spotsCountEl = document.getElementById('comp-spots-count');
+        const msgEl = document.getElementById('comp-golfers-msg');
 
-                if (!isSponsorOnly && playerCount >= spots) {
-                    // They already entered the players! Just apply the discount.
-                    compSelect.style.display = 'none';
-                    document.getElementById('comp-golfers-msg').innerText = "We've applied these complimentary spots to the players you've already entered!";
-                } else {
-                    // They haven't entered them yet, ask what they want to do
-                    compSelect.style.display = 'block';
-                    compSelect.value = 'later'; 
-                    document.getElementById('comp-golfers-msg').innerText = `Your sponsorship includes ${spots} player spots.`;
-                }
-            } else {
-                compSection.style.display = 'none';
-            }
+        if (tierNameEl) tierNameEl.innerText = sponsorTotal === 5000 ? 'Platinum' : 'Gold';
+        if (spotsCountEl) spotsCountEl.innerText = spots;
+        compSection.style.display = 'block';
+
+        if (!isSponsorOnly && playerCount >= spots) {
+            // They already entered the players! Just apply the discount.
+            compSelect.style.display = 'none';
+            if (msgEl) msgEl.innerText = "We've applied these complimentary spots to the players you've already entered!";
+        } else {
+            // They haven't entered them yet, ask what they want to do
+            compSelect.style.display = 'block';
+            compSelect.value = 'later'; 
+            if (msgEl) msgEl.innerText = `Your sponsorship includes ${spots} player spots.`;
         }
+    } else {
+        compSection.style.display = 'none';
+    }
+}
         
         updateCostDisplay();
     }
