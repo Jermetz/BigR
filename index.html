@@ -9583,7 +9583,7 @@ if (isSponsorOnly) {
 if (isSponsorOnly) {
     // Sponsor-only: focus on what happens next, not payment logistics
     if (selectedPaymentType === 'Venmo') {
-        gePaymentNote.innerHTML = `Complete your $${finalTotal} sponsorship via Venmo, then we'll be in touch about your logo placement.<br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
+        gePaymentNote.innerHTML = `Complete your $${finalTotal} sponsorship via Venmo, then we'll be in touch about your logo placement.<br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
     } else if (selectedPaymentType === 'Check') {
         gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. We\'ll reach out shortly about your logo and sponsorship details.';
     } else if (selectedPaymentType === 'Cash') {
@@ -9594,7 +9594,7 @@ if (isSponsorOnly) {
 } else {
     // Player registration
     if (selectedPaymentType === 'Venmo') {
-        gePaymentNote.innerHTML = `Complete your $${finalTotal} payment via Venmo:<br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
+        gePaymentNote.innerHTML = `Complete your $${finalTotal} payment via Venmo:<br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
     } else if (selectedPaymentType === 'Check') {
         gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. Bring to the event.';
     } else if (selectedPaymentType === 'Cash') {
@@ -10148,7 +10148,7 @@ submitWithRetry({
                     
                     const paymentDiv = document.getElementById('donate-payment-instructions');
                     if (paymentType === 'Venmo') {
-                        paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/Jermetz" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
+                        paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
                     } else if (paymentType === 'Check') {
                         paymentDiv.innerHTML = `Please make your $${amount} check payable to the order of Shawn Thomas.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
                     } else if (paymentType === 'Cash') {
