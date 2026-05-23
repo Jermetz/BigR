@@ -6644,17 +6644,18 @@ function downloadPlayersCSV() {
         }
 
         // Build CSV from the rows the server sent back
-        const headers = ['Team Name', 'Player Name', 'Email', 'Phone', 'Payment Type', 'Amount', 'Sponsorship', 'Registered'];
-        const rows = data.players.map(p => [
-            p.teamName || '',
-            (p.firstName || '') + ' ' + (p.lastName || ''),
-            p.email || '',
-            p.phone || '',
-            p.paymentType || '',
-            p.totalCost || '',
-            p.sponsorship || '',
-            p.timestamp || ''
-        ]);
+        const headers = ['Team Name', 'Player Name', 'Email', 'Phone', 'Payment Type', 'Amount', 'Paid', 'Sponsorship', 'Registered'];
+const rows = data.players.map(p => [
+    p.teamName || '',
+    (p.firstName || '') + ' ' + (p.lastName || ''),
+    p.email || '',
+    p.phone || '',
+    p.paymentType || '',
+    p.totalCost || '',
+    p.paid || '',
+    p.sponsorship || '',
+    p.timestamp || ''
+]);
 
         const csv = [headers, ...rows].map(row =>
             row.map(cell => {
