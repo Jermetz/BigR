@@ -2448,6 +2448,18 @@ color: #74b9ff;
                border-color: rgba(52, 152, 219, 0.8);
            }
 
+        /* Disable 3D tilt for large cards containing tables */
+.player-card.no-tilt:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Give Step 3 more room so the comparison table fits */
+#wizard-step-3 {
+    max-width: 850px;
+}
+
         .form-group {
             display: flex;
             gap: 10px;
@@ -5571,7 +5583,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 
                     <!-- Step 3: Sponsorships -->
                     <div class="wizard-step-content" id="wizard-step-3">
-                        <div class="player-card">
+                      <div class="player-card no-tilt">
                             <h3>Sponsorship Opportunities</h3>
                                                        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Boost your impact by adding a sponsorship to your registration.</p>
                             
