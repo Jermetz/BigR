@@ -7460,23 +7460,12 @@ function selectSponsorship(levelValue, holeNum = null) {
         });
     }
 
-    // Auto-close the comparison table so the home page is tidy when they return
-        const compareCollapsible = document.getElementById('sponsor-compare-collapsible');
-        if (compareCollapsible && compareCollapsible.classList.contains('expanded')) {
-            toggleSponsorCompare();
-        }
- // Only navigate to signup if we're not already there — otherwise
+    // Only navigate to signup if we're not already there — otherwise
     // showSection() forces us back to Step 1 of the wizard.
     const signupSection = document.getElementById('section-signup');
     const alreadyOnSignup = signupSection && signupSection.classList.contains('active');
     if (!alreadyOnSignup) {
         showSection('signup');
-    }
-
-    // Auto-close the wizard comparison table if it's open
-    const wizardCollapsible = document.getElementById('wizard-sponsor-collapsible');
-    if (wizardCollapsible && wizardCollapsible.classList.contains('expanded')) {
-        toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible');
     }
 
     if (currentWizardStep === 3) {
@@ -11119,23 +11108,8 @@ function moderatePhoto(rowIndex, decision) {
                 </div>
                 `;
             });
-// Returns true if the user has typed anything into any player field.
-// Used to decide whether selecting a sponsorship should flip to sponsor-only mode.
-function checkAnyPlayerDataEntered() {
-    for (let i = 1; i <= playerCount; i++) {
-        const first = document.getElementById(`p${i}-first`);
-        const last = document.getElementById(`p${i}-last`);
-        const email = document.getElementById(`p${i}-email`);
-        if ((first && first.value.trim()) ||
-            (last && last.value.trim()) ||
-            (email && email.value.trim())) {
-            return true;
-        }
-    }
-    return false;
-}
-         
 
+        
             mapContainer.innerHTML = html;
         }
 let scrollTicking = false;
