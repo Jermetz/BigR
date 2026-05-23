@@ -7997,6 +7997,10 @@ function clearAndStartFresh() {
     closeRestoreModal();
     clearWizardProgress();
     // Reset the form to step 1
+    document.getElementById('golf-signup-form').reset();
+    document.querySelectorAll('#golf-signup-form .payment-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('sq-card-container').style.display = 'none';
+    document.getElementById('payment-note').innerText = '';
     setPlayerCount(4);
     nextWizardStep(1);
     showSection('signup');
@@ -9633,9 +9637,11 @@ setTimeout(() => { geModal.style.opacity = '1'; }, 50);
         setTimeout(() => { window.clapAudio.pause(); window.clapAudio.currentTime = 0; }, 3500);
     }
     
-    // Refresh global data and clear wizard state in the background
-fetchGlobalData();
+   // Refresh global data and clear wizard state in the background
+    fetchGlobalData();
     document.getElementById('golf-signup-form').reset();
+    document.querySelectorAll('#golf-signup-form .payment-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('sq-card-container').style.display = 'none';
     clearWizardProgress();
     const p1Email = document.getElementById('p1-email');
    if (p1Email) { try { sessionStorage.setItem('bigR_lastSubmittedEmail', p1Email.value.trim().toLowerCase()); } catch(e) {} }
@@ -10160,6 +10166,8 @@ submitWithRetry({
                     if(anonCheck) { anonCheck.checked = false; toggleAnonymous(); }
                     if (paymentTypeDropdown) paymentTypeDropdown.value = '';
                     document.getElementById('donate-payment-note').innerText = '';
+                    document.querySelectorAll('#donate-form-container .payment-card').forEach(c => c.classList.remove('active'));
+                    document.getElementById('donate-sq-card-container').style.display = 'none';
                     updateDonationDisplay();
                     
 fetchGlobalData();
