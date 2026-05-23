@@ -7406,10 +7406,14 @@ function selectSponsorship(levelValue, holeNum = null) {
         }
     }
 
+  // Only switch to sponsor-only mode if the user hasn't entered any players yet.
+    // Otherwise they're adding a sponsorship on top of a real registration — preserve their data.
     if (checkbox && !checkbox.checked) {
+        const hasEnteredPlayerData = checkAnyPlayerDataEntered();
+        if (!hasEnteredPlayerData) {
             setSponsorIntent(true);
         }
-
+    }
     // Populate the context banner so user sees what they just selected
     const amount = parseInt(levelValue) || 0;
     if (holeNum) {
@@ -11088,7 +11092,21 @@ function moderatePhoto(rowIndex, decision) {
                 </div>
                 `;
             });
-
+// Returns true if the user has typed anything into any player field.
+// Used to decide whether selecting a sponsorship should flip to sponsor-only mode.
+function checkAnyPlayerDataEntered() {
+    for (let i = 1; i <= playerCount; i++) {
+        const first = document.getElementById(`p${i}-first`);
+        const last = document.getElementById(`p${i}-last`);
+        const email = document.getElementById(`p${i}-email`);
+        if ((first && first.value.trim()) ||
+            (last && last.value.trim()) ||
+            (email && email.value.trim())) {
+            return true;
+        }
+    }
+    return false;
+}
          
 
             mapContainer.innerHTML = html;
