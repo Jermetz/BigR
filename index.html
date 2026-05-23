@@ -4411,11 +4411,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     inset: 0;
     z-index: 100000;
     background: radial-gradient(ellipse at center, #1e293b 0%, #0a0f1c 100%);
-    overflow: hidden;
-    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: flex-start;
     justify-content: center;
     flex-direction: column;
-    padding: 30px 20px;
+    padding: 60px 20px 40px;
     opacity: 0;
     transition: opacity 0.6s ease;
 }
