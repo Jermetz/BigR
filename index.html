@@ -4448,13 +4448,16 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     width: 100%;
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* The animated check */
 .ge-check-wrap {
-    width: clamp(50px, 9vh, 80px);
-    height: clamp(50px, 9vh, 80px);
-    margin: 0 auto clamp(8px, 2vh, 20px);
+    width: clamp(40px, 7vh, 60px);
+    height: clamp(40px, 7vh, 60px);
+    margin: 0 auto 5px; /* Reduced from clamp(8px, 2vh, 20px) */
     border-radius: 50%;
     background: rgba(39, 174, 96, 0.1);
     border: 2px solid #27ae60;
@@ -4888,6 +4891,15 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,0.08);
     }
+}
+        /* Responsive Modal Scaling for small screens */
+@media (max-height: 850px) {
+    .ge-inner { transform: scale(0.9); }
+    .ge-headline { margin-bottom: 5px !important; font-size: 40px !important; }
+    .ge-details { padding: 8px 12px !important; margin-bottom: 10px !important; }
+    .ge-detail-row { padding: 2px 0 !important; }
+    .ge-share-section { margin-bottom: 10px !important; }
+    .ge-share-card-preview { max-width: 140px !important; margin-bottom: 5px !important; }
 }
     </style>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
