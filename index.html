@@ -7497,7 +7497,13 @@ function selectSponsorship(levelValue, holeNum = null) {
         progressBar.style.setProperty('--progress-fill', fillPct + '%');
     }
     
-    currentWizardStep = step;
+currentWizardStep = step;
+    
+    // Ensure the sponsorship UI refreshes if navigating back to Step 3
+    if (step === 3 && typeof handleSponsorshipChange === 'function') {
+        handleSponsorshipChange();
+    }
+    
     updateSponsorBannerVisibility();  // NEW: show/hide banner based on current step
     window.scrollTo({ top: document.getElementById('signup-form-container').offsetTop - 20, behavior: 'smooth' });
 }
@@ -9086,10 +9092,12 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
                 toggleSponsorOnly();
             }
 
-            // Ensure we have enough player slots generated
-            if (playerCount < requiredSpots) {
-                setPlayerCount(requiredSpots);
-            }
+            // Force player count to exactly match the complimentary spots
+            setPlayerCount(requiredSpots);
+            
+            // Hide the add/remove buttons to lock the group size to the complimentary amount
+            document.getElementById('add-player-btn').style.display = 'none';
+            document.getElementById('remove-player-btn').style.display = 'none';
 
             // Take them to Step 2 to fill them out
             showValidationModal(`Let's enter your complimentary ${requiredSpots === 4 ? 'foursome' : 'twosome'} details now! Taking you to the Players step...`, true);
@@ -9278,7 +9286,15 @@ try { lastSubmitted = sessionStorage.getItem('bigR_lastSubmittedEmail'); } catch
   }
 }
 // --- END CLIENT-SIDE DUPLICATE CHECK ---
-         let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost;
+     let compDiscount = 0;
+            if (!isSponsorOnly) {
+                if (sponsorCost === 5000) {
+                    compDiscount = Math.min(playerCount, 4) * COST_PER_PERSON;
+                } else if (sponsorCost === 2500) {
+                    compDiscount = Math.min(playerCount, 2) * COST_PER_PERSON;
+                }
+            }
+            let finalTotal = isSponsorOnly ? sponsorCost : (playerCount * COST_PER_PERSON) + sponsorCost - compDiscount;
             
             if (selectedPaymentType === 'Credit/Debit Card' && finalTotal > 0) {
                 finalTotal = finalTotal + (finalTotal * 0.03) + 0.30;
