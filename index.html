@@ -5599,7 +5599,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                              <select id="sponsorship-level" onchange="handleSponsorshipChange()">
     <option value="" disabled selected>- Select a Sponsorship -</option>
     <option value="0">No Sponsorship (Golf Only)</option>
-    <option value="250">Hole Sponsor — $250</option>
+    <option value="250" id="opt-hole">Hole Sponsor — $250</option>
     <option value="1000" id="opt-silver">Silver Sponsor — $1,000</option>
     <option value="2500" id="opt-gold">Gold Sponsor — $2,500</option>
     <option value="5000" id="opt-platinum">Platinum Sponsor — $5,000</option>
@@ -8652,32 +8652,44 @@ function updateHoleSponsorsUI(soldHoles) {
             }
         }
 
-        function updateTierDropdownAvailability(tierCaps) {
-    var platOpt = document.getElementById('opt-platinum');
-    var goldOpt = document.getElementById('opt-gold');
+ function updateTierDropdownAvailability(tierCaps) {
+        var platOpt = document.getElementById('opt-platinum');
+        var goldOpt = document.getElementById('opt-gold');
+        var holeOpt = document.getElementById('opt-hole');
 
-    if (platOpt && tierCaps.platinum) {
-        var pRem = tierCaps.platinum.remaining;
-        if (pRem <= 0) {
-            platOpt.textContent = 'Platinum Sponsor — SOLD OUT';
-            platOpt.disabled = true;
-        } else {
-            platOpt.textContent = 'Platinum Sponsor — $5,000 (' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left)';
-            platOpt.disabled = false;
+        if (platOpt && tierCaps.platinum) {
+            var pRem = tierCaps.platinum.remaining;
+            if (pRem <= 0) {
+                platOpt.textContent = 'Platinum Sponsor — SOLD OUT';
+                platOpt.disabled = true;
+            } else {
+                platOpt.textContent = 'Platinum Sponsor — $5,000 (' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left)';
+                platOpt.disabled = false;
+            }
+        }
+
+        if (goldOpt && tierCaps.gold) {
+            var gRem = tierCaps.gold.remaining;
+            if (gRem <= 0) {
+                goldOpt.textContent = 'Gold Sponsor — $2,500 — SOLD OUT';
+                goldOpt.disabled = true;
+            } else {
+                goldOpt.textContent = 'Gold Sponsor — $2,500 (' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left)';
+                goldOpt.disabled = false;
+            }
+        }
+
+        if (holeOpt && tierCaps.hole) {
+            var hRem = tierCaps.hole.remaining;
+            if (hRem <= 0) {
+                holeOpt.textContent = 'Hole Sponsor — SOLD OUT';
+                holeOpt.disabled = true;
+            } else {
+                holeOpt.textContent = 'Hole Sponsor — $250 (' + hRem + ' ' + (hRem === 1 ? 'hole' : 'holes') + ' left)';
+                holeOpt.disabled = false;
+            }
         }
     }
-
-    if (goldOpt && tierCaps.gold) {
-        var gRem = tierCaps.gold.remaining;
-        if (gRem <= 0) {
-            goldOpt.textContent = 'Gold Sponsor — $2,500 — SOLD OUT';
-            goldOpt.disabled = true;
-        } else {
-            goldOpt.textContent = 'Gold Sponsor — $2,500 (' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left)';
-            goldOpt.disabled = false;
-        }
-    }
-}
 
 
         // --- Secret Admin Dashboard Logic ---
