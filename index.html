@@ -5805,11 +5805,14 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <option value="Venmo">Venmo</option>
 </select>
 <div class="payment-card-grid">
-    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
-        <span class="payment-card-icon">💳</span>
-        <div class="payment-card-name">Card</div>
-        <div class="payment-card-when">Pay Now</div>
-    </div>
+  <div class="payment-card step1-card-with-badge" data-badge="Recommended" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
+    <span class="payment-card-icon">💳</span>
+    <div class="payment-card-name">Card</div>
+    <div class="payment-card-when">Instant Confirmation</div>
+</div>
+    <p style="font-size: 12px; color: #2ecc71; text-align: center; margin-top: 4px; margin-bottom: 8px; line-height: 1.5;">
+    ✓ Card payments lock in your spot instantly — no follow-up needed.
+</p>
     <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Venmo')">
         <span class="payment-card-icon">📱</span>
         <div class="payment-card-name">Venmo</div>
@@ -5933,11 +5936,11 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <option value="Venmo">Venmo</option>
 </select>
 <div class="payment-card-grid">
-    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Credit/Debit Card')">
-        <span class="payment-card-icon">💳</span>
-        <div class="payment-card-name">Card</div>
-        <div class="payment-card-when">Pay Now</div>
-    </div>
+   <div class="payment-card step1-card-with-badge" data-badge="Recommended" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
+    <span class="payment-card-icon">💳</span>
+    <div class="payment-card-name">Card</div>
+    <div class="payment-card-when">Instant Confirmation</div>
+</div>
     <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Venmo')">
         <span class="payment-card-icon">📱</span>
         <div class="payment-card-name">Venmo</div>
@@ -9291,10 +9294,10 @@ function updateCostDisplay() {
 
             const paymentType = document.getElementById('payment-type').value;
             const noteArea = document.getElementById('payment-note');
-            if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
-            else if (paymentType === 'Cash') noteArea.innerText = "* Cash is due the day of the golf outing 10/9.";
-            else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
-            else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% + $0.30 processing fee is applied to card payments.";
+            if (paymentType === 'Check') noteArea.innerHTML = "* Please make checks payable to Shawn Thomas. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
+else if (paymentType === 'Cash') noteArea.innerHTML = "* Cash is due the day of the golf outing 10/9. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
+else if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a secure Venmo payment link after submitting. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
+            else if (paymentType === 'Credit/Debit Card') noteArea.innerHTML = "<span style='color: #2ecc71;'>✓ Your spot is confirmed the moment you submit.</span> A 3% + $0.30 processing fee applies.";
             else noteArea.innerText = "";
             document.getElementById('sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
         }
