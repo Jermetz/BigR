@@ -11139,15 +11139,30 @@ if (typeof _originalShowSection === 'function') {
     };
 }
 document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-        if (!window.Square || !signupCard) {
+    // Watchdog: only show the "Card payments aren't loading" message if Square
+    // truly fails to attach after a long grace period. Re-checks every second up to
+    // 15 seconds, and refuses to clobber a successfully-attached card iframe.
+    let squareCheckAttempts = 0;
+    const MAX_SQUARE_CHECK_ATTEMPTS = 15; // 15 seconds total
+    const squareWatchdog = setInterval(() => {
+        squareCheckAttempts++;
+        // Success path: Square loaded and the card object exists — stop checking
+        if (window.Square && signupCard) {
+            clearInterval(squareWatchdog);
+            return;
+        }
+        // Timeout path: ran out of attempts
+        if (squareCheckAttempts >= MAX_SQUARE_CHECK_ATTEMPTS) {
+            clearInterval(squareWatchdog);
             const sqContainer = document.getElementById('sq-card-container');
-            if (sqContainer) {
+            // Only show the fallback message if Square's iframe isn't already in there.
+            // If it is, the card form rendered fine and we just had a slow timer — leave it alone.
+            if (sqContainer && !sqContainer.querySelector('iframe')) {
                 sqContainer.style.display = 'block';
                 sqContainer.innerHTML = `<div style="padding: 15px; border: 1px dashed #e74c3c; border-radius: 8px; color: #e74c3c; font-size: 14px; text-align: center;"><strong>Card payments aren't loading.</strong><br>Please try refreshing the page or disabling your ad blocker. You can still use Venmo, Cash, or Check below.</div>`;
             }
         }
-    }, 5000);
+    }, 1000);
     if (window.Square) {
         const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
         payments.card().then(card => {
