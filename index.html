@@ -7438,7 +7438,13 @@ function selectSponsorship(levelValue, holeNum = null) {
         if (compareCollapsible && compareCollapsible.classList.contains('expanded')) {
             toggleSponsorCompare();
         }
- showSection('signup');
+ // Only navigate to signup if we're not already there — otherwise
+    // showSection() forces us back to Step 1 of the wizard.
+    const signupSection = document.getElementById('section-signup');
+    const alreadyOnSignup = signupSection && signupSection.classList.contains('active');
+    if (!alreadyOnSignup) {
+        showSection('signup');
+    }
 
     // Auto-close the wizard comparison table if it's open
     const wizardCollapsible = document.getElementById('wizard-sponsor-collapsible');
@@ -7447,7 +7453,7 @@ function selectSponsorship(levelValue, holeNum = null) {
     }
 
     if (currentWizardStep === 3) {
-        // If already on Step 3, don't jump to Step 2. Just scroll to the name field.
+        // If already on Step 3, don't jump to Step 2...
         setTimeout(() => {
             const nameInput = document.getElementById('sponsor-name-container');
             if (nameInput && nameInput.style.display !== 'none') {
