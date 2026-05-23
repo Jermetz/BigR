@@ -6533,14 +6533,21 @@ async function checkForFailedSubmissions() {
         let signupCard;
         let donateCard;
         
-        function selectPaymentCard(cardEl, selectId, value) {
+ function selectPaymentCard(cardEl, selectId, value) {
     // Highlight only this card in its grid
     cardEl.parentElement.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
     cardEl.classList.add('active');
-    // Set the hidden <select> and fire its existing change handler
+    // Set the hidden <select> and call the appropriate handlers directly
     const select = document.getElementById(selectId);
     select.value = value;
-    select.dispatchEvent(new Event('change'));
+    // Call handlers explicitly — inline onchange attributes don't always fire from synthetic events
+    if (selectId === 'payment-type') {
+        updatePaymentNote();
+        updateCostDisplay();
+    } else if (selectId === 'donate-payment-type') {
+        updateDonatePaymentNote();
+        updateDonationDisplay();
+    }
 }
 
       // --- Validation Modal Logic ---
