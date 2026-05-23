@@ -7612,13 +7612,30 @@ function validateAndNextStep(currentStep, nextStep) {
                 input.style.borderColor = 'transparent';
             }
         });
-if (isValid) {
+
+        // Check for Sponsorship selection on Step 3 for Sponsor Only mode
+        if (currentStep === 3) {
+            const isSponsorOnly = document.getElementById('sponsor-only-checkbox')?.checked || false;
+            const sponsorDropdown = document.getElementById('sponsorship-level');
+            const sponsorVal = sponsorDropdown ? sponsorDropdown.value : "";
+            
+            if (isSponsorOnly && (!sponsorVal || sponsorVal === "0")) {
+                isValid = false;
+                errorMessage = "Please select a Sponsorship level before continuing.";
+                if (sponsorDropdown) sponsorDropdown.style.borderColor = '#e74c3c';
+            } else if (sponsorDropdown) {
+                sponsorDropdown.style.borderColor = 'transparent';
+            }
+        }
+
+        if (isValid) {
             if (typeof saveWizardProgress === 'function') saveWizardProgress();
             nextWizardStep(nextStep);
         } else {
             showValidationModal(errorMessage);
-            // Scroll to the first invalid element
-            const firstInvalid = Array.from(inputs).find(input => input.style.borderColor === 'rgb(231, 76, 60)' || input.style.borderColor === '#e74c3c');
+            // Scroll to the first invalid element (including selects now)
+            const allInvalidElements = currentContainer.querySelectorAll('input, select');
+            const firstInvalid = Array.from(allInvalidElements).find(el => el.style.borderColor === 'rgb(231, 76, 60)' || el.style.borderColor === '#e74c3c');
             if (firstInvalid) {
                 setTimeout(() => {
                     firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
