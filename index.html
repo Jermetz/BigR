@@ -11280,17 +11280,24 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }, 1000);
-    if (window.Square) {
-        const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-        payments.card().then(card => {
-            signupCard = card;
-            signupCard.attach('#sq-card-container');
-        });
-        payments.card().then(card => {
-            donateCard = card;
-            donateCard.attach('#donate-sq-card-container');
-        });
-    }
+   if (window.Square) {
+    const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+    
+    // Attach signup card first, THEN attach donate card.
+    // Square requires sequential attachment — running them in parallel causes
+    // the second one to silently fail to render.
+    payments.card().then(card => {
+        signupCard = card;
+        return signupCard.attach('#sq-card-container');
+    }).then(() => {
+        return payments.card();
+    }).then(card => {
+        donateCard = card;
+        return donateCard.attach('#donate-sq-card-container');
+    }).catch(err => {
+        console.error('Square card attach failed:', err);
+    });
+}
     initCountdown();
     showSection('home');
     const footerYear = document.getElementById('footer-year');
