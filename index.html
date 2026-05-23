@@ -9501,7 +9501,12 @@ if (isSponsorOnly) {
 }
     
  // Show it
-    document.getElementById('signup-form-container').style.display = 'none';
+ document.getElementById('signup-form-container').style.display = 'none';
+geModal.style.display = 'flex';  // set inline BEFORE adding class
+geModal.style.opacity = '0';
+geModal.classList.add('show');
+setTimeout(() => { geModal.style.opacity = '1'; }, 50);
+
     geModal.classList.add('show');
     document.body.style.overflow = 'hidden';
     
@@ -9571,10 +9576,13 @@ fetchGlobalData();
  function closeGrandEntrance() {
     const ge = document.getElementById('grand-entrance');
     if (ge) {
+        ge.style.opacity = '0';
         ge.classList.remove('show');
-        setTimeout(() => { ge.style.display = 'none'; }, 600);
+        setTimeout(() => { 
+            ge.style.display = 'none';
+            ge.style.opacity = '';
+        }, 600);
     }
-    // Always restore the signup form visibility, even if user navigates away
     const formContainer = document.getElementById('signup-form-container');
     if (formContainer) formContainer.style.display = 'block';
     document.body.style.overflow = '';
@@ -9585,6 +9593,7 @@ fetchGlobalData();
     }
     showSection('home');
 }
+
 
 // =================================================================
 // SHAREABLE REGISTRATION CARD
