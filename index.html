@@ -2040,6 +2040,39 @@
     border-radius: 16px;
     border: 1px solid rgba(46, 204, 113, 0.2);
     box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    position: relative;        /* NEW — anchor for the eagle */
+    overflow: visible;          /* NEW — let the eagle spill out */
+}
+        /* Decorative eagle perched on top-right of the fundraising meter */
+.meter-eagle {
+    position: absolute;
+    top: -75px;              /* lifts it above the container edge */
+    right: -40px;            /* pushes it past the right edge */
+    width: 160px;
+    height: auto;
+    pointer-events: none;    /* eagle isn't clickable, won't block the meter */
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    z-index: 4;
+    transform-origin: bottom center;
+    animation: eaglePerch 4s ease-in-out infinite;
+}
+
+@keyframes eaglePerch {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-3px) rotate(0.5deg); }
+}
+
+/* Scale down on mobile so it doesn't overwhelm the meter */
+@media (max-width: 600px) {
+    .meter-eagle {
+        width: 100px;
+        top: -50px;
+        right: -15px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .meter-eagle { animation: none; }
 }
 .meter-header {
     display: flex;
@@ -5330,7 +5363,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <div class="social-stat-label">Holes<br>Sponsored</div>
                 </div>
             </div>
-         <div class="fundraiser-meter-container">
+<div class="fundraiser-meter-container">
+    <img src="Eaglesitting.png" alt="" class="meter-eagle" aria-hidden="true">
     <div class="meter-header">
         <h3>Drive to the Goal</h3>
         <span id="meter-text">$0 Raised / $30,000 Goal</span>
