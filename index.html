@@ -5873,31 +5873,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <option value="5000" id="opt-platinum">Platinum Sponsor — $5,000</option>
 </select>
                             </div>
-                          <div class="custom-sponsor-wizard-link">
-    Looking for something not listed?
-    <a href="javascript:void(0)" onclick="openCustomSponsorModal()">Request a custom package →</a>
-</div>
-                            <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
-                                <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
-                            </div> 
-                            <div id="complimentary-golfers-section" style="display: none; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                                <h4 style="color: #2ecc71; margin-bottom: 8px; font-size: 14px;">🎉 Includes Complimentary Golfers!</h4>
-                                <p id="comp-golfers-msg" style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">Your <span id="comp-tier-name">Platinum</span> sponsorship includes <span id="comp-spots-count">4</span> player spots.</p>
-                                <select id="comp-golfers-decision" style="width: 100%; margin-bottom: 5px; font-size: 13px; padding: 10px;" onchange="handleCompGolfersDecision()">
-                                    <option value="later">I'll email the player names later</option>
-                                    <option value="now">I want to enter their names right now</option>
-                                </select>
-                            </div>
-                            <!-- Expandable Comparison Table for Wizard -->
-                            <div class="sponsor-compare-toggle-wrap" style="margin-top: 10px; margin-bottom: 5px;">
-                                <button type="button" class="sponsor-compare-toggle" id="wizard-sponsor-toggle" onclick="toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible')" aria-expanded="false" aria-controls="wizard-sponsor-collapsible" style="padding: 10px 20px; font-size: 11px;">
-                                    <span class="toggle-label-closed">📋 Compare Tiers</span>
-                                    <span class="toggle-label-open">✕ Hide Tiers</span>
-                                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
-                                </button>
-                            </div>
+                       
 
                             <div class="sponsor-compare-collapsible" id="wizard-sponsor-collapsible" aria-hidden="true">
                                 <div class="sponsor-compare-collapsible-inner">
@@ -6030,7 +6006,31 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                                     </div>
                                 </div>
                             </div>
-                        
+                           <div class="custom-sponsor-wizard-link">
+    Looking for something not listed?
+    <a href="javascript:void(0)" onclick="openCustomSponsorModal()">Request a custom package →</a>
+</div>
+                            <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
+                                <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
+                            </div> 
+                            <div id="complimentary-golfers-section" style="display: none; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <h4 style="color: #2ecc71; margin-bottom: 8px; font-size: 14px;">🎉 Includes Complimentary Golfers!</h4>
+                                <p id="comp-golfers-msg" style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">Your <span id="comp-tier-name">Platinum</span> sponsorship includes <span id="comp-spots-count">4</span> player spots.</p>
+                                <select id="comp-golfers-decision" style="width: 100%; margin-bottom: 5px; font-size: 13px; padding: 10px;" onchange="handleCompGolfersDecision()">
+                                    <option value="later">I'll email the player names later</option>
+                                    <option value="now">I want to enter their names right now</option>
+                                </select>
+                            </div>
+                            <!-- Expandable Comparison Table for Wizard -->
+                            <div class="sponsor-compare-toggle-wrap" style="margin-top: 10px; margin-bottom: 5px;">
+                                <button type="button" class="sponsor-compare-toggle" id="wizard-sponsor-toggle" onclick="toggleSponsorCompare('wizard-sponsor-toggle', 'wizard-sponsor-collapsible')" aria-expanded="false" aria-controls="wizard-sponsor-collapsible" style="padding: 10px 20px; font-size: 11px;">
+                                    <span class="toggle-label-closed">📋 Compare Tiers</span>
+                                    <span class="toggle-label-open">✕ Hide Tiers</span>
+                                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                            </div>
                             <input type="checkbox" id="sponsor-only-checkbox" onchange="toggleSponsorOnly()" style="display: none;">
                         </div>
 
