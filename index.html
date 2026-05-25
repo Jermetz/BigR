@@ -1030,7 +1030,223 @@
     font-style: italic;
     line-height: 1.5;
 }
+/* =================================================================
+   CUSTOM SPONSORSHIP REQUEST
+   ================================================================= */
 
+/* The pitch card on the Sponsors page */
+.custom-sponsor-card {
+    max-width: 720px;
+    margin: 40px auto 30px;
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.12) 0%, rgba(0, 0, 0, 0.4) 100%);
+    border: 1px solid rgba(155, 89, 182, 0.35);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+.custom-sponsor-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #9b59b6, transparent);
+}
+.custom-sponsor-card .custom-eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #c39bd3;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.custom-sponsor-card h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 26px;
+    color: #f8fafc;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.custom-sponsor-card p {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto 22px;
+}
+.custom-sponsor-card .custom-cta {
+    background: linear-gradient(135deg, #9b59b6, #6c3483);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(155, 89, 182, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.custom-sponsor-card .custom-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(155, 89, 182, 0.55);
+}
+
+/* Inline link inside the wizard's Step 3 */
+.custom-sponsor-wizard-link {
+    text-align: center;
+    margin-top: 14px;
+    padding: 12px;
+    background: rgba(155, 89, 182, 0.08);
+    border: 1px dashed rgba(155, 89, 182, 0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+.custom-sponsor-wizard-link a {
+    color: #c39bd3;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 4px;
+}
+.custom-sponsor-wizard-link a:hover {
+    text-decoration: underline;
+}
+
+/* The modal itself — reuses memory-submit-modal patterns */
+.custom-sponsor-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10001;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+.custom-sponsor-modal-card {
+    background: #1e293b;
+    padding: 32px;
+    border-radius: 16px;
+    border: 2px solid #9b59b6;
+    max-width: 580px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+}
+.custom-sponsor-modal-card h2 {
+    color: #c39bd3;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.custom-sponsor-modal-card .modal-intro {
+    color: #cbd5e1;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+.custom-sponsor-modal-card .field-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c39bd3;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+.custom-sponsor-modal-card input,
+.custom-sponsor-modal-card select,
+.custom-sponsor-modal-card textarea {
+    width: 100%;
+    margin-bottom: 14px;
+}
+.custom-sponsor-modal-card textarea {
+    padding: 14px;
+    border: 2px solid transparent;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1e293b;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 110px;
+    transition: all 0.3s ease;
+}
+.custom-sponsor-modal-card textarea:focus {
+    outline: none;
+    border-color: #9b59b6;
+    background-color: #ffffff;
+}
+.custom-sponsor-modal-card .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 480px) {
+    .custom-sponsor-modal-card .field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+.custom-sponsor-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+.custom-sponsor-modal-actions button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+.custom-sponsor-modal-actions .submit-btn {
+    background: linear-gradient(135deg, #9b59b6, #6c3483);
+    color: white;
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+}
+.custom-sponsor-modal-actions .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(155, 89, 182, 0.6);
+}
+.custom-sponsor-modal-actions .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+.custom-sponsor-modal-actions .cancel-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #cbd5e1;
+}
+.custom-sponsor-status {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 13px;
+    min-height: 18px;
+}
+.custom-sponsor-privacy-note {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 14px;
+    font-style: italic;
+    line-height: 1.5;
+}
 /* Admin pending-memory tile */
 .pending-memory {
     background: rgba(243, 156, 18, 0.08);
@@ -5657,6 +5873,10 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <option value="5000" id="opt-platinum">Platinum Sponsor — $5,000</option>
 </select>
                             </div>
+                          <div class="custom-sponsor-wizard-link">
+    Looking for something not listed?
+    <a href="javascript:void(0)" onclick="openCustomSponsorModal()">Request a custom package →</a>
+</div>
                             <div class="form-group" id="sponsor-name-container" style="display: none; margin-bottom: 15px;">
                                 <input type="text" id="sponsor-display-name" placeholder="Sponsor Display Name (e.g., The Smith Family or Acme Corp)">
                             </div> 
@@ -6209,6 +6429,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 </div>
 <!-- Sponsorship comparison table -->
 <!-- Sponsorship comparison — collapsed by default -->
+            <!-- Custom Sponsorship Pitch Card -->
+<div class="custom-sponsor-card">
+    <div class="custom-eyebrow">✨ Don't See What You Need?</div>
+    <h3>Let's Build Something Custom</h3>
+    <p>Want to sponsor the awards lunch, brand the gift bags, combine multiple holes, or design a package that doesn't fit our standard tiers? Tell us what you have in mind — we'd love to make it happen.</p>
+    <button class="custom-cta" onclick="openCustomSponsorModal()">📝 Request a Custom Package</button>
+</div>
 <div class="sponsor-compare-toggle-wrap">
     <button type="button" class="sponsor-compare-toggle" id="sponsor-compare-toggle" onclick="toggleSponsorCompare()" aria-expanded="false" aria-controls="sponsor-compare-collapsible">
         <span class="toggle-label-closed">📋 View Sponsorship Details</span>
@@ -6780,6 +7007,94 @@ function closeMemoryModal() {
     document.getElementById('memory-submit-modal').style.display = 'none';
     document.body.style.overflow = '';
     resetMemoryForm();
+}
+        // =================================================================
+// CUSTOM SPONSORSHIP REQUEST
+// =================================================================
+function openCustomSponsorModal() {
+    document.getElementById('custom-sponsor-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCustomSponsorModal() {
+    document.getElementById('custom-sponsor-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    resetCustomSponsorForm();
+}
+
+function resetCustomSponsorForm() {
+    document.getElementById('custom-sponsor-name').value = '';
+    document.getElementById('custom-sponsor-company').value = '';
+    document.getElementById('custom-sponsor-email').value = '';
+    document.getElementById('custom-sponsor-phone').value = '';
+    document.getElementById('custom-sponsor-budget').value = '';
+    document.getElementById('custom-sponsor-message').value = '';
+    document.getElementById('custom-sponsor-status').innerHTML = '';
+    const btn = document.getElementById('custom-sponsor-submit-btn');
+    btn.disabled = false;
+    btn.innerText = 'Send Request';
+}
+
+function submitCustomSponsorRequest() {
+    const name = document.getElementById('custom-sponsor-name').value.trim();
+    const company = document.getElementById('custom-sponsor-company').value.trim();
+    const email = document.getElementById('custom-sponsor-email').value.trim();
+    const phone = document.getElementById('custom-sponsor-phone').value.trim();
+    const budget = document.getElementById('custom-sponsor-budget').value;
+    const message = document.getElementById('custom-sponsor-message').value.trim();
+    const statusEl = document.getElementById('custom-sponsor-status');
+    const submitBtn = document.getElementById('custom-sponsor-submit-btn');
+
+    // Validation
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!name) {
+        showValidationModal('Please enter your name.');
+        return;
+    }
+    if (!email || !EMAIL_REGEX.test(email)) {
+        showValidationModal('Please enter a valid email so we can follow up.');
+        return;
+    }
+    if (!message) {
+        showValidationModal('Please tell us a bit about what you have in mind.');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = '⏳ Sending...';
+    statusEl.innerHTML = '<span style="color:#c39bd3;">Sending your request...</span>';
+
+    submitWithRetry({
+        action: 'custom_sponsor_request',
+        name: name,
+        company: company,
+        email: email,
+        phone: phone,
+        budget: budget,
+        message: message,
+        deviceType: getDeviceInfo()
+    }, {
+        canRetry: true,
+        label: 'custom sponsorship request'
+    })
+    .then(data => {
+        statusEl.innerHTML = '<span style="color:#2ecc71; font-weight:600;">✅ Request sent! We\'ll be in touch within 48 hours.</span>';
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 60,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#9b59b6', '#c39bd3', '#ffffff'],
+                zIndex: 10002
+            });
+        }
+        setTimeout(closeCustomSponsorModal, 2800);
+    })
+    .catch(err => {
+        statusEl.innerHTML = '<span style="color:#e74c3c;">❌ Couldn\'t send right now. Please email bigrgolfinvitational@gmail.com directly.</span>';
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Request';
+    });
 }
  
 function resetMemoryForm() {
@@ -11488,5 +11803,57 @@ if (typeof _originalSelectSponsorship === 'function') {
 <a href="mailto:bigrgolfinvitational@gmail.com" id="contact-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 60px; height: 60px; background: #3498db; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; text-decoration: none;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Email Us">
   <span style="color: white; font-size: 28px;">✉️</span>
 </a>
+    <!-- Custom Sponsorship Request Modal -->
+<div id="custom-sponsor-modal" class="custom-sponsor-modal">
+    <div class="custom-sponsor-modal-card">
+        <h2>Build a Custom Package</h2>
+        <p class="modal-intro">Tell us what you have in mind and we'll get back to you within 48 hours to design something that works.</p>
+
+        <div class="field-row">
+            <div>
+                <label class="field-label">Your Name *</label>
+                <input type="text" id="custom-sponsor-name" placeholder="Full Name" maxlength="80" required>
+            </div>
+            <div>
+                <label class="field-label">Company / Org</label>
+                <input type="text" id="custom-sponsor-company" placeholder="(Optional)" maxlength="100">
+            </div>
+        </div>
+
+        <div class="field-row">
+            <div>
+                <label class="field-label">Email *</label>
+                <input type="email" id="custom-sponsor-email" placeholder="you@example.com" required>
+            </div>
+            <div>
+                <label class="field-label">Phone</label>
+                <input type="tel" id="custom-sponsor-phone" placeholder="(Optional)" maxlength="14" oninput="formatPhoneAsTyping(this)">
+            </div>
+        </div>
+
+        <label class="field-label">Budget Range</label>
+        <select id="custom-sponsor-budget">
+            <option value="">— Select a range (optional) —</option>
+            <option value="Under $1,000">Under $1,000</option>
+            <option value="$1,000 – $2,500">$1,000 – $2,500</option>
+            <option value="$2,500 – $5,000">$2,500 – $5,000</option>
+            <option value="$5,000 – $10,000">$5,000 – $10,000</option>
+            <option value="$10,000+">$10,000+</option>
+            <option value="Not sure yet">Not sure yet — let's talk</option>
+        </select>
+
+        <label class="field-label">What are you looking for? *</label>
+        <textarea id="custom-sponsor-message" placeholder="e.g. We'd like to sponsor the awards lunch, or combine hole sponsorship with branded gift bags, or anything else you have in mind."  maxlength="1500" required></textarea>
+
+        <p class="custom-sponsor-privacy-note">Your info is used only to follow up about your sponsorship — we never share it.</p>
+
+        <div class="custom-sponsor-modal-actions">
+            <button class="cancel-btn" onclick="closeCustomSponsorModal()">Cancel</button>
+            <button class="submit-btn" id="custom-sponsor-submit-btn" onclick="submitCustomSponsorRequest()">Send Request</button>
+        </div>
+
+        <p class="custom-sponsor-status" id="custom-sponsor-status"></p>
+    </div>
+</div>
 </body>
 </html>
