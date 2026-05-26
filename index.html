@@ -2262,11 +2262,11 @@
         /* Decorative eagle perched on top-right of the fundraising meter */
 .meter-eagle {
     position: absolute;
-    top: -150px;              /* lifts it above the container edge */
-    right: -70px;            /* pushes it past the right edge */
+    top: -150px;
+    right: -70px;
     width: 160px;
     height: auto;
-    pointer-events: none;    /* eagle isn't clickable, won't block the meter */
+    pointer-events: none;
     filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
     z-index: 4;
     transform-origin: bottom center;
@@ -2278,17 +2278,25 @@
     50%      { transform: translateY(-3px) rotate(0.5deg); }
 }
 
-/* Scale down on mobile so it doesn't overwhelm the meter */
-@media (max-width: 600px) {
+/* Tablet — eagle stays but pulls in tighter so it doesn't overlap stats cards */
+@media (max-width: 900px) {
     .meter-eagle {
-        width: 80px;
-        top: -40px;
-        right: -10px;
-        animation: none;
-        transform: none;
+        width: 120px;
+        top: -110px;
+        right: -20px;
     }
 }
 
+/* Mobile — pin to top-right corner of the meter, no float animation */
+@media (max-width: 600px) {
+    .meter-eagle {
+        width: 75px;
+        top: -65px;
+        right: -5px;
+        animation: none;
+        transform: translateY(0);
+    }
+}
 @media (prefers-reduced-motion: reduce) {
     .meter-eagle { animation: none; }
 }
