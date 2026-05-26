@@ -8644,14 +8644,9 @@ function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
             const featured = normalized.filter(s => s.tier === 'featured');
             const standard = normalized.filter(s => s.tier === 'standard');
             
-            // If no one is explicitly featured, promote the first 3 to featured
-            // (provides graceful fallback for old data with no tier info)
-            let spotlightSponsors = featured;
-            if (spotlightSponsors.length === 0 && standard.length > 0) {
-                spotlightSponsors = standard.slice(0, Math.min(3, standard.length));
-            }
-            
-            renderSpotlight(spotlightSponsors);
+         // Only show the Featured spotlight if there are sponsors explicitly tagged as featured.
+// Standard sponsors stay in the marquee — they should NOT be auto-promoted.
+renderSpotlight(featured);
             renderMarquee(normalized); // Marquee shows ALL sponsors
             renderAdminList(normalized);
         }
@@ -8802,41 +8797,42 @@ function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
          * Renders the scrolling Marquee — now clickable when website is provided.
          * Ensures enough duplicates exist for a seamless infinite loop on any screen size.
          */
-        function renderMarquee(allSponsors) {
-            const track = document.getElementById('marquee-track');
-            if (!track || allSponsors.length === 0) return;
+    function renderMarquee(allSponsors) {
+    const track = document.getElementById('marquee-track');
+    if (!track || allSponsors.length === 0) return;
 
-            let logoHTML = '';
-            allSponsors.forEach(sponsor => {
-                const imgSrc = resolveImageSrc(sponsor.logo);
-                const websiteUrl = sponsor.website && sponsor.website.trim()
-                    ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website)
-                    : null;
-                
-                if (websiteUrl) {
-                    logoHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="marquee-logo-link"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></a>`;
-                } else {
-                    logoHTML += `<span class="marquee-logo-link" style="cursor: default;"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></span>`;
-                }
-            });
-
-            // For the -50% translate loop to feel seamless, the track needs to be wider than the viewport.
-            // We need at least 2 copies always; small sponsor counts need 3-4 copies to look natural.
-            // Rule of thumb: aim for ~10 total logos minimum, then halve and duplicate so the loop math works.
-            let copies = 2;
-            if (allSponsors.length <= 3) copies = 6;
-            else if (allSponsors.length <= 5) copies = 4;
-            else if (allSponsors.length <= 8) copies = 3;
-            
-            // The CSS `translateX(-50%)` math requires the duplicated content to be in TWO halves.
-            // So we build the full set N/2 times, then mirror it once more for the loop wrap.
-            const halfRepeats = Math.ceil(copies / 2);
-            let halfHTML = '';
-            for (let i = 0; i < halfRepeats; i++) halfHTML += logoHTML;
-            
-            track.innerHTML = halfHTML + halfHTML;
-            track.style.transform = `translate3d(0, 0, 0)`;
+    let logoHTML = '';
+    allSponsors.forEach(sponsor => {
+        const imgSrc = resolveImageSrc(sponsor.logo);
+        const websiteUrl = sponsor.website && sponsor.website.trim()
+            ? (sponsor.website.startsWith('http') ? sponsor.website : 'https://' + sponsor.website)
+            : null;
+        
+        if (websiteUrl) {
+            logoHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="marquee-logo-link"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></a>`;
+        } else {
+            logoHTML += `<span class="marquee-logo-link" style="cursor: default;"><img src="${imgSrc}" class="marquee-logo-img" alt="Sponsor" onerror="this.style.opacity='0.3'; this.alt='⚠️ Logo failed to load';"></span>`;
         }
+    });
+
+    // Small sponsor counts: show the logos statically (no scroll, no duplicates).
+    // The marquee animation only makes sense once there are enough logos to scroll.
+    if (allSponsors.length <= 3) {
+        track.innerHTML = logoHTML;
+        track.style.animation = 'none';
+        track.style.justifyContent = 'center';
+        track.style.width = '100%';
+        track.style.transform = 'none';
+        return;
+    }
+
+    // 4+ sponsors: enable the infinite scroll loop. Duplicate once for seamless wrap.
+    track.style.animation = '';
+    track.style.justifyContent = 'flex-start';
+    track.style.width = 'max-content';
+    track.innerHTML = logoHTML + logoHTML;
+    track.style.transform = `translate3d(0, 0, 0)`;
+}
 
         /**
          * Renders the Admin sponsor management list with tier badges + delete buttons.
