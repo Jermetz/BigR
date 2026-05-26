@@ -9178,28 +9178,28 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
         let touchendX = 0;
         let isSwiping = false;
 
-        function openLightbox(imageSrc) {
-            const lightbox = document.getElementById('photo-lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.src = imageSrc;
-            lightbox.style.display = 'flex';
-            
-            // 1. Prevent background scrolling (Target both body and html for mobile)
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
+     function openLightbox(imageSrc) {
+    const lightbox = document.getElementById('photo-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    lightboxImg.src = imageSrc;
+    lightbox.style.display = 'flex';
+    
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
-            // Gather all clickable images currently loaded on the page for swiping
-            const elements = Array.from(document.querySelectorAll('[onclick^="openLightbox"]'));
-            currentLightboxImages = elements.map(el => {
-                if (el.tagName === 'IMG' && el.getAttribute('onclick').includes('this.src')) {
-                    return el.src;
-                }
-                const match = el.getAttribute('onclick').match(/'([^']+)'/);
-                return match ? match[1] : null;
-            }).filter(url => url !== null);
-
-            currentLightboxIndex = currentLightboxImages.indexOf(imageSrc);
-        }
+    // Only allow swiping if there are multiple gallery images visible
+    const elements = Array.from(document.querySelectorAll('#event-gallery-grid [onclick^="openLightbox"]'));
+    if (elements.length > 1) {
+        currentLightboxImages = elements.map(el => {
+            const match = el.getAttribute('onclick').match(/'([^']+)'/);
+            return match ? match[1] : null;
+        }).filter(url => url !== null);
+        currentLightboxIndex = currentLightboxImages.indexOf(imageSrc);
+    } else {
+        currentLightboxImages = [];
+        currentLightboxIndex = -1;
+    }
+}
 
         function closeLightbox() {
             document.getElementById('photo-lightbox').style.display = 'none';
