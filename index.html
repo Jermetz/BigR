@@ -5384,7 +5384,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <div class="admin-section">
                 <label>Upload Sponsor Logo</label>
                 <input type="file" id="admin-sponsor-file" accept="image/*" style="padding: 10px; font-size: 12px; margin-bottom: 10px;">
-                
+                <input type="text" id="admin-sponsor-name-match" placeholder="Matching Sponsor Name (e.g., Acme Corp) *" style="margin-bottom: 10px; padding: 12px; font-size: 13px; width: 100%; border-radius: 8px; border: none; background-color: rgba(255,255,255,0.9); color: #1e293b;">
                 <input type="url" id="admin-sponsor-website" placeholder="Sponsor Website URL (e.g., https://acme.com) *" style="margin-bottom: 10px; padding: 12px; font-size: 13px;">
                 
                 <label style="font-size: 11px; margin-top: 0; margin-bottom: 6px;">Showcase Tier</label>
@@ -9038,19 +9038,62 @@ function updateHoleSponsorsUI(soldHoles) {
         }
 
  function updatePremiumSponsorsUI(soldPremium) {
-            const markSold = (tierClass, soldCount) => {
+            const markSold = (tierClass, soldData) => {
                 const tierDiv = document.querySelector(`.tier-${tierClass} .sponsor-logos`);
                 if (!tierDiv) return;
                 const placeholders = tierDiv.querySelectorAll('.sponsor-placeholder');
-                for (let i = 0; i < soldCount && i < placeholders.length; i++) {
-                    placeholders[i].innerText = 'Sold';
-                    placeholders[i].style.borderColor = '#e74c3c';
-                    placeholders[i].style.color = '#e74c3c';
-                    placeholders[i].style.background = 'rgba(231, 76, 60, 0.1)';
-                    placeholders[i].onclick = null;
-                    placeholders[i].style.cursor = 'not-allowed';
+                
+                // Backwards compatibility: if backend sends a number vs an array of sponsor objects
+                let count = typeof soldData === 'number' ? soldData : (Array.isArray(soldData) ? soldData.length : 0);
+                
+                for (let i = 0; i < count && i < placeholders.length; i++) {
+                    const box = placeholders[i];
+                    const sponsorObj = Array.isArray(soldData) ? soldData[i] : null;
+
+                    // Reset default placeholder styles to prepare for new content
+                    box.onclick = null;
+                    box.style.cursor = 'default';
+                    box.style.animation = 'none'; // Stop the shine animation
+                    
+                    if (sponsorObj && sponsorObj.logo) {
+                        // 1. We have a logo
+                        box.style.background = 'rgba(255, 255, 255, 0.05)';
+                        box.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        box.style.padding = '8px'; // Give logo breathing room
+                        
+                        const imgSrc = resolveImageSrc(sponsorObj.logo);
+                        box.innerHTML = `<img src="${imgSrc}" alt="${sponsorObj.name || 'Sponsor'}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 4px;">`;
+                        
+                        if (sponsorObj.name) box.title = sponsorObj.name; // Tooltip on hover
+                    } else if (sponsorObj && sponsorObj.name) {
+                        // 2. No logo, but we have a name
+                        box.style.background = 'rgba(241, 196, 15, 0.1)';
+                        box.style.borderColor = '#f1c40f';
+                        box.style.color = '#f1c40f';
+                        box.style.fontWeight = '700';
+                        box.style.textAlign = 'center';
+                        box.style.padding = '10px';
+                        box.innerText = sponsorObj.name;
+                        box.title = sponsorObj.name;
+                    } else {
+                        // 3. Fallback: just red "Sold" (if backend hasn't updated yet)
+                        box.innerText = 'Sold';
+                        box.style.borderColor = '#e74c3c';
+                        box.style.color = '#e74c3c';
+                        box.style.background = 'rgba(231, 76, 60, 0.1)';
+                    }
+
+                    // 4. Make it clickable if there's a website
+                    if (sponsorObj && sponsorObj.website) {
+                        box.style.cursor = 'pointer';
+                        box.onclick = () => {
+                            const finalUrl = sponsorObj.website.startsWith('http') ? sponsorObj.website : 'https://' + sponsorObj.website;
+                            window.open(finalUrl, '_blank', 'noopener,noreferrer');
+                        };
+                    }
                 }
             };
+
             if (soldPremium) {
                 markSold('platinum', soldPremium.platinum);
                 markSold('gold', soldPremium.gold);
@@ -9332,13 +9375,15 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
             document.getElementById('tier-standard-btn').classList.toggle('active', tier === 'standard');
         }
 
-        function submitAdminSponsor() {
+function submitAdminSponsor() {
             let password = document.getElementById('admin-pass').value;
             let fileInput = document.getElementById('admin-sponsor-file');
             let website = document.getElementById('admin-sponsor-website').value.trim();
+            let sponsorName = document.getElementById('admin-sponsor-name-match').value.trim(); // Read the field
             
             if (!password) { alert("Please enter password"); return; }
             if (!fileInput.files || fileInput.files.length === 0) { alert("Select an image first."); return; }
+            if (!sponsorName) { alert("Please enter the matching Sponsor Name so the system can link it."); return; }
             if (!website) { alert("Please provide the sponsor's website URL."); return; }
             
             // Auto-prepend https:// if missing
@@ -9354,12 +9399,13 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8'
                     },
-                    body: JSON.stringify({ 
+                   body: JSON.stringify({ 
                         action: "upload_sponsor", 
                         password: password, 
                         imageBase64: base64Data,
                         mimeType: mimeType,
                         website: website,
+                        sponsorName: sponsorName, // Relays the text label down to Apps Script
                         tier: selectedUploadTier
                     })
                 })
