@@ -11626,17 +11626,39 @@ async function loadSquareOnDemand(type) {
     if (!window.Square) return;
     const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
 
+    // Give the browser 50ms to paint the display:block change so Square calculates dimensions correctly
+    await new Promise(resolve => setTimeout(resolve, 50));
+
     if (type === 'signup' && !signupCard) {
+        const container = document.getElementById('sq-card-container');
         try {
-            signupCard = await payments.card();
-            await signupCard.attach('#sq-card-container');
-        } catch (err) { console.error('Square signup attach failed:', err); }
+            // Show immediate visual feedback
+            container.innerHTML = '<div style="text-align: center; color: #94a3b8; font-size: 13px; padding: 10px;">🔒 Loading secure payment form...</div>';
+            const card = await payments.card();
+            container.innerHTML = ''; // Clear loading text
+            await card.attach('#sq-card-container');
+            signupCard = card; // Only assign if attach succeeds
+        } catch (err) { 
+            console.error('Square signup attach failed:', err); 
+            signupCard = null; // Allow retry on next click
+            container.innerHTML = '<div style="color: #e74c3c; font-size: 13px; text-align: center;">Failed to load payment form. Please click a different payment method, then click Card again.</div>';
+        }
     }
+    
     if (type === 'donate' && !donateCard) {
+        const container = document.getElementById('donate-sq-card-container');
         try {
-            donateCard = await payments.card();
-            await donateCard.attach('#donate-sq-card-container');
-        } catch (err) { console.error('Square donate attach failed:', err); }
+            // Show immediate visual feedback
+            container.innerHTML = '<div style="text-align: center; color: #94a3b8; font-size: 13px; padding: 10px;">🔒 Loading secure payment form...</div>';
+            const card = await payments.card();
+            container.innerHTML = ''; // Clear loading text
+            await card.attach('#donate-sq-card-container');
+            donateCard = card; // Only assign if attach succeeds
+        } catch (err) { 
+            console.error('Square donate attach failed:', err); 
+            donateCard = null; // Allow retry on next click
+            container.innerHTML = '<div style="color: #e74c3c; font-size: 13px; text-align: center;">Failed to load payment form. Please click a different payment method, then click Card again.</div>';
+        }
     }
 }
 
