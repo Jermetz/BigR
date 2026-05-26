@@ -11622,6 +11622,24 @@ if (typeof _originalShowSection === 'function') {
         setTimeout(updateStickyCtaBar, 100);
     };
 }
+async function loadSquareOnDemand(type) {
+    if (!window.Square) return;
+    const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+
+    if (type === 'signup' && !signupCard) {
+        try {
+            signupCard = await payments.card();
+            await signupCard.attach('#sq-card-container');
+        } catch (err) { console.error('Square signup attach failed:', err); }
+    }
+    if (type === 'donate' && !donateCard) {
+        try {
+            donateCard = await payments.card();
+            await donateCard.attach('#donate-sq-card-container');
+        } catch (err) { console.error('Square donate attach failed:', err); }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Prevent pinch-to-zoom on all touch devices
 document.addEventListener('touchmove', function(e) {
@@ -11662,23 +11680,7 @@ document.addEventListener('gesturechange', function(e) {
             }
         }
     }, 1000);
-  async function loadSquareOnDemand(type) {
-        if (!window.Square) return;
-        const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-        
-        if (type === 'signup' && !signupCard) {
-            try {
-                signupCard = await payments.card();
-                await signupCard.attach('#sq-card-container');
-            } catch (err) { console.error('Square signup attach failed:', err); }
-        }
-        if (type === 'donate' && !donateCard) {
-            try {
-                donateCard = await payments.card();
-                await donateCard.attach('#donate-sq-card-container');
-            } catch (err) { console.error('Square donate attach failed:', err); }
-        }
-    }
+ 
     initCountdown();
     showSection('home');
     const footerYear = document.getElementById('footer-year');
