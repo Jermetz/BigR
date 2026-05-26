@@ -6628,8 +6628,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         <h3 style="justify-content: center; font-size: 12px; margin-bottom: 10px; color: #3498db;">⛳ Event Co-Directors</h3>
                         
                         <p style="font-size: 18px; color: #f8fafc; font-weight: 700; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif;">Jeremy Metzler</p>
-                        <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 20px;">
-               <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 20px;">
+                    <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 20px;">
     <a href="mailto:bigrgolfinvitational@gmail.com" style="color: #f1c40f; text-decoration: none; font-weight: 600;">bigrgolfinvitational@gmail.com</a><br>
     <a href="tel:2676002525" style="color: #f1c40f; text-decoration: none; font-weight: 600;">(267) 600-2525</a>
 </p>
@@ -7979,7 +7978,7 @@ function validateAndNextStep(currentStep, nextStep) {
                 isValid = false;
                 input.style.borderColor = '#e74c3c';
                 errorMessage = "One or more teammate emails is invalid — please fix or leave blank.";
-            } else if (input.value && input.value.trim()) {
+           } else {
                 input.style.borderColor = 'transparent';
             }
         });
@@ -10667,6 +10666,7 @@ function startExperience() {
 
         // Converts a millisecond timestamp into a human-readable "X min ago" / "just now" string
         function humanizeTime(timestamp) {
+            if (!timestamp) return '';
             const diff = Date.now() - timestamp;
             const mins = Math.floor(diff / 60000);
             const hours = Math.floor(diff / 3600000);
