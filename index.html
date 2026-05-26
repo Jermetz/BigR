@@ -11615,6 +11615,20 @@ if (typeof _originalShowSection === 'function') {
     };
 }
 document.addEventListener("DOMContentLoaded", () => {
+    // Prevent pinch-to-zoom on all touch devices
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('gesturechange', function(e) {
+    e.preventDefault();
+}, { passive: false });
     // Watchdog: only show the "Card payments aren't loading" message if Square
     // truly fails to attach after a long grace period. Re-checks every second up to
     // 15 seconds, and refuses to clobber a successfully-attached card iframe.
@@ -11627,6 +11641,7 @@ document.addEventListener("DOMContentLoaded", () => {
             clearInterval(squareWatchdog);
             return;
         }
+        
         // Timeout path: ran out of attempts
         if (squareCheckAttempts >= MAX_SQUARE_CHECK_ATTEMPTS) {
             clearInterval(squareWatchdog);
