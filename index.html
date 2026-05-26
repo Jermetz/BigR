@@ -9667,7 +9667,10 @@ else if (paymentType === 'Cash') noteArea.innerHTML = "* Cash is due the day of 
 else if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a secure Venmo payment link after submitting. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
             else if (paymentType === 'Credit/Debit Card') noteArea.innerHTML = "<span style='color: #2ecc71;'>✓ Your spot is confirmed the moment you submit.</span> A 3% + $0.30 processing fee applies.";
             else noteArea.innerText = "";
-            document.getElementById('sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
+            
+            const isCard = (paymentType === 'Credit/Debit Card');
+            document.getElementById('sq-card-container').style.display = isCard ? 'block' : 'none';
+            if (isCard) loadSquareOnDemand('signup');
         }
         function updateDonatePaymentNote() {
             const paymentType = document.getElementById('donate-payment-type').value;
@@ -9678,7 +9681,10 @@ else if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a sec
             else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% + $0.30 processing fee is applied to card payments.";
             else noteArea.innerText = "";
-            document.getElementById('donate-sq-card-container').style.display = (paymentType === 'Credit/Debit Card') ? 'block' : 'none';
+            
+            const isCard = (paymentType === 'Credit/Debit Card');
+            document.getElementById('donate-sq-card-container').style.display = isCard ? 'block' : 'none';
+            if (isCard) loadSquareOnDemand('donate');
         }
 
 
@@ -11638,8 +11644,8 @@ document.addEventListener('gesturechange', function(e) {
     const MAX_SQUARE_CHECK_ATTEMPTS = 15; // 15 seconds total
     const squareWatchdog = setInterval(() => {
         squareCheckAttempts++;
-        // Success path: Square loaded and the card object exists — stop checking
-        if (window.Square && signupCard) {
+       // Success path: Square library loaded successfully — stop checking
+        if (window.Square) {
             clearInterval(squareWatchdog);
             return;
         }
@@ -11656,24 +11662,23 @@ document.addEventListener('gesturechange', function(e) {
             }
         }
     }, 1000);
-   if (window.Square) {
-    const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-    
-    // Attach signup card first, THEN attach donate card.
-    // Square requires sequential attachment — running them in parallel causes
-    // the second one to silently fail to render.
-    payments.card().then(card => {
-        signupCard = card;
-        return signupCard.attach('#sq-card-container');
-    }).then(() => {
-        return payments.card();
-    }).then(card => {
-        donateCard = card;
-        return donateCard.attach('#donate-sq-card-container');
-    }).catch(err => {
-        console.error('Square card attach failed:', err);
-    });
-}
+  async function loadSquareOnDemand(type) {
+        if (!window.Square) return;
+        const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+        
+        if (type === 'signup' && !signupCard) {
+            try {
+                signupCard = await payments.card();
+                await signupCard.attach('#sq-card-container');
+            } catch (err) { console.error('Square signup attach failed:', err); }
+        }
+        if (type === 'donate' && !donateCard) {
+            try {
+                donateCard = await payments.card();
+                await donateCard.attach('#donate-sq-card-container');
+            } catch (err) { console.error('Square donate attach failed:', err); }
+        }
+    }
     initCountdown();
     showSection('home');
     const footerYear = document.getElementById('footer-year');
