@@ -5186,6 +5186,22 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         </div>
     </div>
 </div>
+    <!-- MAINTENANCE MODE OVERLAY -->
+<div id="maintenance-overlay" style="display: none; position: fixed; inset: 0; z-index: 100050; background: linear-gradient(135deg, #0a0f1c 0%, #1e293b 100%); justify-content: center; align-items: center; padding: 30px; overflow-y: auto;">
+    <div style="text-align: center; max-width: 520px; color: white; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <img src="Big R Logo.png" alt="Big R Memorial" style="max-width: 180px; margin-bottom: 30px; filter: drop-shadow(0 0 25px rgba(255,255,255,0.4));">
+        <div style="font-size: 64px; margin-bottom: 20px;">🚧</div>
+        <h1 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: clamp(32px, 6vw, 48px); color: #f1c40f; margin-bottom: 16px; line-height: 1.1;">We'll be right back</h1>
+        <p style="color: #cbd5e1; font-size: 17px; line-height: 1.6; margin-bottom: 28px;">The Big R Memorial site is briefly down for updates.<br>Thanks for your patience — we'll be back online shortly.</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 30px;">
+            <div style="width: 50px; height: 1px; background: rgba(241,196,15,0.4);"></div>
+            <div style="width: 8px; height: 8px; background: #f1c40f; transform: rotate(45deg);"></div>
+            <div style="width: 50px; height: 1px; background: rgba(241,196,15,0.4);"></div>
+        </div>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Questions? <a href="mailto:bigrgolfinvitational@gmail.com" style="color: #3498db; text-decoration: none; font-weight: 600;">bigrgolfinvitational@gmail.com</a></p>
+        <button id="maintenance-admin-trigger" onclick="handleMaintenanceAdminClick()" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #64748b; padding: 8px 18px; border-radius: 50px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;">Admin Access</button>
+    </div>
+</div>
     <!-- Grand Entrance: full-screen registration takeover -->
 <div id="grand-entrance">
     <div class="ge-inner">
@@ -5428,6 +5444,15 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <button class="primary-btn" onclick="sendSmsBlast()" style="background-color: #9b59b6; color: white;">Blast Text Message</button>
                 <p id="admin-sms-loader" class="admin-loader" style="color: #9b59b6;">📱 Sending text messages...</p>
             </div>
+            <div class="admin-section" style="background: rgba(231, 76, 60, 0.08); border: 1px solid rgba(231, 76, 60, 0.3);">
+    <label style="color: #e74c3c;">🚧 Maintenance Mode</label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">When ON, the public site shows an "Under Construction" page. Admins can still access everything.</p>
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+        <span style="font-size: 13px; color: #cbd5e1; font-weight: 600;">Status: <span id="maintenance-current-state" style="color: #2ecc71;">LIVE</span></span>
+    </div>
+    <button id="maintenance-toggle-btn" class="primary-btn" onclick="toggleMaintenanceMode()" style="background-color: #e74c3c; width: 100%;">🚧 Enable Maintenance Mode</button>
+    <p id="maintenance-loader" class="admin-loader" style="color: #e74c3c;">⚙️ Updating...</p>
+</div>
             <div class="admin-section">
                 <label>🛠️ Developer Tools</label>
                 <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Clear local browser storage (failed submissions, wizard state, and duplicate email warnings). Useful for testing.</p>
@@ -8394,6 +8419,9 @@ function debounceWizardSave() {
             fetch(GOOGLE_APP_SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
+                    if (data && typeof data.maintenanceMode === 'boolean') {
+    applyMaintenanceState(data.maintenanceMode);
+}
                     if (data && data.total !== undefined) {
                         updateMeterUI(data.total);
                         updateSocialStats(data);
@@ -9193,7 +9221,104 @@ if (memBadge && window.__pendingMemoriesCount > 0) {
                 }
             }
         }
+// MAINTENANCE MODE
+let isMaintenanceMode = false;
+let maintenanceSecretClicks = 0;
+let maintenanceSecretTimer = null;
 
+function applyMaintenanceState(enabled) {
+    isMaintenanceMode = enabled;
+    const overlay = document.getElementById('maintenance-overlay');
+    if (!overlay) return;
+    let isAdminBypass = false;
+    try { isAdminBypass = sessionStorage.getItem('bigR_adminBypass') === 'true'; } catch (e) {}
+    if (enabled && !isAdminBypass) {
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } else {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    updateMaintenanceAdminUI();
+}
+
+function updateMaintenanceAdminUI() {
+    const stateEl = document.getElementById('maintenance-current-state');
+    const btnEl = document.getElementById('maintenance-toggle-btn');
+    if (!stateEl || !btnEl) return;
+    if (isMaintenanceMode) {
+        stateEl.textContent = 'MAINTENANCE MODE';
+        stateEl.style.color = '#e74c3c';
+        btnEl.innerText = '✅ Disable Maintenance Mode (Go Live)';
+        btnEl.style.backgroundColor = '#27ae60';
+    } else {
+        stateEl.textContent = 'LIVE';
+        stateEl.style.color = '#2ecc71';
+        btnEl.innerText = '🚧 Enable Maintenance Mode';
+        btnEl.style.backgroundColor = '#e74c3c';
+    }
+}
+
+function toggleMaintenanceMode() {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert("Please enter the Admin Password."); return; }
+    const newState = !isMaintenanceMode;
+    const confirmMsg = newState
+        ? "Enable maintenance mode? The public site will be hidden until you turn this off."
+        : "Disable maintenance mode and bring the site back online?";
+    if (!confirm(confirmMsg)) return;
+    const loader = document.getElementById('maintenance-loader');
+    const btn = document.getElementById('maintenance-toggle-btn');
+    if (loader) loader.style.display = 'block';
+    if (btn) btn.disabled = true;
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "set_maintenance", password: password, enabled: newState })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (loader) loader.style.display = 'none';
+        if (btn) btn.disabled = false;
+        if (data.result === 'success') {
+            applyMaintenanceState(data.maintenanceMode);
+            alert(newState ? "🚧 Maintenance mode enabled." : "✅ Site is live again!");
+        } else {
+            alert("Backend Error: " + (data.error || "Check password."));
+        }
+    })
+    .catch(err => {
+        if (loader) loader.style.display = 'none';
+        if (btn) btn.disabled = false;
+        alert("Network Error: " + err.message);
+    });
+}
+
+function handleMaintenanceAdminClick() {
+    maintenanceSecretClicks++;
+    clearTimeout(maintenanceSecretTimer);
+    maintenanceSecretTimer = setTimeout(() => { maintenanceSecretClicks = 0; }, 1000);
+    if (maintenanceSecretClicks >= 5) {
+        maintenanceSecretClicks = 0;
+        const pw = prompt("Admin Password:");
+        if (pw === null) return;
+        fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "set_maintenance", password: pw, enabled: true })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.result === 'success') {
+                try { sessionStorage.setItem('bigR_adminBypass', 'true'); } catch (e) {}
+                document.getElementById('maintenance-overlay').style.display = 'none';
+                document.body.style.overflow = '';
+                alert("✅ Admin access granted for this browser session.");
+            } else {
+                alert("❌ Wrong password.");
+            }
+        })
+        .catch(() => alert("❌ Network error."));
+    }
+}
         function closeAdminDashboard() {
             document.getElementById('admin-overlay').style.display = 'none';
             document.body.style.overflow = '';
