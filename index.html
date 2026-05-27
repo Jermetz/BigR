@@ -662,6 +662,70 @@
     flex-direction: column;
     gap: 6px;
 }
+        /* =================================================================
+   RYAN'S PHOTO — flip card on hover/click
+   ================================================================= */
+.ryan-flip-card {
+    perspective: 1200px;
+    display: block;
+    margin: 0 auto 30px auto;
+    max-width: 100%;
+    width: fit-content;
+    cursor: pointer;
+}
+.ryan-flip-inner {
+    position: relative;
+    display: inline-block;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    border-radius: 12px;
+}
+.ryan-flip-card.flipped .ryan-flip-inner {
+    transform: rotateY(180deg);
+}
+.ryan-flip-front,
+.ryan-flip-back {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: block;
+}
+.ryan-flip-front {
+    display: block;
+}
+.ryan-flip-back {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform: rotateY(180deg);
+    object-fit: cover;
+}
+/* Subtle hover lift hint */
+.ryan-flip-card:not(.flipped) .ryan-flip-inner:hover {
+    transform: rotateY(8deg) scale(1.02);
+    box-shadow: -8px 12px 30px rgba(0,0,0,0.5);
+}
+.ryan-flip-card.flipped .ryan-flip-inner:hover {
+    transform: rotateY(172deg) scale(1.02);
+}
+/* Flip hint label */
+.ryan-flip-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    animation: hintFade 2.5s ease-out 1.5s forwards;
+    opacity: 1;
+}
+@keyframes hintFade {
+    0% { opacity: 1; }
+    100% { opacity: 0; pointer-events: none; }
+}
 .recent-donor-item {
     display: flex;
     align-items: center;
@@ -6325,7 +6389,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <section id="section-story" class="content-section">
             <h2>Ryan's Story</h2>
             <h4>Written by Michael Mignogna</h4>
-            <img src="BigRFrame.png" alt="Ryan Thomas" style="display: block; margin: 0 auto 30px auto; max-width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);">
+          <div class="ryan-flip-card" id="ryan-flip-card" onclick="this.classList.toggle('flipped')" title="Click to flip">
+    <div class="ryan-flip-inner">
+        <img class="ryan-flip-front" src="BigRFrame.png" alt="Ryan Thomas" style="max-width: 100%; max-height: 600px; display: block;">
+        <img class="ryan-flip-back" src="prayercard.jpg" alt="Come to Me — Prayer Card">
+    </div>
+</div>
+<p class="ryan-flip-hint">↩ Click to flip</p>
                       <div class="story-text timeline">
                 <div class="timeline-item">
                     <div class="timeline-date">The Definition of a Hero</div>
