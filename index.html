@@ -3090,6 +3090,7 @@ color: #74b9ff;
 .social-stat-card:nth-child(2) { animation-delay: 0.25s; }
 .social-stat-card:nth-child(3) { animation-delay: 0.4s; }
 @keyframes socialStatFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .social-stat-card:hover {
@@ -8567,8 +8568,10 @@ function debounceWizardSave() {
                     if (data && typeof data.maintenanceMode === 'boolean') {
     applyMaintenanceState(data.maintenanceMode);
 }
-                    if (data && data.total !== undefined) {
+if (data && data.total !== undefined) {
                         updateMeterUI(data.total);
+                    }
+                    if (data) {
                         updateSocialStats(data);
                     }
                     if (data && data.isSoldOut) {
@@ -11030,7 +11033,7 @@ function updateSocialStats(data) {
 
     // Players registered = max capacity - spots remaining (fall back to 0)
     const maxCap = parseInt(data.maxCapacity) || 144;
-    const spotsLeft = (typeof data.spotsRemaining === 'number') ? data.spotsRemaining : maxCap;
+const spotsLeft = (data.spotsRemaining != null) ? parseInt(data.spotsRemaining) : maxCap;
     const playersRegistered = Math.max(0, maxCap - spotsLeft);
 
     // Total raised — already exposed
