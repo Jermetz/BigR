@@ -5420,8 +5420,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>
         </div>
     </div>
-    <div id="admin-overlay" class="fullscreen-overlay">
-        <div class="overlay-card admin-card">
+   <div id="admin-overlay" class="fullscreen-overlay">
+        <div class="overlay-card admin-card" style="position: relative;">
+            <span onclick="closeAdminDashboard()" title="Close Dashboard" style="position: absolute; top: 15px; right: 20px; font-size: 32px; line-height: 1; color: #94a3b8; cursor: pointer; font-family: Arial, sans-serif;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#94a3b8'">&times;</span>
             <h2 style="color: #3498db; margin-bottom: 5px;">Admin Dashboard</h2>
             <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Secure Access Required</p>
             
