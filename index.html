@@ -5426,6 +5426,17 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Secure Access Required</p>
             
             <input type="password" id="admin-pass" placeholder="Enter Admin Password" style="margin-bottom: 20px;">
+            <div class="admin-section">
+                <label>💰 Sales Breakdown</label>
+                <div id="admin-sales-breakdown" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Card: <strong id="sales-card" style="color: #2ecc71; font-size: 15px; float: right;">$0</strong></div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Venmo: <strong id="sales-venmo" style="color: #3498db; font-size: 15px; float: right;">$0</strong></div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Cash: <strong id="sales-cash" style="color: #f1c40f; font-size: 15px; float: right;">$0</strong></div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Check: <strong id="sales-check" style="color: #e74c3c; font-size: 15px; float: right;">$0</strong></div>
+                </div>
+                <button class="secondary-btn" onclick="loadSalesBreakdown()" style="width: 100%; margin-bottom: 5px;">🔄 Load / Refresh Sales</button>
+                <p id="sales-loader" class="admin-loader">Fetching sales data...</p>
+            </div>
 
             <div class="admin-section">
                 <label>Override Total Raised ($)</label>
@@ -9470,6 +9481,34 @@ function handleMaintenanceAdminClick() {
         .catch(() => alert("❌ Network error."));
     }
 }
+        function loadSalesBreakdown() {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password to load sales."); return; }
+
+            const loader = document.getElementById('sales-loader');
+            loader.style.display = 'block';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "get_sales_breakdown", password: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loader.style.display = 'none';
+                if (data.result === 'success') {
+                    document.getElementById('sales-card').innerText = '$' + (data.card || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    document.getElementById('sales-venmo').innerText = '$' + (data.venmo || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    document.getElementById('sales-cash').innerText = '$' + (data.cash || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    document.getElementById('sales-check').innerText = '$' + (data.check || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                } else {
+                    alert("Backend Error: " + (data.error || "Check password."));
+                }
+            })
+            .catch(err => {
+                loader.style.display = 'none';
+                alert("Network Error: " + err.message);
+            });
+        }
         function closeAdminDashboard() {
             document.getElementById('admin-overlay').style.display = 'none';
             document.body.style.overflow = '';
