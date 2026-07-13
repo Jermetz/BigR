@@ -6177,35 +6177,25 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                         <div class="player-card">
                             <h3>Payment Information</h3>
                             <div class="form-group" style="flex-direction: column; margin-top: 10px;">
-                        <select id="payment-type" onchange="updatePaymentNote(); updateCostDisplay();" style="display:none;">
+                     <select id="payment-type" onchange="updatePaymentNote(); updateCostDisplay();" style="display:none;">
     <option value="" disabled selected>Select Payment Type *</option>
     <option value="Credit/Debit Card">Credit/Debit Card</option>
-    <option value="Cash">Cash</option>
-    <option value="Check">Check</option>
     <option value="Venmo">Venmo</option>
 </select>
+
 <div class="payment-card-grid">
-    <div class="payment-card step1-card-with-badge" data-badge="Recommended" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
-        <span class="payment-card-icon">💳</span>
-        <div class="payment-card-name">Card</div>
-        <div class="payment-card-when">Instant Confirmation</div>
-    </div>
+<div class="payment-card step1-card-with-badge" data-badge="Recommended" onclick="selectPaymentCard(this, 'payment-type', 'Credit/Debit Card')">
+    <span class="payment-card-icon">💳</span>
+    <div class="payment-card-name">Card</div>
+    <div class="payment-card-when">Instant Confirmation</div>
+</div>
     <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Venmo')">
         <span class="payment-card-icon">📱</span>
         <div class="payment-card-name">Venmo</div>
         <div class="payment-card-when">Pay Later</div>
     </div>
-    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Cash')">
-        <span class="payment-card-icon">💵</span>
-        <div class="payment-card-name">Cash</div>
-        <div class="payment-card-when">At Event</div>
-    </div>
-    <div class="payment-card" onclick="selectPaymentCard(this, 'payment-type', 'Check')">
-        <span class="payment-card-icon">📝</span>
-        <div class="payment-card-name">Check</div>
-        <div class="payment-card-when">At Event</div>
-    </div>
 </div>
+
 <p style="font-size: 12px; color: #ffffff; text-align: center; margin-top: 10px; margin-bottom: 8px; line-height: 1.5;">
     <span style="color: #2ecc71;">✓</span> Card payments process instantly — no follow-up needed.
 </p>
@@ -6308,13 +6298,12 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="player-card">
                     <h3 style="margin-bottom: 10px; color: #cbd5e1;">Payment Information</h3>
                     <div class="form-group" style="flex-direction: column;">
-                      <select id="donate-payment-type" onchange="updateDonatePaymentNote(); updateDonationDisplay();" style="display:none;">
+                 <select id="donate-payment-type" onchange="updateDonatePaymentNote(); updateDonationDisplay();" style="display:none;">
     <option value="" disabled selected>Select Payment Type *</option>
     <option value="Credit/Debit Card">Credit/Debit Card</option>
-    <option value="Cash">Cash</option>
-    <option value="Check">Check</option>
     <option value="Venmo">Venmo</option>
 </select>
+
 <div class="payment-card-grid">
 <div class="payment-card step1-card-with-badge" data-badge="Recommended" onclick="selectPaymentCard(this, 'donate-payment-type', 'Credit/Debit Card')">
     <span class="payment-card-icon">💳</span>
@@ -6326,17 +6315,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <div class="payment-card-name">Venmo</div>
         <div class="payment-card-when">Pay Later</div>
     </div>
-    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Cash')">
-        <span class="payment-card-icon">💵</span>
-        <div class="payment-card-name">Cash</div>
-        <div class="payment-card-when">At Event</div>
-    </div>
-    <div class="payment-card" onclick="selectPaymentCard(this, 'donate-payment-type', 'Check')">
-        <span class="payment-card-icon">📝</span>
-        <div class="payment-card-name">Check</div>
-        <div class="payment-card-when">At Event</div>
-    </div>
 </div>
+
                         <p id="donate-payment-note" class="payment-note"></p>
                         <div id="donate-sq-card-container" style="display: none; margin-top: 10px; padding: 10px; background: white; border-radius: 8px;"></div>
                     </div>
@@ -10015,28 +9995,25 @@ function updateCostDisplay() {
         }
 
     function updatePaymentNote() {
-            window.__cachedSquareToken = null;
-            window.__cachedSquareTokenTime = null;
+        window.__cachedSquareToken = null;
+        window.__cachedSquareTokenTime = null;
 
-            const paymentType = document.getElementById('payment-type').value;
-            const noteArea = document.getElementById('payment-note');
-            if (paymentType === 'Check') noteArea.innerHTML = "* Please make checks payable to Shawn Thomas. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
-else if (paymentType === 'Cash') noteArea.innerHTML = "* Cash is due the day of the golf outing 10/9. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
-else if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a secure Venmo payment link after submitting. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
-            else if (paymentType === 'Credit/Debit Card') noteArea.innerHTML = "<span style='color: #2ecc71;'>✓ Your spot is confirmed the moment you submit.</span> A 3% + $0.30 processing fee applies.";
-            else noteArea.innerText = "";
-            
-            const isCard = (paymentType === 'Credit/Debit Card');
-            document.getElementById('sq-card-container').style.display = isCard ? 'block' : 'none';
-            if (isCard) loadSquareOnDemand('signup');
-        }
+        const paymentType = document.getElementById('payment-type').value;
+        const noteArea = document.getElementById('payment-note');
+        if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a secure Venmo payment link after submitting. <span style='color: #94a3b8; font-size: 12px;'>Spot held pending payment receipt.</span>";
+        else if (paymentType === 'Credit/Debit Card') noteArea.innerHTML = "<span style='color: #2ecc71;'>✓ Your spot is confirmed the moment you submit.</span> A 3% + $0.30 processing fee applies.";
+        else noteArea.innerText = "";
+        
+        const isCard = (paymentType === 'Credit/Debit Card');
+        document.getElementById('sq-card-container').style.display = isCard ? 'block' : 'none';
+        if (isCard) loadSquareOnDemand('signup');
+    }
+
         function updateDonatePaymentNote() {
             const paymentType = document.getElementById('donate-payment-type').value;
             const noteArea = document.getElementById('donate-payment-note');
 
-            if (paymentType === 'Check') noteArea.innerText = "* Please make checks payable to the order of Shawn Thomas.";
-            else if (paymentType === 'Cash') noteArea.innerText = "* Cash can be brought to the golf outing on 10/9.";
-            else if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
+            if (paymentType === 'Venmo') noteArea.innerText = "* You will receive a secure Venmo payment link after submitting.";
             else if (paymentType === 'Credit/Debit Card') noteArea.innerText = "* A 3% + $0.30 processing fee is applied to card payments.";
             else noteArea.innerText = "";
             
@@ -10044,6 +10021,7 @@ else if (paymentType === 'Venmo') noteArea.innerHTML = "* You will receive a sec
             document.getElementById('donate-sq-card-container').style.display = isCard ? 'block' : 'none';
             if (isCard) loadSquareOnDemand('donate');
         }
+
 
 
        document.getElementById('golf-signup-form').addEventListener('submit', async function(e) {
@@ -10305,28 +10283,19 @@ if (isSponsorOnly) {
     // Payment note
   const gePaymentNote = document.getElementById('ge-payment-note');
 if (isSponsorOnly) {
-    // Sponsor-only: focus on what happens next, not payment logistics
     if (selectedPaymentType === 'Venmo') {
         gePaymentNote.innerHTML = `Complete your $${finalTotal} sponsorship via Venmo, then we'll be in touch about your logo placement.<br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
-    } else if (selectedPaymentType === 'Check') {
-        gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. We\'ll reach out shortly about your logo and sponsorship details.';
-    } else if (selectedPaymentType === 'Cash') {
-        gePaymentNote.innerHTML = 'We\'ll reach out shortly about your logo and sponsorship details. Cash can be brought to the event on October 9th.';
     } else {
         gePaymentNote.innerHTML = 'A confirmation email is on its way. We\'ll reach out shortly about your logo and sponsorship details.';
     }
 } else {
-    // Player registration
     if (selectedPaymentType === 'Venmo') {
         gePaymentNote.innerHTML = `Complete your $${finalTotal} payment via Venmo:<br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px;">Pay with Venmo</a>`;
-    } else if (selectedPaymentType === 'Check') {
-        gePaymentNote.innerHTML = 'Please make checks payable to Shawn Thomas. Bring to the event.';
-    } else if (selectedPaymentType === 'Cash') {
-        gePaymentNote.innerHTML = 'Bring your cash payment to the event on October 9th.';
     } else {
         gePaymentNote.innerHTML = 'A confirmation email is on its way.';
     }
 }
+
     
  // Show it
  document.getElementById('signup-form-container').style.display = 'none';
@@ -10873,11 +10842,10 @@ submitWithRetry({
                     const paymentDiv = document.getElementById('donate-payment-instructions');
                     if (paymentType === 'Venmo') {
                         paymentDiv.innerHTML = `Please complete your $${amount} donation via Venmo: <br><br><a href="https://venmo.com/BigRGolf" target="_blank" style="background: #008CFF; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">Donate with Venmo</a><br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
-                    } else if (paymentType === 'Check') {
-                        paymentDiv.innerHTML = `Please make your $${amount} check payable to the order of Shawn Thomas.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
-                    } else if (paymentType === 'Cash') {
-                        paymentDiv.innerHTML = `Please bring your $${amount} cash donation to the golf outing on 10/9.<br><br><span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
+                    } else {
+                        paymentDiv.innerHTML = `<span style="font-size: 13px; color: #cbd5e1; font-weight: normal;">A confirmation email has been sent to ${email}.</span>`;
                     }
+
                     
                     document.getElementById('donate-success-overlay').style.display = 'flex';
 
@@ -12056,7 +12024,7 @@ document.addEventListener('gesturechange', function(e) {
             // If it is, the card form rendered fine and we just had a slow timer — leave it alone.
             if (sqContainer && !sqContainer.querySelector('iframe')) {
                 sqContainer.style.display = 'block';
-                sqContainer.innerHTML = `<div style="padding: 15px; border: 1px dashed #e74c3c; border-radius: 8px; color: #e74c3c; font-size: 14px; text-align: center;"><strong>Card payments aren't loading.</strong><br>Please try refreshing the page or disabling your ad blocker. You can still use Venmo, Cash, or Check below.</div>`;
+                sqContainer.innerHTML = `<div style="padding: 15px; border: 1px dashed #e74c3c; border-radius: 8px; color: #e74c3c; font-size: 14px; text-align: center;"><strong>Card payments aren't loading.</strong><br>Please try refreshing the page or disabling your ad blocker. You can still use Venmo below.</div>`;
             }
         }
     }, 1000);
