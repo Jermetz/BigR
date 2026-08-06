@@ -3337,7 +3337,8 @@ body.sticky-cta-visible #contact-widget {
             flex-wrap: wrap;  
             justify-content: center;  
             gap: 15px;  
-        }  
+        } 
+         
  .sponsor-placeholder {  
             width: 140px;  
             height: 80px;  
@@ -5225,7 +5226,22 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     .ge-share-section { margin-bottom: 10px !important; }  
     .ge-share-card-preview { max-width: 140px !important; margin-bottom: 5px !important; }  
 }  
-    </style>  
+    </style> 
+    <style>
+/* ============ SPONSOR LOGO HOVER ZOOM ============ */
+.sponsor-placeholder:has(img) {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+.sponsor-placeholder:has(img):hover {
+    transform: scale(1.18);
+    z-index: 10;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+}
+.sponsor-placeholder:has(img)::after {
+    display: none;
+}
+</style>
+ 
 <script src="https://web.squarecdn.com/v1/square.js"></script>  
 </head>  
 <body>  
@@ -9528,7 +9544,9 @@ function updateHoleSponsorsUI(soldHoles) {
                     sponsorName = null;  
                 } else if (entry && typeof entry === 'object') {  
                     holeNum = entry.hole;  
-                    sponsorName = entry.sponsor || null;  
+                    sponsorName = entry.sponsor || null;
+                    sponsorLogo = entry.logo || null;
+
                 } else {  
                     return;  // skip malformed entries  
                 }  
@@ -9550,7 +9568,7 @@ function updateHoleSponsorsUI(soldHoles) {
   
                     const tooltip = document.createElement('div');  
                     tooltip.className = 'sponsor-tooltip';  
-                    tooltip.innerHTML = `<span class="tooltip-label">⛳ Sponsored by</span>${escapeTributeHtml(sponsorName)}`;  
+                    tooltip.innerHTML = (sponsorLogo ? `<img src="${resolveImageSrc(sponsorLogo)}" style="display:block; max-height:40px; max-width:130px; object-fit:contain; margin:0 auto 5px; background:#ffffff; border-radius:4px; padding:3px;">` : '') + `<span class="tooltip-label">⛳ Sponsored by</span>${escapeTributeHtml(sponsorName)}`;
                     card.appendChild(tooltip);  
   
                     // Mobile tap support: toggle the tooltip on tap since hover doesn't work on touch  
