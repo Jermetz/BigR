@@ -9538,7 +9538,7 @@ function updateHoleSponsorsUI(soldHoles) {
             soldHoles.forEach(entry => {  
                 // Backwards compatible: accept both old plain-number format AND new {hole, sponsor} object format.  
                 // If Apps Script hasn't been redeployed yet, we gracefully fall back to "Sold" with no sponsor name.  
-                let holeNum, sponsorName;  
+                let holeNum, sponsorName, sponsorLogo = null;
                 if (typeof entry === 'number') {  
                     holeNum = entry;  
                     sponsorName = null;  
