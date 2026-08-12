@@ -5449,7 +5449,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Card: <strong id="sales-card" style="color: #2ecc71; font-size: 15px; float: right;">$0</strong></div>  
                     <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Venmo: <strong id="sales-venmo" style="color: #3498db; font-size: 15px; float: right;">$0</strong></div>  
                     <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Cash: <strong id="sales-cash" style="color: #f1c40f; font-size: 15px; float: right;">$0</strong></div>  
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Check: <strong id="sales-check" style="color: #e74c3c; font-size: 15px; float: right;">$0</strong></div>  
+                   <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px;">Check: <strong id="sales-check" style="color: #e74c3c; font-size: 15px; float: right;">$0</strong></div>
+                    <div style="background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); padding: 10px; border-radius: 6px; font-size: 13px;">✅ Paid: <strong id="sales-paid" style="color: #2ecc71; font-size: 15px; float: right;">$0</strong></div>
+                    <div style="background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); padding: 10px; border-radius: 6px; font-size: 13px;">⏳ Unpaid: <strong id="sales-unpaid" style="color: #e74c3c; font-size: 15px; float: right;">$0</strong></div>
                 </div>  
                 <button class="secondary-btn" onclick="loadSalesBreakdown()" style="width: 100%; margin-bottom: 5px;">🔄 Load / Refresh Sales</button>  
                 <p id="sales-loader" class="admin-loader">Fetching sales data...</p>  
@@ -9876,7 +9878,10 @@ function handleMaintenanceAdminClick() {
                     document.getElementById('sales-card').innerText = '$' + (data.card || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});  
                     document.getElementById('sales-venmo').innerText = '$' + (data.venmo || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});  
                     document.getElementById('sales-cash').innerText = '$' + (data.cash || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});  
-                    document.getElementById('sales-check').innerText = '$' + (data.check || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});  
+                   document.getElementById('sales-check').innerText = '$' + (data.check || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    document.getElementById('sales-paid').innerText = '$' + (data.paid || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    document.getElementById('sales-unpaid').innerText = '$' + (data.unpaid || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+
                 } else {  
                     alert("Backend Error: " + (data.error || "Check password."));  
                 }  
