@@ -5713,10 +5713,10 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>  
 </div>  
   
-<div class="sponsor-tier tier-platinum" style="margin: 25px auto 35px; max-width: 580px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(229, 228, 226, 0.2); border-top: 4px solid #e5e4e2;">  
-                <div class="tier-title" style="font-size: 13px; margin-bottom: 12px; color: #e5e4e2; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Platinum Sponsor</div>
+<div class="sponsor-tier" style="margin: 25px auto 35px; max-width: 580px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(241, 196, 15, 0.25); border-top: 4px solid #f1c40f;">
+                <div class="tier-title" style="font-size: 13px; margin-bottom: 12px; color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Title Sponsor</div>
                 <div class="sponsor-logos" style="display: flex; gap: 12px; justify-content: center;">  
-                    <div class="sponsor-placeholder" onclick="selectSponsorship('2500')" style="cursor: pointer; width: 240px; max-width: 100%; height: 170px; border: 2px dashed rgba(229, 228, 226, 0.4); border-radius: 10px; padding: 10px; text-align: center;">Tap to Sponsor<br>($2,500)</div>
+                    <div class="sponsor-placeholder title-sponsor-slot" style="cursor: default; width: 220px; max-width: 100%; height: 220px; border: 2px dashed rgba(241, 196, 15, 0.4); border-radius: 12px; padding: 12px; text-align: center;">Title Sponsor</div>
                 </div>  
             </div>  
   
@@ -6901,7 +6901,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             <h2>Our Sponsors</h2>  
             <p style="text-align: center; margin-bottom: 25px;">Thank you to our generous sponsors who make this event possible.</p>  
   
-                    <div class="sponsor-tier tier-platinum">  
+                    <div class="sponsor-tier" style="border-top: 4px solid #f1c40f;"><div class="tier-title" style="color: #f1c40f;">Title Sponsor</div><p style="font-size: 11px; color: #cbd5e1; margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Presenting Partner of the Big R Memorial Golf Outing</p><div class="sponsor-logos"><div class="sponsor-placeholder title-sponsor-slot" style="cursor: default; width: 200px; height: 200px;">Title Sponsor</div></div></div>
+<div class="sponsor-tier tier-platinum">
     <div class="tier-title">Platinum Sponsor</div>  
   <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Presenting Partner</p>
     <div class="sponsor-logos">  
@@ -9139,7 +9140,7 @@ function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
                 if (!logo || logo.length < 20) return null;  
                 return {  
                     logo: logo,  
-                    website: entry.website || null,  
+                                        name: entry.name || '', website: entry.website || null,  
                     tier: entry.tier === 'featured' ? 'featured' : 'standard'  
                 };  
             }  
@@ -9216,6 +9217,34 @@ renderSpotlight(featured);
         /**  
          * Renders the rotating Featured Spotlight (3-4 logos, 4s rotation, hover-zoom, clickable)  
          */  
+                // TITLE SPONSOR — filled from the admin logo uploads, matched by name.
+        // Change this to match the name you typed when uploading the logo:
+        var TITLE_SPONSOR_NAME = "Atlantic";
+
+        function renderTitleSponsor(allSponsors) {
+            var slots = document.querySelectorAll('.title-sponsor-slot');
+            if (slots.length === 0) return;
+            var match = null;
+            for (var i = 0; i < allSponsors.length; i++) {
+                var n = (allSponsors[i].name || "").toString().toLowerCase();
+                if (n && n.indexOf(TITLE_SPONSOR_NAME.toLowerCase()) !== -1) { match = allSponsors[i]; break; }
+            }
+            if (!match) return;
+            var imgSrc = resolveImageSrc(match.logo);
+            slots.forEach(function(slot) {
+                slot.innerHTML = '<img src="' + imgSrc + '" alt="Title Sponsor" style="width: 100%; height: 100%; object-fit: contain;">';
+                slot.style.animation = 'none';
+                if (match.website) {
+                    slot.style.cursor = 'pointer';
+                    slot.title = 'Visit our Title Sponsor';
+                    slot.onclick = function() {
+                        var url = match.website.indexOf('http') === 0 ? match.website : 'https://' + match.website;
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                    };
+                }
+            });
+        }
+
         function renderSpotlight(featuredArray) {  
             const container = document.getElementById('sponsor-spotlight-container');  
             const stage = document.getElementById('spotlight-stage');  
