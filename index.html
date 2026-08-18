@@ -9212,7 +9212,9 @@ function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
 renderSpotlight(featured);  
             renderMarquee(normalized); // Marquee shows ALL sponsors  
             renderAdminList(normalized);
-            renderTitleSponsor(normalized);
+                        renderTitleSponsor(normalized);
+        }
+
   
         /**  
          * Renders the rotating Featured Spotlight (3-4 logos, 4s rotation, hover-zoom, clickable)  
@@ -12419,7 +12421,9 @@ async function lookupBalance() {
                     </div>  
                     <div style="font-size:26px; font-weight:800; color:#2ecc71;">$${b.amount.toLocaleString()}</div>  
                 </div>  
-                <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:14px;"  
+                           <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:14px;"
+                        onclick="selectBalanceToPay(${i})">💳 Pay This by Card</button>
+
                            <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:14px;"  
                         onclick="selectBalanceToPay(${i})">💳 Pay This by Card</button>  
                 <a href="https://venmo.com/BigRGolf" target="_blank" rel="noopener"  
