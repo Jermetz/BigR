@@ -9211,8 +9211,8 @@ function updateSpotsRemainingUI(spotsRemaining, maxCapacity) {
 // Standard sponsors stay in the marquee — they should NOT be auto-promoted.  
 renderSpotlight(featured);  
             renderMarquee(normalized); // Marquee shows ALL sponsors  
-            renderAdminList(normalized);  
-        }  
+            renderAdminList(normalized);
+            renderTitleSponsor(normalized);
   
         /**  
          * Renders the rotating Featured Spotlight (3-4 logos, 4s rotation, hover-zoom, clickable)  
