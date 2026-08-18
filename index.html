@@ -5738,7 +5738,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <img src="Eaglesitting.png" alt="" class="meter-eagle" aria-hidden="true">  
     <div class="meter-header">  
         <h3>Drive to the Goal</h3>  
-        <span id="meter-text">$0 Raised / $30,000 Goal</span>  
+        <span id="meter-text">$0 Raised / $50,000 Goal</span>  
     </div>  
     <div class="meter-track">  
         <div id="meter-fill" class="meter-fill"></div>  
@@ -5746,11 +5746,11 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <div class="meter-flag">⛳</div>  
     </div>  
     <div class="meter-milestones">  
-        <div class="meter-milestone" id="milestone-5k" style="left: 16.67%;">$5K</div>  
-        <div class="meter-milestone" id="milestone-10k" style="left: 33.33%;">$10K</div>  
-        <div class="meter-milestone" id="milestone-15k" style="left: 50%;">$15K</div>  
-        <div class="meter-milestone" id="milestone-20k" style="left: 66.67%;">$20K</div>  
-        <div class="meter-milestone" id="milestone-25k" style="left: 83.33%;">$25K</div>  
+        <div class="meter-milestone" id="milestone-10k" style="left: 20%;">$10K</div>
+        <div class="meter-milestone" id="milestone-20k" style="left: 40%;">$20K</div>
+        <div class="meter-milestone" id="milestone-30k" style="left: 60%;">$30K</div>
+        <div class="meter-milestone" id="milestone-40k" style="left: 80%;">$40K</div>
+
     </div>  
 </div>  
   
@@ -7293,7 +7293,7 @@ async function checkForFailedSubmissions() {
     }  
 }  
         const TWILIO_SCORING_NUMBER = '(888) 621-5658';  
-        const FUNDRAISING_GOAL = 30000;  
+        const FUNDRAISING_GOAL = 50000;  
         const SQUARE_APP_ID = 'sq0idp-iHevDgt4OmWMA_J7DiTHSQ';  
         const SQUARE_LOCATION_ID = 'LTCEZT605XBHK';  
         const COST_PER_PERSON = 175;  
@@ -9053,11 +9053,11 @@ if (data && data.eventPhotos) {
                 window.requestAnimationFrame(step);  
             }  
            const milestones = [  
-            { id: 'milestone-5k', threshold: 5000 },  
-            { id: 'milestone-10k', threshold: 10000 },  
-            { id: 'milestone-15k', threshold: 15000 },  
-            { id: 'milestone-20k', threshold: 20000 },  
-            { id: 'milestone-25k', threshold: 25000 }  
+            { id: 'milestone-10k', threshold: 10000 },
+            { id: 'milestone-20k', threshold: 20000 },
+            { id: 'milestone-30k', threshold: 30000 },
+            { id: 'milestone-40k', threshold: 40000 }
+
         ];  
         milestones.forEach(function(m) {  
             const el = document.getElementById(m.id);  
