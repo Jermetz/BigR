@@ -10292,11 +10292,22 @@ function submitAdminSponsor() {
             .then(res => res.json())  
             .then(data => {  
                 document.getElementById('admin-email-loader').style.display = 'none';  
-                if (data.result === 'success') {  
-                    if (data.count === 0) {  
-                        alert("Warning: No matching recipients found. 0 emails were sent.");  
-                    } else {  
-                        alert("Email sent successfully to " + data.count + " recipients!");  
+                                if (data.result === 'success') {
+                    if (data.count === 0) {
+                        alert("Warning: No matching recipients found. 0 emails were sent.");
+                    } else {
+                        var msg = "Sent to " + data.count + " of " + data.attempted +
+                                  " recipients in " + data.batches + " batch(es).";
+                        if (data.failed && data.failed.length > 0) {
+                            msg += "\n\n⚠️ " + data.failed.length + " batch(es) failed:\n" +
+                                   data.failed.map(function(f) {
+                                       return "Batch " + f.batchNumber + " (" + f.size + " people): " + f.error;
+                                   }).join("\n");
+                        }
+                        if (typeof data.quotaRemaining === 'number') {
+                            msg += "\n\nGmail sends left today: " + data.quotaRemaining;
+                        }
+                        alert(msg);  
                         document.getElementById('admin-email-subject').value = '';  
                         document.getElementById('admin-email-body').value = '';  
                         document.getElementById('admin-custom-emails').value = '';  
