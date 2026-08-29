@@ -5453,6 +5453,27 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                     <div style="background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); padding: 10px; border-radius: 6px; font-size: 13px;">✅ Paid: <strong id="sales-paid" style="color: #2ecc71; font-size: 15px; float: right;">$0</strong></div>
                     <div style="background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); padding: 10px; border-radius: 6px; font-size: 13px;">⏳ Unpaid: <strong id="sales-unpaid" style="color: #e74c3c; font-size: 15px; float: right;">$0</strong></div>
                 </div>  
+                <div style="background: rgba(52,152,219,0.08); border: 1px solid rgba(52,152,219,0.35); padding: 14px; border-radius: 8px; margin-bottom: 12px;">
+    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #3498db; font-weight: 700; margin-bottom: 10px;">Estimated Money Received</div>
+    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+        <span style="color: #cbd5e1;">Gross collected</span>
+        <strong id="net-gross" style="color: #f8fafc;">$0</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+        <span style="color: #cbd5e1;">Less processing fees</span>
+        <strong id="net-fees" style="color: #e74c3c;">$0</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 13px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <span style="color: #cbd5e1;">Less expenses</span>
+        <strong id="net-expenses" style="color: #e74c3c;">$0</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px;">
+        <span style="color: #f8fafc; font-weight: 700; font-size: 14px;">Estimated cash on hand</span>
+        <strong id="net-cash" style="color: #2ecc71; font-size: 20px;">$0</strong>
+    </div>
+    <p id="net-fee-detail" style="font-size: 11px; color: #94a3b8; margin-top: 10px; line-height: 1.5;"></p>
+</div>
+
                 <button class="secondary-btn" onclick="loadSalesBreakdown()" style="width: 100%; margin-bottom: 5px;">🔄 Load / Refresh Sales</button>  
                 <p id="sales-loader" class="admin-loader">Fetching sales data...</p>  
             </div>  
@@ -5565,6 +5586,37 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Clear local browser storage (failed submissions, wizard state, and duplicate email warnings). Useful for testing.</p>  
                 <button class="secondary-btn" onclick="clearAdminCache()" style="width: 100%; border: 1px solid #e74c3c; color: #e74c3c; background: transparent;">🗑️ Clear Local Form Cache</button>  
             </div>  
+            <div class="admin-section" style="background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.25);">
+    <label style="color: #e74c3c;">🧾 Outing Expenses</label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Log what you spend. Every expense is subtracted from Estimated Cash on Hand at the top of this dashboard.</p>
+
+    <input type="text" id="expense-desc" placeholder="What was it for? (e.g. Course deposit)" maxlength="120" style="margin-bottom: 8px;">
+
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="number" id="expense-amount" placeholder="Amount $" min="0" step="0.01" style="flex: 1;">
+        <input type="date" id="expense-date" style="flex: 1;">
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <select id="expense-category" style="flex: 1;">
+            <option value="Course / Venue">Course / Venue</option>
+            <option value="Food &amp; Beverage">Food &amp; Beverage</option>
+            <option value="Prizes &amp; Awards">Prizes &amp; Awards</option>
+            <option value="Signage &amp; Printing">Signage &amp; Printing</option>
+            <option value="Gift Bags / Swag">Gift Bags / Swag</option>
+            <option value="Software / Website">Software / Website</option>
+            <option value="Other" selected>Other</option>
+        </select>
+        <input type="text" id="expense-paid-by" placeholder="Paid by (optional)" maxlength="60" style="flex: 1;">
+    </div>
+
+    <button class="primary-btn" onclick="addExpense()" style="background-color: #e74c3c; width: 100%;">➕ Add Expense</button>
+    <p id="expense-status" style="font-size: 12px; margin-top: 8px; min-height: 16px; text-align: center;"></p>
+
+    <button class="secondary-btn" onclick="loadExpenses()" style="width: 100%; margin-top: 6px;">🔄 Load Expense List</button>
+    <div id="expense-list" style="margin-top: 12px;"></div>
+</div>
+
             <button class="danger-btn" onclick="closeAdminDashboard()" style="width: 100%; margin-top: 10px;">Close Dashboard</button>  
         </div>  
     </div>  
@@ -9910,6 +9962,7 @@ function handleMaintenanceAdminClick() {
                    document.getElementById('sales-check').innerText = '$' + (data.check || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
                     document.getElementById('sales-paid').innerText = '$' + (data.paid || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
                     document.getElementById('sales-unpaid').innerText = '$' + (data.unpaid || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                    if (data.money) renderMoneySummary(data.money);
 
                 } else {  
                     alert("Backend Error: " + (data.error || "Check password."));  
@@ -9920,6 +9973,151 @@ function handleMaintenanceAdminClick() {
                 alert("Network Error: " + err.message);  
             });  
         }  
+                function fmtMoney(v) {
+            return '$' + (Number(v) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function renderMoneySummary(m) {
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = val;
+            };
+            set('net-gross', fmtMoney(m.grossPaid));
+            set('net-fees', '−' + fmtMoney(m.estFees));
+            set('net-expenses', '−' + fmtMoney(m.expensesTotal));
+            set('net-cash', fmtMoney(m.cashOnHand));
+
+            const fb = m.feesByMethod || {};
+            const tc = m.transactionCounts || {};
+            const detail = document.getElementById('net-fee-detail');
+            if (detail) {
+                detail.innerText =
+                    'Estimated fees on money actually received — Square: ' + fmtMoney(fb.card) +
+                    ' on ' + (tc.card || 0) + ' payment' + ((tc.card === 1) ? '' : 's') +
+                    ' · Venmo: ' + fmtMoney(fb.venmo) +
+                    ' on ' + (tc.venmo || 0) + ' payment' + ((tc.venmo === 1) ? '' : 's') +
+                    '. Unpaid balances are excluded. These are estimates — reconcile against your Square payouts.';
+            }
+
+            if (m.expenses) renderExpenseList(m.expenses);
+        }
+
+        function addExpense() {
+            const password = document.getElementById('admin-pass').value;
+            const statusEl = document.getElementById('expense-status');
+            if (!password) { alert("Please enter the Admin Password."); return; }
+
+            const desc = document.getElementById('expense-desc').value.trim();
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            if (!desc) { alert("Please describe what this expense was for."); return; }
+            if (!amount || amount <= 0) { alert("Please enter an amount greater than zero."); return; }
+
+            statusEl.innerHTML = '<span style="color:#f1c40f;">Saving expense...</span>';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'add_expense',
+                    password: password,
+                    description: desc,
+                    amount: amount,
+                    category: document.getElementById('expense-category').value,
+                    date: document.getElementById('expense-date').value,
+                    paidBy: document.getElementById('expense-paid-by').value.trim()
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.result !== 'success') throw new Error(data.error || 'Save failed');
+                statusEl.innerHTML = '<span style="color:#2ecc71;">✅ Expense saved.</span>';
+                document.getElementById('expense-desc').value = '';
+                document.getElementById('expense-amount').value = '';
+                document.getElementById('expense-paid-by').value = '';
+                renderExpenseList(data.expenses || []);
+                loadSalesBreakdown();   // refresh cash on hand
+                setTimeout(() => { statusEl.innerHTML = ''; }, 4000);
+            })
+            .catch(err => {
+                statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
+            });
+        }
+
+        function loadExpenses() {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password."); return; }
+
+            const listEl = document.getElementById('expense-list');
+            if (listEl) listEl.innerHTML = '<p style="color:#94a3b8; font-size:12px; text-align:center;">Loading...</p>';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'list_expenses', password: password })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.result !== 'success') throw new Error(data.error || 'Check password.');
+                renderExpenseList(data.expenses || []);
+            })
+            .catch(err => {
+                if (listEl) listEl.innerHTML = '<p style="color:#e74c3c; font-size:12px; text-align:center;">❌ ' + err.message + '</p>';
+            });
+        }
+
+        function renderExpenseList(expenses) {
+            const listEl = document.getElementById('expense-list');
+            if (!listEl) return;
+
+            if (!expenses || expenses.length === 0) {
+                listEl.innerHTML = '<p style="color:#94a3b8; font-size:12px; text-align:center; padding:8px;">No expenses logged yet.</p>';
+                return;
+            }
+
+            let total = 0;
+            listEl.innerHTML = expenses.map(e => {
+                total += e.amount;
+                const meta = escapeTributeHtml(e.category) + ' · ' + escapeTributeHtml(e.date) +
+                             (e.paidBy ? ' · paid by ' + escapeTributeHtml(e.paidBy) : '');
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 10px; background:rgba(0,0,0,0.25); border-radius:6px; margin-bottom:6px;">
+                        <div style="min-width:0;">
+                            <div style="color:#f8fafc; font-size:13px; font-weight:600; word-break:break-word;">${escapeTributeHtml(e.description)}</div>
+                            <div style="color:#94a3b8; font-size:11px; margin-top:2px;">${meta}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                            <strong style="color:#e74c3c; font-size:14px;">${fmtMoney(e.amount)}</strong>
+                            <span onclick="voidExpense(${e.rowIndex})" title="Remove this expense" style="color:#64748b; cursor:pointer; font-size:15px;">✖</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            listEl.insertAdjacentHTML('beforeend',
+                '<div style="text-align:right; color:#cbd5e1; font-size:13px; padding-top:8px; margin-top:4px; border-top:1px solid rgba(255,255,255,0.1);">Total expenses: <strong style="color:#e74c3c;">' + fmtMoney(total) + '</strong></div>'
+            );
+        }
+
+        function voidExpense(rowIndex) {
+            const password = document.getElementById('admin-pass').value;
+            if (!password) { alert("Please enter the Admin Password."); return; }
+            if (!confirm("Remove this expense? It stays in the Expenses sheet marked 'void', but stops counting against your cash on hand.")) return;
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'delete_expense', password: password, rowIndex: rowIndex })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.result !== 'success') throw new Error(data.error || 'Check password.');
+                renderExpenseList(data.expenses || []);
+                loadSalesBreakdown();
+            })
+            .catch(err => alert('Error: ' + err.message));
+        }
+
+
         function closeAdminDashboard() {  
             document.getElementById('admin-overlay').style.display = 'none';  
             document.body.style.overflow = '';  
