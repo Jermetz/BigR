@@ -5664,6 +5664,16 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         </svg>  
         <span class="menu-text">Sign Up</span>  
     </a></li>  
+        <li><a href="javascript:void(0);" onclick="showSection('roster')" aria-label="Manage Roster">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="8" r="3"/>
+            <path d="M3.5 19 C3.5 15.7 6 13.5 9 13.5 C10.4 13.5 11.7 14 12.7 14.8"/>
+            <line x1="17" y1="13" x2="17" y2="21"/>
+            <line x1="13" y1="17" x2="21" y2="17"/>
+        </svg>
+        <span class="menu-text">Manage Roster</span>
+    </a></li>
+
     <li><a href="javascript:void(0);" onclick="showSection('donate')" aria-label="Donate">  
         <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">  
             <path d="M12 20 C12 20 4 14.5 4 9 C4 6.5 6 4.5 8.5 4.5 C10 4.5 11.3 5.3 12 6.5 C12.7 5.3 14 4.5 15.5 4.5 C18 4.5 20 6.5 20 9 C20 14.5 12 20 12 20 Z"/>  
@@ -6784,7 +6794,38 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     </div>  
 </section>  
   
-  
+  <section id="section-roster" class="content-section" data-hide-back-to-top="true">
+    <img src="Big R Logo.png" alt="Big R Memorial Golf Outing Logo" class="main-logo">
+    <h2>Manage Your Roster</h2>
+    <p style="text-align: center; margin-bottom: 20px; color: #cbd5e1;">
+        Registered but didn't have everyone's names yet? Enter your email below to add or update your players.
+    </p>
+
+    <div style="background: rgba(52,152,219,0.08); border: 1px solid rgba(52,152,219,0.3); border-radius: 10px; padding: 16px 18px; margin-bottom: 25px; line-height: 1.6;">
+        <p style="color: #3498db; font-weight: 600; margin: 0 0 6px; font-size: 15px;">Who can use this</p>
+        <p style="color: #cbd5e1; font-size: 13px; margin: 0;">
+            Use the email address of whoever registered the group or purchased the sponsorship. Sponsors with complimentary player spots can name those players here too. Please have your names in by <strong>Friday, October 2</strong> so we can print the check-in sheets and cart signs.
+        </p>
+    </div>
+
+    <div class="player-card" id="roster-lookup-card">
+        <h3 style="margin-bottom: 10px; color: #cbd5e1;">Find Your Registration</h3>
+        <div class="form-group">
+            <input type="email" id="roster-lookup-email" placeholder="Email used at registration *">
+        </div>
+        <button type="button" class="primary-btn" style="background-color: #3498db;" onclick="lookupRoster()">🔍 Find My Roster</button>
+        <p id="roster-lookup-status" style="margin-top: 12px; min-height: 18px; font-size: 13px; text-align: center;"></p>
+    </div>
+
+    <div id="roster-container"></div>
+
+    <p style="text-align: center; font-size: 13px; color: #94a3b8; margin: 18px 0 4px; line-height: 1.6;">
+        Need to swap a player after the deadline, or something not looking right? Email
+        <a href="mailto:bigrgolfinvitational@gmail.com" style="color: #3498db; text-decoration: none; font-weight: 600;">bigrgolfinvitational@gmail.com</a>
+        and we'll sort it out.
+    </p>
+</section>
+
         <section id="section-photos" class="content-section">  
     <h2>Photos</h2>  
     <p style="text-align: center; margin-bottom: 20px;">5th Annual Big R Invitational Group Photo</p>  
@@ -12575,7 +12616,190 @@ function moderatePhoto(rowIndex, decision) {
 // =================================================================  
 let payCard = null;  
 let selectedBalance = null;  
-  
+// =================================================================
+// ROSTER PORTAL
+// =================================================================
+let __rosterEmail = '';
+
+async function lookupRoster() {
+    const email = document.getElementById('roster-lookup-email').value.trim();
+    const statusEl = document.getElementById('roster-lookup-status');
+    const container = document.getElementById('roster-container');
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!EMAIL_REGEX.test(email)) {
+        showValidationModal("Please enter the email address you used when registering.");
+        return;
+    }
+
+    statusEl.innerHTML = '<span style="color:#f1c40f;">Looking up your registration...</span>';
+    container.innerHTML = '';
+
+    try {
+        const res = await fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'roster_lookup', email: email })
+        });
+        const data = await res.json();
+        if (data.result !== 'success') throw new Error(data.error || 'Lookup failed');
+
+        statusEl.innerHTML = '';
+        __rosterEmail = email;
+
+        if (!data.rosters || data.rosters.length === 0) {
+            container.innerHTML = `
+                <div class="player-card" style="text-align:center; border-color: rgba(241,196,15,0.4);">
+                    <div style="font-size:40px; margin-bottom:10px;">🤔</div>
+                    <h3 style="color:#f1c40f;">No registration found</h3>
+                    <p style="color:#cbd5e1; font-size:14px; margin-top:8px; line-height:1.6;">
+                        We don't see a registration under <strong>${escapeTributeHtml(email)}</strong>.
+                        Only the person who registered the group or bought the sponsorship can manage the roster —
+                        try their email address instead. Still stuck? Email
+                        <a href="mailto:bigrgolfinvitational@gmail.com" style="color:#3498db;">bigrgolfinvitational@gmail.com</a>.
+                    </p>
+                </div>`;
+            return;
+        }
+
+        window.__rosters = data.rosters;
+        container.innerHTML = data.rosters.map((r, idx) => renderRosterCard(r, idx)).join('');
+
+    } catch (err) {
+        statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
+    }
+}
+
+function renderRosterCard(roster, idx) {
+    const heading = roster.teamName
+        ? escapeTributeHtml(roster.teamName)
+        : (roster.sponsorship && roster.sponsorship !== 'None'
+            ? escapeTributeHtml(roster.sponsorship)
+            : 'Your Registration');
+
+    let rowsHtml = '';
+
+    // Existing players — editable
+    roster.players.forEach((p, pIdx) => {
+        rowsHtml += `
+            <div style="background:rgba(0,0,0,0.25); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#94a3b8; font-weight:600; margin-bottom:8px;">
+                    Player ${pIdx + 1}${p.isPrimary ? ' <span style="color:#3498db;">· Primary Contact</span>' : ''}
+                </div>
+                <div class="form-group">
+                    <input type="text" id="r${idx}-p${pIdx}-first" value="${escapeTributeHtml(p.firstName)}" placeholder="First Name">
+                    <input type="text" id="r${idx}-p${pIdx}-last" value="${escapeTributeHtml(p.lastName)}" placeholder="Last Name">
+                </div>
+                <input type="email" id="r${idx}-p${pIdx}-email" value="${escapeTributeHtml(p.email === 'N/A' ? '' : p.email)}" placeholder="Email (optional)" ${p.isPrimary ? 'readonly style="opacity:0.6; cursor:not-allowed;"' : ''}>
+                <input type="hidden" id="r${idx}-p${pIdx}-row" value="${p.rowIndex}">
+            </div>`;
+    });
+
+    // Complimentary slots still open
+    for (let s = 0; s < roster.openSlots; s++) {
+        const slotIdx = roster.players.length + s;
+        rowsHtml += `
+            <div style="background:rgba(46,204,113,0.08); border:1px dashed rgba(46,204,113,0.4); border-radius:8px; padding:12px; margin-bottom:10px;">
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#2ecc71; font-weight:600; margin-bottom:8px;">
+                    ⛳ Complimentary Player ${s + 1}
+                </div>
+                <div class="form-group">
+                    <input type="text" id="r${idx}-p${slotIdx}-first" placeholder="First Name">
+                    <input type="text" id="r${idx}-p${slotIdx}-last" placeholder="Last Name">
+                </div>
+                <input type="email" id="r${idx}-p${slotIdx}-email" placeholder="Email (optional)">
+                <input type="hidden" id="r${idx}-p${slotIdx}-row" value="">
+            </div>`;
+    }
+
+    const totalSlots = roster.players.length + roster.openSlots;
+    const subtitle = roster.openSlots > 0
+        ? `<span style="color:#2ecc71;">${roster.openSlots} complimentary spot${roster.openSlots !== 1 ? 's' : ''} to fill</span>`
+        : `${roster.players.length} player${roster.players.length !== 1 ? 's' : ''} — edit any name below`;
+
+    return `
+        <div class="player-card no-tilt" style="border-color: rgba(52,152,219,0.4);" data-roster="${idx}">
+            <h3 style="margin-bottom:4px; color:#f1c40f;">${heading}</h3>
+            <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">${subtitle}</p>
+            ${rowsHtml || '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">No editable player spots on this registration.</p>'}
+            ${totalSlots > 0 ? `
+                <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:6px;" onclick="saveRoster(${idx}, ${totalSlots})">✓ Save Roster</button>
+                <p id="roster-save-status-${idx}" style="margin-top:12px; min-height:18px; font-size:13px; text-align:center;"></p>
+            ` : ''}
+        </div>`;
+}
+
+async function saveRoster(idx, totalSlots) {
+    const roster = (window.__rosters || [])[idx];
+    if (!roster) return;
+
+    const statusEl = document.getElementById('roster-save-status-' + idx);
+    const card = document.querySelector('[data-roster="' + idx + '"]');
+    const btn = card ? card.querySelector('.primary-btn') : null;
+
+    const players = [];
+    let namedCount = 0;
+
+    for (let p = 0; p < totalSlots; p++) {
+        const first = (document.getElementById(`r${idx}-p${p}-first`) || {}).value || '';
+        const last = (document.getElementById(`r${idx}-p${p}-last`) || {}).value || '';
+        const email = (document.getElementById(`r${idx}-p${p}-email`) || {}).value || '';
+        const rowVal = (document.getElementById(`r${idx}-p${p}-row`) || {}).value || '';
+
+        if (first.trim() || last.trim()) namedCount++;
+        players.push({
+            firstName: first.trim(),
+            lastName: last.trim(),
+            email: email.trim(),
+            rowIndex: rowVal ? parseInt(rowVal) : null
+        });
+    }
+
+    if (namedCount === 0) {
+        showValidationModal("Please enter at least one player name before saving.");
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.innerText = '⏳ Saving...'; }
+    statusEl.innerHTML = '<span style="color:#f1c40f;">Saving your roster...</span>';
+
+    try {
+        const res = await fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'roster_update',
+                email: __rosterEmail,
+                transactionId: roster.transactionId,
+                players: players
+            })
+        });
+        const data = await res.json();
+        if (data.result !== 'success') throw new Error(data.error || 'Save failed');
+
+        const parts = [];
+        if (data.added > 0) parts.push(data.added + ' player' + (data.added !== 1 ? 's' : '') + ' added');
+        if (data.updated > 0) parts.push(data.updated + ' updated');
+
+        statusEl.innerHTML = '<span style="color:#2ecc71; font-weight:600;">✅ Roster saved' +
+            (parts.length ? ' — ' + parts.join(', ') : '') + '. A confirmation email is on its way.</span>';
+
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 }, colors: ['#27ae60', '#f1c40f', '#ffffff'] });
+        }
+
+        if (btn) { btn.disabled = false; btn.innerText = '✓ Save Roster'; }
+
+        // Re-read from the server so newly added rows become editable
+        setTimeout(lookupRoster, 2500);
+
+    } catch (err) {
+        statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
+        if (btn) { btn.disabled = false; btn.innerText = '✓ Save Roster'; }
+    }
+}
+
+
 async function lookupBalance() {  
     const email = document.getElementById('pay-lookup-email').value.trim();  
     const statusEl = document.getElementById('pay-lookup-status');  
@@ -12903,14 +13127,18 @@ document.addEventListener('gesturechange', function(e) {
   
     // --- Payment portal deep link: bigrgolf.com/?pay=1 ---  
     const payParams = new URLSearchParams(window.location.search);  
-    if (payParams.get('pay') !== null || window.location.hash === '#pay') {  
-        try { localStorage.setItem('introPlayed', 'true'); } catch(e) {}  
-        const paySplash = document.getElementById('splash-screen');  
-        if (paySplash) paySplash.style.display = 'none';  
-        showSection('pay');  
-    } else {  
-        showSection('home');  
-    }  
+        const wantsPay = payParams.get('pay') !== null || window.location.hash === '#pay';
+    const wantsRoster = payParams.get('roster') !== null || window.location.hash === '#roster';
+
+    if (wantsPay || wantsRoster) {
+        try { localStorage.setItem('introPlayed', 'true'); } catch(e) {}
+        const deepLinkSplash = document.getElementById('splash-screen');
+        if (deepLinkSplash) deepLinkSplash.style.display = 'none';
+        showSection(wantsRoster ? 'roster' : 'pay');
+    } else {
+        showSection('home');
+    }
+
   
     const footerYear = document.getElementById('footer-year');  
     if (footerYear) footerYear.textContent = new Date().getFullYear();  
@@ -12921,7 +13149,8 @@ document.addEventListener('gesturechange', function(e) {
     startToastEngine();  
   
     // Restore in-progress registration if one exists — but never on the payment page  
-    const isPayPage = payParams.get('pay') !== null || window.location.hash === '#pay';  
+        const isPayPage = wantsPay || wantsRoster;
+
     if (isPayPage) {  
         attachWizardAutosave();  
     } else {  
