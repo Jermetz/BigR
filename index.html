@@ -12879,15 +12879,29 @@ function renderRosterCard(roster, idx) {
     }
 
     const totalSlots = roster.players.length + roster.openSlots;
-    const subtitle = roster.openSlots > 0
+        const subtitle = roster.openSlots > 0
         ? `<span style="color:#2ecc71;">${roster.openSlots} complimentary spot${roster.openSlots !== 1 ? 's' : ''} to fill</span>`
-        : `${roster.players.length} player${roster.players.length !== 1 ? 's' : ''} — edit any name below`;
+        : roster.players.length > 0
+            ? `${roster.players.length} player${roster.players.length !== 1 ? 's' : ''} — edit any name below`
+            : `<span style="color:#f1c40f;">Sponsorship confirmed — no player spots included</span>`;
 
     return `
         <div class="player-card no-tilt" style="border-color: rgba(52,152,219,0.4);" data-roster="${idx}">
             <h3 style="margin-bottom:4px; color:#f1c40f;">${heading}</h3>
             <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">${subtitle}</p>
-            ${rowsHtml || '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">No editable player spots on this registration.</p>'}
+                        ${rowsHtml || `
+                <div style="background:rgba(241,196,15,0.06); border:1px solid rgba(241,196,15,0.25); border-radius:8px; padding:18px; text-align:center;">
+                    <div style="font-size:32px; margin-bottom:8px;">🤝</div>
+                    <p style="color:#f8fafc; font-size:14px; font-weight:600; margin-bottom:8px;">Thank you for sponsoring!</p>
+                    <p style="color:#cbd5e1; font-size:13px; line-height:1.6; margin:0;">
+                        This sponsorship doesn't include complimentary player spots, so there's no roster to fill in here.
+                        If you'd like to add golfers, you can
+                        <a href="javascript:void(0);" onclick="showSection('signup')" style="color:#3498db; font-weight:600;">register them separately</a>
+                        at $175 each, or email
+                        <a href="mailto:bigrgolfinvitational@gmail.com" style="color:#3498db;">bigrgolfinvitational@gmail.com</a>
+                        and we'll sort it out.
+                    </p>
+                </div>`}
             ${totalSlots > 0 ? `
                                ${emailOptOutHtml('roster-skip-email-' + idx)}
                 <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:6px;" onclick="saveRoster(${idx}, ${totalSlots})">✓ Save Roster</button>
