@@ -10927,7 +10927,8 @@ if (selectedPaymentType === 'Credit/Debit Card') {
            submitWithRetry({  
       
                     action: "signup",   
-                    teamName: teamName,  
+                   teamName: teamName,
+                    skipEmail: skipEmail,
                     players: players,  
                     sponsorship: sponsorName,  
                     sponsorshipAmount: sponsorCost,  
@@ -12663,12 +12664,177 @@ async function lookupRoster() {
         }
 
         window.__rosters = data.rosters;
-        container.innerHTML = data.rosters.map((r, idx) => renderRosterCard(r, idx)).join('');
+              container.innerHTML = renderAllRosters(data.rosters);
 
     } catch (err) {
         statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
     }
 }
+// Shared opt-out checkbox used above each Save button on the roster page.
+function emailOptOutHtml(id) {
+    return `
+        <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; background:rgba(0,0,0,0.2); border-radius:8px; padding:11px 12px; margin:14px 0 4px;">
+            <input type="checkbox" id="${id}" style="width:17px; height:17px; flex-shrink:0; margin-top:1px; padding:0; box-shadow:none;">
+            <span style="font-size:12px; color:#cbd5e1; line-height:1.5;">Don't send me a confirmation email for this change</span>
+        </label>`;
+}
+
+
+// Decides whether to show one pooled card or separate cards per sponsorship.
+function renderAllRosters(rosters) {
+    window.__rosters = rosters;
+
+    // Tidy up the sponsorship label for display — strip the "(2 spots left)"
+    // snapshot and any bracketed admin notes captured at purchase time.
+    rosters.forEach(r => {
+        r.sponsorship = (r.sponsorship || '')
+            .replace(/\s*\[[^\]]*\]/g, '')
+            .replace(/\s*\(\d+\s*spots?\s*left\)/gi, '')
+            .replace(/\s*\(Display:[^)]*\)/gi, '')
+            .trim();
+    });
+
+    const openIdx = [];
+    let totalOpen = 0;
+    rosters.forEach((r, i) => {
+        if (r.openSlots > 0) { openIdx.push(i); totalOpen += r.openSlots; }
+    });
+
+    let html = '';
+
+    if (openIdx.length > 1) {
+        // Several sponsorships with spots to fill — pool them into one group
+        html += renderCombinedCard(openIdx, totalOpen);
+        rosters.forEach((r, i) => {
+            if (r.openSlots === 0 && r.players.length > 0) html += renderRosterCard(r, i);
+        });
+    } else {
+        rosters.forEach((r, i) => { html += renderRosterCard(r, i); });
+    }
+
+    return html;
+}
+
+function renderCombinedCard(openIdx, totalOpen) {
+    const rosters = window.__rosters;
+    const suggestedName = rosters[openIdx[0]].teamName || '';
+
+    let slotsHtml = '';
+    let n = 0;
+    openIdx.forEach(ri => {
+        for (let s = 0; s < rosters[ri].openSlots; s++) {
+            slotsHtml += `
+                <div style="background:rgba(46,204,113,0.08); border:1px dashed rgba(46,204,113,0.4); border-radius:8px; padding:12px; margin-bottom:10px;">
+                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#2ecc71; font-weight:600; margin-bottom:8px;">
+                        ⛳ Player ${n + 1}
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="combo-p${n}-first" placeholder="First Name">
+                        <input type="text" id="combo-p${n}-last" placeholder="Last Name">
+                    </div>
+                    <input type="email" id="combo-p${n}-email" placeholder="Email (optional)">
+                    <input type="hidden" id="combo-p${n}-tx" value="${ri}">
+                </div>`;
+            n++;
+        }
+    });
+
+    const groupLabel = totalOpen === 4 ? 'Foursome'
+        : totalOpen === 3 ? 'Threesome'
+        : totalOpen === 2 ? 'Twosome'
+        : totalOpen + '-Player Group';
+
+    return `
+        <div class="player-card no-tilt" style="border-color: rgba(46,204,113,0.5);">
+            <h3 style="margin-bottom:4px; color:#2ecc71;">Your ${groupLabel}</h3>
+            <p style="font-size:13px; color:#cbd5e1; margin-bottom:16px; line-height:1.5;">
+                You have ${openIdx.length} sponsorships with <strong>${totalOpen} complimentary player spots</strong> between them.
+                Enter everyone below and they'll be grouped together as one team on event day.
+            </p>
+
+            <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#f1c40f; font-weight:600; margin-bottom:6px;">Team Name (optional)</label>
+            <input type="text" id="combo-team-name" value="${escapeTributeHtml(suggestedName)}" placeholder="e.g. Atlantic Concrete" maxlength="80" style="margin-bottom:18px;">
+
+            ${slotsHtml}
+
+                        ${emailOptOutHtml('combo-skip-email')}
+            <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:6px;" onclick="saveCombinedRoster(${totalOpen})">✓ Save My ${groupLabel}</button>
+            <p id="combo-save-status" style="margin-top:12px; min-height:18px; font-size:13px; text-align:center; line-height:1.5;"></p>
+        </div>`;
+}
+
+async function saveCombinedRoster(totalOpen) {
+    const statusEl = document.getElementById('combo-save-status');
+    const teamName = (document.getElementById('combo-team-name').value || '').trim();
+    const skipEmail = !!(document.getElementById('combo-skip-email') || {}).checked;
+
+
+    // Sort the entered names back under whichever sponsorship owns each spot.
+    // The group plays together, but each pair stays attached to its own
+    // transaction so the sponsorship accounting stays clean.
+    const byRoster = {};
+    let namedCount = 0;
+
+    for (let n = 0; n < totalOpen; n++) {
+        const first = (document.getElementById(`combo-p${n}-first`).value || '').trim();
+        const last  = (document.getElementById(`combo-p${n}-last`).value || '').trim();
+        const email = (document.getElementById(`combo-p${n}-email`).value || '').trim();
+        const ri    = document.getElementById(`combo-p${n}-tx`).value;
+
+        if (!first && !last) continue;
+        namedCount++;
+        if (!byRoster[ri]) byRoster[ri] = [];
+        byRoster[ri].push({ firstName: first, lastName: last, email: email, rowIndex: null });
+    }
+
+    if (namedCount === 0) {
+        showValidationModal("Please enter at least one player name before saving.");
+        return;
+    }
+
+    const btn = statusEl.previousElementSibling;
+    if (btn && btn.tagName === 'BUTTON') { btn.disabled = true; btn.innerText = '⏳ Saving...'; }
+    statusEl.innerHTML = '<span style="color:#f1c40f;">Saving your group...</span>';
+
+    let totalSaved = 0;
+
+    try {
+        for (const ri in byRoster) {
+            if (!byRoster.hasOwnProperty(ri)) continue;
+            const roster = window.__rosters[ri];
+
+            const res = await fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'roster_update',
+                    email: __rosterEmail,
+                    transactionId: roster.transactionId,
+                    teamName: teamName,
+                    players: byRoster[ri]
+                })
+            });
+            const data = await res.json();
+            if (data.result !== 'success') throw new Error(data.error || 'Save failed');
+            totalSaved += (data.added || 0) + (data.updated || 0);
+        }
+
+        statusEl.innerHTML = '<span style="color:#2ecc71; font-weight:600;">✅ Saved — ' +
+            totalSaved + ' player' + (totalSaved !== 1 ? 's' : '') +
+                        ' added to your group.' + (skipEmail ? '' : ' A confirmation email is on its way.') + '</span>';
+
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 80, spread: 65, origin: { y: 0.6 }, colors: ['#27ae60', '#f1c40f', '#ffffff'] });
+        }
+
+        setTimeout(lookupRoster, 2600);
+
+    } catch (err) {
+        statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
+        if (btn && btn.tagName === 'BUTTON') { btn.disabled = false; btn.innerText = '✓ Save My Group'; }
+    }
+}
+
 
 function renderRosterCard(roster, idx) {
     const heading = roster.teamName
@@ -12723,6 +12889,7 @@ function renderRosterCard(roster, idx) {
             <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">${subtitle}</p>
             ${rowsHtml || '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">No editable player spots on this registration.</p>'}
             ${totalSlots > 0 ? `
+                               ${emailOptOutHtml('roster-skip-email-' + idx)}
                 <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:6px;" onclick="saveRoster(${idx}, ${totalSlots})">✓ Save Roster</button>
                 <p id="roster-save-status-${idx}" style="margin-top:12px; min-height:18px; font-size:13px; text-align:center;"></p>
             ` : ''}
@@ -12734,6 +12901,7 @@ async function saveRoster(idx, totalSlots) {
     if (!roster) return;
 
     const statusEl = document.getElementById('roster-save-status-' + idx);
+    const skipEmail = !!(document.getElementById('roster-skip-email-' + idx) || {}).checked;
     const card = document.querySelector('[data-roster="' + idx + '"]');
     const btn = card ? card.querySelector('.primary-btn') : null;
 
@@ -12770,8 +12938,10 @@ async function saveRoster(idx, totalSlots) {
             body: JSON.stringify({
                 action: 'roster_update',
                 email: __rosterEmail,
-                transactionId: roster.transactionId,
+               transactionId: roster.transactionId,
+                skipEmail: skipEmail,
                 players: players
+
             })
         });
         const data = await res.json();
@@ -12782,7 +12952,8 @@ async function saveRoster(idx, totalSlots) {
         if (data.updated > 0) parts.push(data.updated + ' updated');
 
         statusEl.innerHTML = '<span style="color:#2ecc71; font-weight:600;">✅ Roster saved' +
-            (parts.length ? ' — ' + parts.join(', ') : '') + '. A confirmation email is on its way.</span>';
+                        (parts.length ? ' — ' + parts.join(', ') : '') +
+            (skipEmail ? '.</span>' : '. A confirmation email is on its way.</span>');
 
         if (typeof confetti === 'function') {
             confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 }, colors: ['#27ae60', '#f1c40f', '#ffffff'] });
