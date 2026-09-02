@@ -6404,8 +6404,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <option value="0">No Sponsorship (Golf Only)</option>  
     <option value="250" id="opt-hole">Hole Sponsor — $250</option>  
     <option value="1000" id="opt-silver">Silver Sponsor — $1,000</option>  
-    <option value="1500" id="opt-gold">Gold Sponsor — $1,500</option>  
-    <option value="2500" id="opt-platinum">Platinum Sponsor — $2,500</option>  
+    <option value="1500" id="opt-gold">Gold Sponsor — $1,500 (1 player entry included)</option>  
+    <option value="2500" id="opt-platinum">Platinum Sponsor — $2,500 (2 player entries included)</option>  
+
 </select>  
                             </div>  
                          
@@ -6757,7 +6758,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
        <div style="background: rgba(241,196,15,0.08); border: 1px solid rgba(241,196,15,0.3); border-radius: 10px; padding: 16px 18px; margin-bottom: 25px; text-align: left; line-height: 1.6;">  
         <p style="color: #f1c40f; font-weight: 600; margin: 0 0 6px; font-size: 15px;">Why we're asking you to pay now</p>  
         <p style="color: #cbd5e1; font-size: 13px; margin: 0;">  
-            As we get closer, we have to commit final numbers and deposits to the course and caterer, and cover prizes and materials that get ordered in advance. Settling your balance by <strong>Friday, August 14</strong> lets us lock all of that in without fronting the cost ourselves. Every dollar goes to Ryan's memory and mitochondrial disease research. Thank you!  
+            As we get closer, we have to commit final numbers and deposits to the course and caterer, and cover prizes and materials that get ordered in advance. Settling your balance by <strong>Tuesday, Sept. 15th</strong> lets us lock all of that in without fronting the cost ourselves. Every dollar goes to Ryan's memory and mitochondrial disease research. Thank you!  
         </p>  
     </div>  
   
@@ -9801,14 +9802,16 @@ function updatePremiumSponsorsUI(soldPremium) {
             var pRem = tierCaps.platinum.remaining;  
             var platCtas = document.querySelectorAll('.platinum-cta');  
             if (pRem <= 0) {  
-                platOpt.textContent = 'Platinum Sponsor — SOLD OUT';  
+            platOpt.textContent = 'Platinum Sponsor — $2,500 (2 player entries included) — SOLD OUT';
+
                 platOpt.disabled = true;  
                 platCtas.forEach(btn => {  
                     btn.textContent = 'Sold Out';  
                     btn.disabled = true;  
                 });  
             } else {  
-                platOpt.textContent = 'Platinum Sponsor — $2,500 (' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left)';  
+            platOpt.textContent = 'Platinum Sponsor — $2,500 (2 player entries included) — ' + pRem + ' ' + (pRem === 1 ? 'spot' : 'spots') + ' left';
+
                 platOpt.disabled = false;  
                 platCtas.forEach(btn => {  
                     btn.textContent = 'Choose Platinum';  
@@ -9817,18 +9820,18 @@ function updatePremiumSponsorsUI(soldPremium) {
             }  
         }  
   
-        if (goldOpt && tierCaps.gold) {  
+                if (goldOpt && tierCaps.gold) {  
             var gRem = tierCaps.gold.remaining;  
             var goldCtas = document.querySelectorAll('.gold-cta');  
             if (gRem <= 0) {  
-                goldOpt.textContent = 'Gold Sponsor — $1,500 — SOLD OUT';  
+                goldOpt.textContent = 'Gold Sponsor — $1,500 (1 player entry included) — SOLD OUT';  
                 goldOpt.disabled = true;  
                 goldCtas.forEach(btn => {  
                     btn.textContent = 'Sold Out';  
                     btn.disabled = true;  
                 });  
             } else {  
-                goldOpt.textContent = 'Gold Sponsor — $1,500 (' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left)';  
+                goldOpt.textContent = 'Gold Sponsor — $1,500 (1 player entry included) — ' + gRem + ' ' + (gRem === 1 ? 'spot' : 'spots') + ' left';  
                 goldOpt.disabled = false;  
                 goldCtas.forEach(btn => {  
                     btn.textContent = 'Choose Gold';  
@@ -10928,7 +10931,6 @@ if (selectedPaymentType === 'Credit/Debit Card') {
       
                     action: "signup",   
                    teamName: teamName,
-                    skipEmail: skipEmail,
                     players: players,  
                     sponsorship: sponsorName,  
                     sponsorshipAmount: sponsorCost,  
@@ -12811,7 +12813,9 @@ async function saveCombinedRoster(totalOpen) {
                     email: __rosterEmail,
                     transactionId: roster.transactionId,
                     teamName: teamName,
-                    players: byRoster[ri]
+                    skipEmail: skipEmail,
+                     players: byRoster[ri]
+
                 })
             });
             const data = await res.json();
@@ -13042,8 +13046,6 @@ async function lookupBalance() {
                            <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:14px;"
                         onclick="selectBalanceToPay(${i})">💳 Pay This by Card</button>
 
-                           <button type="button" class="primary-btn" style="background-color:#27ae60; margin-top:14px;"  
-                        onclick="selectBalanceToPay(${i})">💳 Pay This by Card</button>  
                 <a href="https://venmo.com/BigRGolf" target="_blank" rel="noopener"  
                    class="primary-btn"  
                    style="background-color:#008CFF; margin-top:10px; text-decoration:none;">  
