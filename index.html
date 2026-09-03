@@ -13807,6 +13807,7 @@ if (typeof _originalSelectSponsorship === 'function') {
   var STARTERS = [
     "When does the outing start?",
     "How much is registration?",
+    "How do i edit my foursome names?",=
     "Where is it held?",
     "How do I sponsor?"
   ];
@@ -13817,8 +13818,9 @@ if (typeof _originalSelectSponsorship === 'function') {
 
   // Turns **bold** into real bold, and newlines into line breaks
   function format(text) {
-    return escapeHtml(text)
+        return escapeHtml(text)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:var(--caddy-green);font-weight:600">$1</a>')
       .replace(/\n/g, "<br>");
   }
 
