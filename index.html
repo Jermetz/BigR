@@ -13761,14 +13761,17 @@ if (typeof _originalSelectSponsorship === 'function') {
       left: 50%;
       transform: translateX(-50%);
     }
-    #caddy-panel {
-      top: 88px; bottom: auto; right: 0; left: 0;
+     #caddy-panel {
+      top: 0; bottom: 0; right: 0; left: 0;
       width: 100%; max-width: 100%;
-      height: 72vh;
-      max-height: calc(100vh - 200px);
-      border-radius: 14px;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100dvh;
+      border-radius: 0;
     }
-  }
+    #caddy-bar {
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
 
 </style>
 
