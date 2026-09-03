@@ -13580,9 +13580,11 @@ if (typeof _originalSelectSponsorship === 'function') {
       body: JSON.stringify({ prompt: userPrompt })
     });
     
-    if (!response.ok) {
-      throw new Error(`Server returned status ${response.status}`);
+        if (!response.ok) {
+      const details = await response.text();
+      throw new Error(`Status ${response.status}: ${details}`);
     }
+
     
     const data = await response.json();
     return data;
