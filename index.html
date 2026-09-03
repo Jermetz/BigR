@@ -13572,51 +13572,353 @@ if (typeof _originalSelectSponsorship === 'function') {
   <div id="ai-agent-response" style="margin-top: 10px; font-weight: bold;"></div>
 </div>
 
-<script>
-  async function askAIAgent(userPrompt) {
-    const response = await fetch("https://bigrcaddy.jermetzler.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: userPrompt })
-    });
-    
-        if (!response.ok) {
-      const details = await response.text();
-      throw new Error(`Status ${response.status}: ${details}`);
-    }
+<!-- ==========================================================
+     BIG R CADDY - Floating chat widget
+     Paste this entire block into index.html, just before </body>
+     ========================================================== -->
 
-    
-    const data = await response.json();
-    return data;
+<style>
+  /* ---- Colors: change these six values to re-skin the widget ---- */
+  :root {
+    --caddy-navy:   #0E2233;  /* header bar + button */
+    --caddy-green:  #1F7A4D;  /* accents, send button */
+    --caddy-cream:  #F6F2E7;  /* panel background (scorecard paper) */
+    --caddy-rule:   #D8D0BC;  /* hairlines */
+    --caddy-ink:    #24303A;  /* body text */
+    --caddy-flag:   #C2452F;  /* flag, small highlights */
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const submitBtn = document.getElementById("ai-agent-submit");
-    if (!submitBtn) {
-      console.error("AI Agent submit button not found in DOM.");
-      return;
+  /* ---- Floating launcher button (top right) ---- */
+  #caddy-launcher {
+    position: fixed;
+    top: 88px;                /* raise/lower the button here */
+    right: 20px;              /* move left/right here */
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 10px 13px;
+    border: none;
+    border-radius: 999px;
+    background: var(--caddy-navy);
+    color: #fff;
+    font: 600 15px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: .01em;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  }
+  #caddy-launcher:hover { background: #16334a; }
+  #caddy-launcher:focus-visible { outline: 3px solid var(--caddy-green); outline-offset: 2px; }
+  #caddy-launcher svg { width: 20px; height: 20px; flex: none; }
+  #caddy-launcher[data-open="true"] { display: none; }
+
+  /* ---- Chat panel ---- */
+  #caddy-panel {
+    position: fixed;
+    top: 88px;
+    right: 20px;
+    z-index: 9999;
+    width: 370px;
+    max-width: calc(100vw - 32px);
+    height: 520px;
+    max-height: calc(100vh - 120px);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--caddy-cream);
+    box-shadow: 0 18px 50px rgba(0,0,0,.45);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  #caddy-panel[data-open="true"] { display: flex; }
+
+  #caddy-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    background: var(--caddy-navy);
+    color: #fff;
+  }
+  #caddy-head svg { width: 22px; height: 22px; flex: none; }
+  #caddy-title { font: 600 16px/1.2 Georgia, "Times New Roman", serif; }
+  #caddy-sub { font-size: 12px; opacity: .68; margin-top: 2px; }
+  #caddy-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+    opacity: .75;
+  }
+  #caddy-close:hover { opacity: 1; }
+
+  #caddy-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .caddy-msg {
+    max-width: 84%;
+    padding: 10px 13px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--caddy-ink);
+    word-wrap: break-word;
+  }
+  .caddy-msg strong { font-weight: 700; }
+  .caddy-from-bot {
+    align-self: flex-start;
+    background: #fff;
+    border: 1px solid var(--caddy-rule);
+    border-left: 3px solid var(--caddy-green);
+  }
+  .caddy-from-you {
+    align-self: flex-end;
+    background: var(--caddy-navy);
+    color: #fff;
+  }
+  .caddy-error {
+    align-self: flex-start;
+    background: #fdecea;
+    border: 1px solid #f0c3bc;
+    color: #8a2b1c;
+    font-size: 14px;
+  }
+
+  /* thinking dots */
+  #caddy-typing { display: flex; gap: 4px; align-items: center; }
+  #caddy-typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--caddy-green);
+    animation: caddy-bounce 1.1s infinite;
+  }
+  #caddy-typing span:nth-child(2) { animation-delay: .18s; }
+  #caddy-typing span:nth-child(3) { animation-delay: .36s; }
+  @keyframes caddy-bounce {
+    0%, 60%, 100% { opacity: .25; transform: translateY(0); }
+    30%           { opacity: 1;   transform: translateY(-3px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #caddy-typing span { animation: none; opacity: .6; }
+  }
+
+  /* suggested questions */
+  #caddy-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .caddy-chip {
+    background: #fff;
+    border: 1px solid var(--caddy-rule);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--caddy-ink);
+    cursor: pointer;
+  }
+  .caddy-chip:hover { border-color: var(--caddy-green); color: var(--caddy-green); }
+
+  /* composer */
+  #caddy-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--caddy-rule);
+    background: #fff;
+  }
+  #caddy-input {
+    flex: 1;
+    border: 1px solid var(--caddy-rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 16px;          /* 16px stops iOS from zooming on focus */
+    color: var(--caddy-ink);
+    background: #fff;
+  }
+  #caddy-input:focus { outline: 2px solid var(--caddy-green); outline-offset: -1px; }
+  #caddy-send {
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    background: var(--caddy-green);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #caddy-send:hover { background: #19643e; }
+  #caddy-send:disabled { opacity: .5; cursor: default; }
+
+  @media (max-width: 480px) {
+    #caddy-panel {
+      top: auto; bottom: 0; right: 0; left: 0;
+      width: 100%; max-width: 100%;
+      height: 72vh;
+      border-radius: 14px 14px 0 0;
     }
+    #caddy-launcher { top: auto; bottom: 20px; right: 20px; }
+  }
+</style>
 
-    submitBtn.addEventListener("click", async () => {
-      const inputField = document.getElementById("ai-agent-input");
-      const responseContainer = document.getElementById("ai-agent-response");
-      const prompt = inputField.value.trim();
+<button id="caddy-launcher" aria-label="Ask the Caddy">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 21V3l12 4-12 4"/>
+  </svg>
+  Ask the Caddy
+</button>
 
-      if (!prompt) return;
+<div id="caddy-panel" role="dialog" aria-label="Ask the Caddy" aria-modal="false">
+  <div id="caddy-head">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 21V3l12 4-12 4"/>
+    </svg>
+    <div>
+      <div id="caddy-title">The Caddy</div>
+      <div id="caddy-sub">Big R Memorial Golf Outing</div>
+    </div>
+    <button id="caddy-close" aria-label="Close">&times;</button>
+  </div>
 
-      responseContainer.textContent = "Thinking...";
+  <div id="caddy-log" aria-live="polite"></div>
 
-      try {
-        const data = await askAIAgent(prompt);
-        responseContainer.textContent = typeof data === "object" 
-          ? (data.reply || data.response || JSON.stringify(data)) 
-          : data;
-      } catch (error) {
-        responseContainer.textContent = "Error: " + error.message;
-        console.error("AI Agent Error:", error);
-      }
+  <div id="caddy-bar">
+    <input id="caddy-input" type="text" placeholder="Ask about the outing..." autocomplete="off">
+    <button id="caddy-send">Send</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var WORKER_URL = "https://bigrcaddy.jermetzler.workers.dev/";
+
+  var launcher = document.getElementById("caddy-launcher");
+  var panel    = document.getElementById("caddy-panel");
+  var closeBtn = document.getElementById("caddy-close");
+  var log      = document.getElementById("caddy-log");
+  var input    = document.getElementById("caddy-input");
+  var sendBtn  = document.getElementById("caddy-send");
+  var greeted  = false;
+
+  var STARTERS = [
+    "When does the outing start?",
+    "How much is registration?",
+    "Where is it held?",
+    "How do I sponsor?"
+  ];
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // Turns **bold** into real bold, and newlines into line breaks
+  function format(text) {
+    return escapeHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br>");
+  }
+
+  function addMsg(text, kind) {
+    var el = document.createElement("div");
+    el.className = "caddy-msg caddy-" + kind;
+    el.innerHTML = format(text);
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+
+  function addChips() {
+    var wrap = document.createElement("div");
+    wrap.id = "caddy-chips";
+    STARTERS.forEach(function (q) {
+      var b = document.createElement("button");
+      b.className = "caddy-chip";
+      b.type = "button";
+      b.textContent = q;
+      b.addEventListener("click", function () {
+        wrap.remove();
+        send(q);
+      });
+      wrap.appendChild(b);
     });
+    log.appendChild(wrap);
+  }
+
+  function greet() {
+    if (greeted) return;
+    greeted = true;
+    addMsg("Hi, I'm the Caddy. Ask me anything about the outing \u2014 schedule, registration, sponsorships, or the Memory Wall.", "from-bot");
+    addChips();
+  }
+
+  function openPanel() {
+    panel.setAttribute("data-open", "true");
+    launcher.setAttribute("data-open", "true");
+    greet();
+    input.focus();
+  }
+
+  function closePanel() {
+    panel.removeAttribute("data-open");
+    launcher.removeAttribute("data-open");
+    launcher.focus();
+  }
+
+  launcher.addEventListener("click", openPanel);
+  closeBtn.addEventListener("click", closePanel);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && panel.getAttribute("data-open") === "true") closePanel();
   });
+
+  async function send(text) {
+    var prompt = (text !== undefined ? text : input.value).trim();
+    if (!prompt) return;
+
+    input.value = "";
+    sendBtn.disabled = true;
+    addMsg(prompt, "from-you");
+
+    var thinking = document.createElement("div");
+    thinking.className = "caddy-msg caddy-from-bot";
+    thinking.innerHTML = '<div id="caddy-typing"><span></span><span></span><span></span></div>';
+    log.appendChild(thinking);
+    log.scrollTop = log.scrollHeight;
+
+    try {
+      var res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+      });
+
+      var raw = await res.text();
+      thinking.remove();
+
+      if (!res.ok) {
+        addMsg("Something went wrong reaching the Caddy. Status " + res.status + ": " + raw, "error");
+        return;
+      }
+
+      var data = JSON.parse(raw);
+      addMsg(data.reply || "No answer came back. Try asking another way.", "from-bot");
+    } catch (err) {
+      thinking.remove();
+      addMsg("Couldn't reach the Caddy. Check your connection and try again. (" + err.message + ")", "error");
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  sendBtn.addEventListener("click", function () { send(); });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); send(); }
+  });
+})();
 </script>
 </body>  
 </html>
