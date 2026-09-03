@@ -13564,7 +13564,14 @@ if (typeof _originalSelectSponsorship === 'function') {
   
         <p class="custom-sponsor-status" id="custom-sponsor-status"></p>  
     </div>  
-</div>  
+</div> 
+<!-- AI Agent Interface UI -->
+<div id="ai-agent-container" style="margin-top: 20px;">
+  <input type="text" id="ai-agent-input" placeholder="Ask the AI Agent..." style="padding: 8px; width: 70%;" />
+  <button id="ai-agent-submit" style="padding: 8px 12px;">Send</button>
+  <div id="ai-agent-response" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
+
 <script>
   async function askAIAgent(userPrompt) {
     const response = await fetch("https://bigrcaddy.jermetzler.workers.dev/", {
@@ -13576,6 +13583,24 @@ if (typeof _originalSelectSponsorship === 'function') {
     const data = await response.json();
     return data;
   }
+
+  document.getElementById("ai-agent-submit").addEventListener("click", async () => {
+    const inputField = document.getElementById("ai-agent-input");
+    const responseContainer = document.getElementById("ai-agent-response");
+    const prompt = inputField.value.trim();
+
+    if (!prompt) return;
+
+    responseContainer.textContent = "Thinking...";
+
+    try {
+      const data = await askAIAgent(prompt);
+      responseContainer.textContent = data.reply || data.response || JSON.stringify(data);
+    } catch (error) {
+      responseContainer.textContent = "Error connecting to AI Agent.";
+      console.error(error);
+    }
+  });
 </script>
 </body>  
 </html>
