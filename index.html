@@ -13566,7 +13566,7 @@ if (typeof _originalSelectSponsorship === 'function') {
     </div>  
 </div> 
 <!-- AI Agent Interface UI -->
-<div id="ai-agent-container" style="margin-top: 20px;">
+<div id="ai-agent-container" style="display: block !important; visibility: visible !important; position: relative; z-index: 9999; background: #ffffff; color: #000000; padding: 15px; border: 2px solid #000000; margin: 20px auto; max-width: 400px; border-radius: 8px;">
   <input type="text" id="ai-agent-input" placeholder="Ask the AI Agent..." style="padding: 8px; width: 70%;" />
   <button id="ai-agent-submit" style="padding: 8px 12px;">Send</button>
   <div id="ai-agent-response" style="margin-top: 10px; font-weight: bold;"></div>
@@ -13580,26 +13580,40 @@ if (typeof _originalSelectSponsorship === 'function') {
       body: JSON.stringify({ prompt: userPrompt })
     });
     
+    if (!response.ok) {
+      throw new Error(`Server returned status ${response.status}`);
+    }
+    
     const data = await response.json();
     return data;
   }
 
-  document.getElementById("ai-agent-submit").addEventListener("click", async () => {
-    const inputField = document.getElementById("ai-agent-input");
-    const responseContainer = document.getElementById("ai-agent-response");
-    const prompt = inputField.value.trim();
-
-    if (!prompt) return;
-
-    responseContainer.textContent = "Thinking...";
-
-    try {
-      const data = await askAIAgent(prompt);
-      responseContainer.textContent = data.reply || data.response || JSON.stringify(data);
-    } catch (error) {
-      responseContainer.textContent = "Error connecting to AI Agent.";
-      console.error(error);
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.getElementById("ai-agent-submit");
+    if (!submitBtn) {
+      console.error("AI Agent submit button not found in DOM.");
+      return;
     }
+
+    submitBtn.addEventListener("click", async () => {
+      const inputField = document.getElementById("ai-agent-input");
+      const responseContainer = document.getElementById("ai-agent-response");
+      const prompt = inputField.value.trim();
+
+      if (!prompt) return;
+
+      responseContainer.textContent = "Thinking...";
+
+      try {
+        const data = await askAIAgent(prompt);
+        responseContainer.textContent = typeof data === "object" 
+          ? (data.reply || data.response || JSON.stringify(data)) 
+          : data;
+      } catch (error) {
+        responseContainer.textContent = "Error: " + error.message;
+        console.error("AI Agent Error:", error);
+      }
+    });
   });
 </script>
 </body>  
