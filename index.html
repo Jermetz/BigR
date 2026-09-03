@@ -13755,6 +13755,12 @@ if (typeof _originalSelectSponsorship === 'function') {
   #caddy-send:disabled { opacity: .5; cursor: default; }
 
   @media (max-width: 480px) {
+    #caddy-launcher {
+      top: 14px;
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%);
+    }
     #caddy-panel {
       top: 88px; bottom: auto; right: 0; left: 0;
       width: 100%; max-width: 100%;
@@ -13763,6 +13769,7 @@ if (typeof _originalSelectSponsorship === 'function') {
       border-radius: 14px;
     }
   }
+
 </style>
 
 <button id="caddy-launcher" aria-label="Ask the Caddy">
