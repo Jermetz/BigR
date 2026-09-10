@@ -5766,7 +5766,123 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
 <img src="1stMem.png" alt="1st Memorial Outing — In Honor of Ryan Thomas" class="memorial-badge" onclick="openLightbox(this.src)">  
               
             <h3 class="event-date">Friday, October 9th, '26</h3>  
-            <p class="home-subtitle">Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>  
+                        <p class="home-subtitle">Join us for a great day of golf, friends, and honoring Ryan Thomas.</p>  
+
+<style>
+.spots-alert-banner {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, rgba(46,204,113,0.15) 0%, rgba(0,0,0,0.45) 100%);
+    border: 1px solid rgba(46,204,113,0.45);
+    border-left: 5px solid #2ecc71;
+    border-radius: 14px;
+    padding: 20px 22px;
+    text-align: left;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    animation: spotsBannerIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes spotsBannerIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.spots-alert-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #2ecc71;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.spots-alert-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #2ecc71; box-shadow: 0 0 8px #2ecc71;
+    animation: spotsAlertPulse 1.6s ease-in-out infinite;
+}
+@keyframes spotsAlertPulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.35; transform: scale(0.8); }
+}
+.spots-alert-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.25;
+    margin-bottom: 8px;
+}
+.spots-alert-body {
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+.spots-alert-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.spots-alert-actions a, .spots-alert-actions button {
+    flex: 1;
+    min-width: 150px;
+    padding: 13px 18px;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.spots-alert-register {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(39,174,96,0.35);
+}
+.spots-alert-register:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(39,174,96,0.5); }
+.spots-alert-text {
+    background: transparent;
+    border: 1px solid rgba(46,204,113,0.5) !important;
+    color: #2ecc71;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.spots-alert-text:hover { background: rgba(46,204,113,0.12); transform: translateY(-2px); }
+@media (max-width: 480px) {
+    .spots-alert-banner { padding: 18px 16px; }
+    .spots-alert-headline { font-size: 19px; }
+    .spots-alert-actions a, .spots-alert-actions button { min-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .spots-alert-banner, .spots-alert-dot { animation: none; }
+}
+</style>
+
+<div class="spots-alert-banner" role="status">
+    <div class="spots-alert-eyebrow">
+        <span class="spots-alert-dot"></span>
+        Now Accepting Registrations
+    </div>
+    <div class="spots-alert-headline">⛳ Foursome spots are still available!</div>
+    <div class="spots-alert-body">
+        Grab your group and lock in your spot before we fill up. Questions or trouble signing up? Text
+        <a href="sms:+12676002525" style="color:#f1c40f; text-decoration:none; font-weight:700; white-space:nowrap;">(267) 600-2525</a>
+        and we'll get you squared away.
+    </div>
+    <div class="spots-alert-actions">
+        <a href="javascript:void(0);" onclick="goToSignup(4)" class="spots-alert-register">Register My Foursome</a>
+        <a href="sms:+12676002525" class="spots-alert-text">📱 Text Us: (267) 600-2525</a>
+    </div>
+</div>
+  
               
 <div id="countdown-timer" aria-live="off" aria-hidden="true">  
                 <div class="time-box"><span id="days">00</span><p>Days</p></div>  
