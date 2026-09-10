@@ -5865,6 +5865,16 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     justify-content: center;
 }
 .spots-alert-roster:hover { background: rgba(52,152,219,0.12); transform: translateY(-2px); }
+.spots-alert-pay {
+    background: transparent;
+    border: 1px solid rgba(241,196,15,0.5) !important;
+    color: #f1c40f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.spots-alert-pay:hover { background: rgba(241,196,15,0.12); transform: translateY(-2px); }
+
 
 @media (max-width: 480px) {
     .spots-alert-banner { padding: 18px 16px; }
@@ -5891,7 +5901,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <a href="javascript:void(0);" onclick="goToSignup(4)" class="spots-alert-register">Register My Foursome</a>
          <a href="sms:+12676002525" class="spots-alert-text">📱 Text Us: (267) 600-2525</a>
         <a href="https://bigrgolf.com/#roster" class="spots-alert-roster" onclick="showSection('roster'); return false;">✏️ Edit My Foursome</a>
+        <a href="https://bigrgolf.com/?pay=1" class="spots-alert-pay" onclick="showSection('pay'); return false;">💳 Pay My Balance</a>
     </div>
+
 </div>
   
               
