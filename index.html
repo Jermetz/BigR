@@ -3067,7 +3067,7 @@ color: #74b9ff;
    ================================================================= */  
 .social-stats-row {  
     display: grid;  
-    grid-template-columns: repeat(3, 1fr);  
+   grid-template-columns: repeat(2, 1fr);
     gap: 12px;  
     max-width: 580px;  
     width: 100%;  
@@ -3086,7 +3086,43 @@ color: #74b9ff;
     transform: translateY(15px);  
     animation: socialStatFadeIn 0.6s ease-out forwards;  
 }  
-.social-stat-card:nth-child(1) { animation-delay: 0.1s; }  
+.social-stat-card:nth-child(1) { animation-delay: 0.1s; }
+/* --- Player capacity meter --- */
+.social-stat-card.capacity-meter-card {
+    grid-column: 1 / -1;
+    padding: 16px 18px 14px;
+    text-align: left;
+}
+.social-stat-card.capacity-meter-card:hover { transform: none; }
+.capacity-meter-head {
+    display: flex; justify-content: space-between;
+    align-items: baseline; gap: 10px; margin-bottom: 10px;
+}
+.capacity-meter-caption {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: #94a3b8; font-weight: 600;
+}
+.capacity-meter-count {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px; font-weight: 700; color: #f1c40f;
+    line-height: 1; font-variant-numeric: tabular-nums;
+}
+.capacity-meter-track {
+    width: 100%; height: 12px; border-radius: 50px; overflow: hidden;
+    background: rgba(255,255,255,0.08);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+.capacity-meter-fill {
+    height: 100%; width: 0%; border-radius: 50px;
+    background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.capacity-meter-fill.warn { background: linear-gradient(90deg, #e67e22 0%, #f39c12 100%); }
+.capacity-meter-fill.critical { background: linear-gradient(90deg, #c0392b 0%, #e74c3c 100%); }
+.capacity-meter-pct { margin-top: 8px; font-size: 11px; color: #cbd5e1; }
+.capacity-meter-pct strong { color: #f8fafc; font-weight: 700; }
+.capacity-meter-card.is-zero .capacity-meter-count { color: #cbd5e1; }
+
 .social-stat-card:nth-child(2) { animation-delay: 0.25s; }  
 .social-stat-card:nth-child(3) { animation-delay: 0.4s; }  
 @keyframes socialStatFadeIn {  
@@ -5922,11 +5958,17 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
             </div>  
   
 <div class="social-stats-row" id="social-stats-row">  
-                <div class="social-stat-card is-zero" id="stat-players-card">  
-                    <div class="social-stat-value" id="stat-players">0</div>  
-                    <div class="social-stat-label">Players<br>Registered</div>  
+                <div class="social-stat-card capacity-meter-card" id="stat-players-card">
+ 
+                    <div class="capacity-meter-head"><span class="capacity-meter-caption">Players Registered</span><span class="capacity-meter-count" id="capacity-meter-count">0 / 144</span></div>
+
+                    <div class="capacity-meter-track"><div class="capacity-meter-fill" id="capacity-meter-fill"></div></div><div class="capacity-meter-pct" id="capacity-meter-pct">0% full · 144 spots remaining</div>
+
+
                 </div>  
-                <div class="social-stat-card is-zero" id="stat-raised-card">  
+               <div class="social-stat-card is-zero" id="stat-raised-card">
+
+
                     <div class="social-stat-value" id="stat-raised">$0</div>  
                     <div class="social-stat-label">Raised<br>So Far</div>  
                 </div>  
@@ -11908,14 +11950,33 @@ function animateStatCount(el, targetValue, formatter, duration = 1400) {
     window.requestAnimationFrame(step);  
 }  
   
-function updateSocialStats(data) {  
+function updateCapacityMeter(registered, maxCap) {
+    const fill = document.getElementById('capacity-meter-fill');
+    const pct = document.getElementById('capacity-meter-pct');
+    const count = document.getElementById('capacity-meter-count');
+    if (!fill || !pct || !count) return;
+    const cap = maxCap || 144;
+    let percent = cap > 0 ? (registered / cap) * 100 : 0;
+    if (percent > 100) percent = 100;
+    count.textContent = registered.toLocaleString() + ' / ' + cap.toLocaleString();
+    fill.style.width = percent + '%';
+    fill.classList.remove('warn', 'critical');
+    if (percent >= 90) fill.classList.add('critical');
+    else if (percent >= 70) fill.classList.add('warn');
+    const left = Math.max(0, cap - registered);
+    pct.innerHTML = '<strong>' + Math.round(percent) + '% full</strong> · ' + (left === 0 ? 'tournament is full' : left + ' spot' + (left !== 1 ? 's' : '') + ' remaining');
+}
+
+function updateSocialStats(data) {
+  
     if (!data) return;  
   
     // Players registered = max capacity - spots remaining (fall back to 0)  
     const maxCap = parseInt(data.maxCapacity) || 144;  
 const spotsLeft = (data.spotsRemaining != null) ? parseInt(data.spotsRemaining) : maxCap;  
-    const playersRegistered = Math.max(0, maxCap - spotsLeft);  
-  
+const playersRegistered = Math.max(0, maxCap - spotsLeft);
+    updateCapacityMeter(playersRegistered, maxCap);
+
     // Total raised — already exposed  
     const totalRaised = parseInt(data.total) || 0;  
   
