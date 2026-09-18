@@ -14016,7 +14016,8 @@ if (typeof _originalSelectSponsorship === 'function') {
     "How much is registration?",
     "How do i edit my foursome names?",
     "Where is it held?",
-    "How do I sponsor?"
+    "How can I donate?"
+
   ];
 
   function escapeHtml(s) {
@@ -14129,5 +14130,87 @@ if (typeof _originalSelectSponsorship === 'function') {
   });
 })();
 </script>
+<!-- ===== SPONSORSHIPS CLOSED — delete this whole block to turn sponsorships back on ===== -->
+<style>
+  .sponsor-closed-note {
+    max-width: 640px; margin: 20px auto 30px; padding: 22px 20px;
+    background: linear-gradient(135deg, rgba(231,76,60,0.12), rgba(0,0,0,0.4));
+    border: 1px solid rgba(231,76,60,0.4); border-left: 5px solid #e74c3c;
+    border-radius: 14px; text-align: center;
+  }
+  .sponsor-closed-note h3 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #f8fafc; font-size: 22px; margin-bottom: 8px; }
+  .sponsor-closed-note p { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+  .sponsor-closed-note button { background: linear-gradient(135deg,#e74c3c,#c0392b); color:#fff; border:none; padding:13px 28px; border-radius:50px; font-weight:700; font-size:14px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; }
+  .sponsor-compare-toggle-wrap, .sponsor-compare-collapsible,
+  .custom-sponsor-card, .custom-sponsor-wizard-link { display: none !important; }
+</style>
+<script>
+(function () {
+  var NOTE_TITLE = "Sponsorships are closed";
+  var NOTE_TEXT  = "Thank you to everyone who stepped up as a sponsor this year! Sponsorships are no longer available, but you can still support Ryan's legacy and mitochondrial disease research with a donation of any amount.";
+
+  function noteHtml() {
+    return '<div class="sponsor-closed-note"><h3>' + NOTE_TITLE + '</h3><p>' + NOTE_TEXT + '</p>' +
+           '<button type="button" onclick="showSection(\'donate\')">❤️ Donate Instead</button></div>';
+  }
+
+  // Every sponsor button, tier box, and open hole now goes to Donate
+  window.selectSponsorship      = function () { showSection('donate'); };
+  window.goToSponsorOnly        = function () { showSection('donate'); };
+  window.openCustomSponsorModal = function () { showSection('donate'); };
+
+  // Make sure no registration can carry a sponsorship (including saved progress)
+  function clearSponsorship() {
+    var dd = document.getElementById('sponsorship-level');
+    if (dd) dd.value = '0';
+    var cb = document.getElementById('sponsor-only-checkbox');
+    if (cb && cb.checked) setSponsorIntent(false);
+    try { selectedHoleNum = null; } catch (e) {}
+    if (typeof hideSponsorContextBanner === 'function') hideSponsorContextBanner();
+  }
+  var origNext = window.nextWizardStep;
+  window.nextWizardStep = function (step) {
+    clearSponsorship();
+    origNext(step);
+    if (typeof updateCostDisplay === 'function') updateCostDisplay();
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Sign-up Step 1: hide the "Playing Golf / Sponsoring Only" choice
+    var sBtn = document.getElementById('intent-sponsor-btn');
+    if (sBtn && sBtn.closest('.player-card')) sBtn.closest('.player-card').style.display = 'none';
+
+    // Sign-up Step 3: swap the sponsorship picker for the note
+    var step3 = document.getElementById('wizard-step-3');
+    var picker = step3 && step3.querySelector('.player-card');
+    if (picker) { picker.style.display = 'none'; picker.insertAdjacentHTML('beforebegin', noteHtml()); }
+
+    // Home page: hide the "Sponsor Us" button
+    document.querySelectorAll('button[onclick="goToSponsorOnly()"]').forEach(function (b) { b.style.display = 'none'; });
+
+    // Sponsors page: note at the top, relabel open spots, fix hole map text
+    var sp = document.getElementById('section-sponsors');
+    if (sp) {
+      var intro = sp.querySelector('p');
+      if (intro) intro.insertAdjacentHTML('afterend', noteHtml());
+      sp.querySelectorAll('p').forEach(function (p) {
+        if (/Tap an open hole/i.test(p.textContent)) p.textContent = 'Hole sponsorships are closed. Thank you to our hole sponsors!';
+      });
+    }
+    document.querySelectorAll('.sponsor-placeholder').forEach(function (el) {
+      if (/Tap to Sponsor/i.test(el.textContent)) { el.textContent = 'Sponsorships Closed'; el.onclick = null; el.style.cursor = 'default'; }
+    });
+    document.querySelectorAll('.map-node').forEach(function (n) {
+      n.onclick = null; n.style.cursor = 'default';
+      var lbl = n.querySelector('.hole-label');
+      if (lbl && lbl.textContent.trim() === 'Open') lbl.textContent = '';
+    });
+
+    setTimeout(clearSponsorship, 600);
+  });
+})();
+</script>
+<!-- ===== END SPONSORSHIPS CLOSED ===== -->
+
 </body>  
 </html>
