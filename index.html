@@ -14155,13 +14155,13 @@ if (typeof _originalSelectSponsorship === 'function') {
   /* New logo: crop to a wide rectangle and feather the edges into the background */
   body.new-logo-active .main-logo {
       width: 100%;
-      max-width: 380px;
+      max-width: 440px;
       height: auto;
-      aspect-ratio: 1.8 / 1;          /* wider = bigger first number */
+      aspect-ratio: 2.1 / 1;
       object-fit: cover;
       object-position: center 55%;    /* raise/lower the logo inside the strip */
       background: #ffffff;
-      padding: 0;
+      padding: 0 7%;
       border-radius: 0;
       filter: none;
       box-shadow: none;
@@ -14175,7 +14175,7 @@ if (typeof _originalSelectSponsorship === 'function') {
               mask-composite: intersect;
   }
   @media (max-width: 480px) {
-      body.new-logo-active .main-logo { max-width: 300px; }
+      body.new-logo-active .main-logo { max-width: 340px; }
   }
 </style>
 <!-- ===== END SITE LOGO SWITCHER ===== -->
