@@ -5543,9 +5543,9 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <div id="pending-tributes-list" style="margin-top: 10px;"></div>  
             </div>  
             <div class="admin-section">  
-    <label>📸 Moderate Event Photos <span class="pending-tribute-badge" id="admin-pending-photos-badge" style="display:none;">0</span></label>  
-    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Review and approve uploaded photos before they appear in the public gallery.</p>  
-    <button class="secondary-btn" onclick="loadPendingPhotos()" style="margin-bottom: 10px;">🔍 Load Pending Photos</button>  
+    <label>📸 Manage Event Photos <span class="pending-tribute-badge" id="admin-pending-photos-badge" style="display:none;">0</span></label>  
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Photos appear in the gallery as soon as they're uploaded. Load the list to remove any you don't want shown.</p>  
+    <button class="secondary-btn" onclick="loadManagePhotos()" style="margin-bottom: 10px;">🔍 Load Gallery Photos</button>  
     <div id="pending-photos-list" style="margin-top: 10px;"></div>  
 </div>  
             <!-- ENHANCED: Sponsor upload now requires website URL + tier selection -->  
@@ -5815,12 +5815,22 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         💳 Pay My Balance
     </a>
 </div>
-<div id="countdown-timer" aria-live="off" aria-hidden="true">  
-                <div class="time-box"><span id="days">00</span><p>Days</p></div>  
-                <div class="time-box"><span id="hours">00</span><p>Hours</p></div>  
-                <div class="time-box"><span id="minutes">00</span><p>Minutes</p></div>  
-                <div class="time-box"><span id="seconds">00</span><p>Seconds</p></div>  
-</div>  
+<!-- ===== EVENT PHOTOS (home) ===== -->
+<div class="photo-upload-card" style="width: 100%; max-width: 620px; margin: 10px auto 20px;">
+    <h3>📸 Share an Event Photo</h3>
+    <p>Capture a moment from the outing and share it with everyone.</p>
+    <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">
+    <input type="file" id="photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelected(this)">
+    <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>
+    <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
+    <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Up to 5 photos at a time. They appear in the gallery below right away.</p>
+</div>
+<div class="event-gallery-section" style="width: 100%; max-width: 720px; margin: 0 auto 35px; padding-top: 0; border-top: none;">
+    <h3>📷 Event Gallery</h3>
+    <div id="event-gallery-grid" class="event-gallery-grid"></div>
+    <div id="event-gallery-empty" class="gallery-empty" style="display: none;">No event photos yet — be the first to share one above.</div>
+</div>
+<!-- ===== END EVENT PHOTOS ===== -->
   
 <div class="sponsor-tier" style="margin: 25px auto 35px; max-width: 580px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(241, 196, 15, 0.25); border-top: 4px solid #f1c40f;">
                 <div class="tier-title" style="font-size: 13px; margin-bottom: 12px; color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Title Sponsor</div>
@@ -6848,25 +6858,7 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         <img src="5th-annual-group.jpg" alt="5th Annual Group Photo" loading="lazy" onclick="openLightbox(this.src)" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">  
     </div>  
   
-    <!-- Live event upload — only meaningful on event day, but works year-round -->  
-    <div class="photo-upload-card">  
-        <h3>📸 Share an Event Photo</h3>  
-        <p>Capture a moment from the outing and share it with everyone.</p>  
-        <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">  
-     <input type="file" id="photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelected(this)">  
-        <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>  
-        <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>  
-        <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Photos are reviewed before appearing publicly.</p>  
-    </div>  
-  
-    <!-- Event gallery (populated by JS) -->  
-    <div class="event-gallery-section">  
-        <h3>📷 Event Gallery</h3>  
-        <div id="event-gallery-grid" class="event-gallery-grid"></div>  
-        <div id="event-gallery-empty" class="gallery-empty" style="display: none;">  
-            No event photos yet — be the first to share one above.  
-        </div>  
-    </div>  
+    
 </section>  
         <section id="section-leaderboard" class="content-section">  
     <h2>🏆 Live Leaderboard</h2>  
@@ -12524,7 +12516,7 @@ async function handlePhotoSelected(input) {
   
        // Final UI feedback  
        if (successCount > 0) {  
-           statusEl.innerHTML = `<span style="color:#2ecc71;">✅ Successfully submitted ${successCount} photo(s) for review!</span>`;  
+           statusEl.innerHTML = `<span style="color:#2ecc71;">Posted ${successCount} photo(s) to the gallery!</span>`; fetchGlobalData();  
            if (typeof confetti === 'function') {  
                confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ['#f39c12', '#f1c40f', '#ffffff'] });  
            }  
@@ -12599,6 +12591,73 @@ function renderEventGallery(photos) {
 // =================================================================  
 // ADMIN: photo moderation  
 // =================================================================  
+        function loadManagePhotos() {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+    const listEl = document.getElementById('pending-photos-list');
+    listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center;">Loading...</p>';
+
+    fetch(GOOGLE_APP_SCRIPT_URL)
+        .then(r => r.json())
+        .then(data => {
+            const photos = (data && data.eventPhotos) || [];
+            if (photos.length === 0) {
+                listEl.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">No photos in the gallery yet.</p>';
+                return;
+            }
+            listEl.innerHTML = photos.map(p => {
+                const dateStr = p.timestamp ? new Date(p.timestamp).toLocaleString() : '';
+                const removeBtn = p.rowIndex
+                    ? `<button class="danger-btn" onclick="removeEventPhoto(${p.rowIndex})">🗑️ Remove</button>`
+                    : '<span style="font-size:11px; color:#e74c3c;">Redeploy the Apps Script to enable removal</span>';
+                return `
+                    <div class="pending-photo" data-row="${p.rowIndex}">
+                        <img src="${p.thumbUrl}" alt="Gallery photo" onclick="openLightbox('${p.url}')">
+                        <div class="pp-info">
+                            <div class="pp-uploader">📷 ${escapeTributeHtml(p.uploader)}</div>
+                            <div class="pp-time">${dateStr}</div>
+                            <div class="pp-actions">${removeBtn}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+        })
+        .catch(err => {
+            listEl.innerHTML = '<p style="color:#e74c3c; font-size:13px; text-align:center;">❌ ' + err.message + '</p>';
+        });
+}
+
+function removeEventPhoto(rowIndex) {
+    const password = document.getElementById('admin-pass').value;
+    if (!password) { alert('Please enter the Admin Password.'); return; }
+    if (!confirm("Remove this photo from the gallery? It will also be moved to your Google Drive trash.")) return;
+
+    const tile = document.querySelector(`.pending-photo[data-row="${rowIndex}"]`);
+    if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = true);
+
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'moderate_photo', password: password, rowIndex: rowIndex, decision: 'rejected' })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            if (tile) {
+                tile.style.transition = 'opacity 0.4s ease';
+                tile.style.opacity = '0';
+                setTimeout(() => tile.remove(), 400);
+            }
+            fetchGlobalData();
+        } else {
+            alert('Backend Error: ' + (data.error || 'Check password.'));
+            if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+        }
+    })
+    .catch(err => {
+        alert('Network Error: ' + err.message);
+        if (tile) tile.querySelectorAll('button').forEach(b => b.disabled = false);
+    });
+}
 function loadPendingPhotos() {  
     const password = document.getElementById('admin-pass').value;  
     if (!password) { alert('Please enter the Admin Password.'); return; }  
@@ -14081,6 +14140,66 @@ if (typeof _originalSelectSponsorship === 'function') {
 })();
 </script>
 <!-- ===== END SPONSORSHIPS CLOSED ===== -->
+    <!-- ===== REGISTRATION CLOSED — delete this whole block to reopen registration ===== -->
+<style>
+  .reg-closed-note {
+    max-width: 600px; margin: 10px auto 25px; padding: 24px 20px;
+    background: linear-gradient(135deg, rgba(52,152,219,0.12), rgba(0,0,0,0.4));
+    border: 1px solid rgba(52,152,219,0.4); border-left: 5px solid #3498db;
+    border-radius: 14px; text-align: center;
+  }
+  .reg-closed-note h3 { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #f8fafc; font-size: 24px; margin-bottom: 8px; }
+  .reg-closed-note p { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 18px; }
+  .reg-closed-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .reg-closed-actions button {
+    flex: 1; min-width: 150px; padding: 12px 16px; border-radius: 50px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #fff;
+  }
+  #sticky-cta-bar .cta-register, .register-price-hint { display: none !important; }
+</style>
+<script>
+(function () {
+  // Any "Register" button now just shows the closed message
+  window.goToSignup = function () { showSection('signup'); };
+
+  // Forget any half-finished registration so it doesn't try to restore
+  try { sessionStorage.removeItem('bigRWizardState'); } catch (e) {}
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Sign Up page: hide the form, show the closed notice
+    ['golf-signup-form', 'form-subtitle', 'sold-out-banner', 'sponsor-context-banner', 'form-main-title'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    var container = document.getElementById('signup-form-container');
+    if (container) {
+      container.insertAdjacentHTML('beforeend',
+        '<div class="reg-closed-note">' +
+          '<h3>Registration is closed</h3>' +
+          '<p>Thank you to everyone joining us at The Bucks Club on Friday, October 9! Already registered? You can still update your players or settle a balance below.</p>' +
+          '<div class="reg-closed-actions">' +
+            '<button style="background:#3498db;" onclick="showSection(\'roster\')">✏️ Edit My Roster</button>' +
+            '<button style="background:#27ae60;" onclick="showSection(\'pay\')">💳 Pay My Balance</button>' +
+            '<button style="background:#e74c3c;" onclick="showSection(\'donate\')">❤️ Donate</button>' +
+          '</div>' +
+        '</div>');
+    }
+
+    // Home page: hide the Register Now button (and the sticky-bar Register button)
+    document.querySelectorAll('button[onclick="goToSignup(4)"]').forEach(function (b) {
+      var row = b.closest('.action-buttons');
+      (row || b).style.display = 'none';
+    });
+
+    // Side menu + footer: hide the Sign Up links
+    document.querySelectorAll('a[onclick="showSection(\'signup\')"]').forEach(function (a) {
+      var li = a.closest('li');
+      (li || a).style.display = 'none';
+    });
+  });
+})();
+</script>
+<!-- ===== END REGISTRATION CLOSED ===== -->
 <!-- ===== SITE LOGO SWITCHER ===== -->
 <script>
 (function () {
