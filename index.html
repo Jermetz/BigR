@@ -5608,6 +5608,17 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <button class="primary-btn" onclick="sendSmsBlast()" style="background-color: #9b59b6; color: white;">Blast Text Message</button>  
                 <p id="admin-sms-loader" class="admin-loader" style="color: #9b59b6;">📱 Sending text messages...</p>  
             </div>  
+            <div class="admin-section" style="background: rgba(241,196,15,0.06); border: 1px solid rgba(241,196,15,0.3);">
+    <label style="color: #f1c40f;">🖼️ Site Logo</label>
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Automatic switches to the new logo at 12:00 AM on Friday, Oct 9. Choosing New or Original overrides that for every visitor.</p>
+    <p style="font-size: 13px; color: #cbd5e1; font-weight: 600; margin-bottom: 10px;">Showing: <span id="logo-current-state" style="color: #f1c40f;">—</span></p>
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <button type="button" id="logo-btn-new" class="intent-btn" style="padding: 10px 8px; font-size: 12px;" onclick="setSiteLogo('new')">✨ New Logo</button>
+        <button type="button" id="logo-btn-old" class="intent-btn" style="padding: 10px 8px; font-size: 12px;" onclick="setSiteLogo('old')">↩️ Original Logo</button>
+    </div>
+    <button type="button" id="logo-btn-auto" class="intent-btn" style="width: 100%; padding: 10px 8px; font-size: 12px;" onclick="setSiteLogo('auto')">⏰ Automatic (switch at midnight Oct 9)</button>
+    <p id="logo-loader" class="admin-loader">⚙️ Updating logo...</p>
+</div>
             <div class="admin-section" style="background: rgba(231, 76, 60, 0.08); border: 1px solid rgba(231, 76, 60, 0.3);">  
     <label style="color: #e74c3c;">🚧 Maintenance Mode</label>  
     <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">When ON, the public site shows an "Under Construction" page. Admins can still access everything.</p>  
@@ -9216,7 +9227,8 @@ function debounceWizardSave() {
             fetch(GOOGLE_APP_SCRIPT_URL)  
                 .then(response => response.json())  
                 .then(data => {  
-                    if (data && typeof data.maintenanceMode === 'boolean') {  
+                  if (data && data.logoMode) applySiteLogo(data.logoMode);
+                    if (data && typeof data.maintenanceMode === 'boolean') {
     applyMaintenanceState(data.maintenanceMode);  
 }  
 if (data && data.total !== undefined) {  
@@ -11322,7 +11334,7 @@ function loadCardLogo() {
             console.warn('Share card: Big R Logo.png failed to load, using text fallback');  
             resolve(null);  
         };  
-        img.src = 'Big R Logo.png';  
+        img.src = getActiveLogoFile();  
     });  
 }  
   
@@ -14201,6 +14213,101 @@ if (typeof _originalSelectSponsorship === 'function') {
 })();
 </script>
 <!-- ===== END SPONSORSHIPS CLOSED ===== -->
+<!-- ===== SITE LOGO SWITCHER ===== -->
+<script>
+(function () {
+  var ORIGINAL_LOGO = 'Big R Logo.png';
+  var NEW_LOGO      = 'NewBigRLogo.png';
+  var SWITCH_TIME   = new Date('2026-10-09T00:00:00-04:00').getTime(); // midnight Eastern, Oct 9
 
+  var currentMode = 'auto'; // 'auto' | 'new' | 'old'
+
+  function resolveLogo() {
+    if (currentMode === 'new') return NEW_LOGO;
+    if (currentMode === 'old') return ORIGINAL_LOGO;
+    return Date.now() >= SWITCH_TIME ? NEW_LOGO : ORIGINAL_LOGO;
+  }
+  window.getActiveLogoFile = resolveLogo;
+
+  function paintLogos() {
+    var file = resolveLogo();
+
+    // Tag every logo image once, then swap them all
+    document.querySelectorAll('img').forEach(function (img) {
+      var src = img.getAttribute('src');
+      if (src === ORIGINAL_LOGO || src === NEW_LOGO) img.setAttribute('data-site-logo', '1');
+    });
+    document.querySelectorAll('img[data-site-logo]').forEach(function (img) {
+      if (img.getAttribute('src') !== file) img.setAttribute('src', file);
+    });
+
+    // Make the shareable card reload the right logo next time
+    try { __cardLogoImage = null; __cardLogoLoadAttempted = false; } catch (e) {}
+
+    // Admin dashboard status
+    var stateEl = document.getElementById('logo-current-state');
+    if (stateEl) {
+      var which = (file === NEW_LOGO) ? 'New logo' : 'Original logo';
+      var how = currentMode === 'auto'
+        ? (Date.now() >= SWITCH_TIME ? ' (automatic)' : ' (automatic — switches at midnight Oct 9)')
+        : ' (manual override)';
+      stateEl.textContent = which + how;
+    }
+    ['new', 'old', 'auto'].forEach(function (m) {
+      var b = document.getElementById('logo-btn-' + m);
+      if (b) b.classList.toggle('active', m === currentMode);
+    });
+  }
+
+  window.applySiteLogo = function (mode) {
+    currentMode = (mode === 'new' || mode === 'old') ? mode : 'auto';
+    paintLogos();
+  };
+
+  window.setSiteLogo = function (mode) {
+    var password = document.getElementById('admin-pass').value;
+    if (!password) { alert("Please enter the Admin Password."); return; }
+
+    var labels = { 'new': 'the NEW logo', 'old': 'the ORIGINAL logo', 'auto': 'AUTOMATIC (switches at midnight Oct 9)' };
+    if (!confirm("Set the site logo to " + labels[mode] + " for all visitors?")) return;
+
+    var loader = document.getElementById('logo-loader');
+    if (loader) loader.style.display = 'block';
+
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'set_logo', password: password, mode: mode })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (loader) loader.style.display = 'none';
+      if (data.result === 'success') {
+        applySiteLogo(data.logoMode);
+        alert("✅ Site logo updated.");
+      } else {
+        alert("Backend Error: " + (data.error || "Check password."));
+      }
+    })
+    .catch(function (err) {
+      if (loader) loader.style.display = 'none';
+      alert("Network Error: " + err.message);
+    });
+  };
+
+  // Preload the new logo so the switch is instant
+  var pre = new Image(); pre.src = NEW_LOGO;
+
+  // Paint now, and flip automatically at midnight for anyone with the page open
+  paintLogos();
+  if (Date.now() < SWITCH_TIME) {
+    setTimeout(paintLogos, SWITCH_TIME - Date.now() + 1000);
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) paintLogos();
+  });
+})();
+</script>
+<!-- ===== END SITE LOGO SWITCHER ===== -->
 </body>  
 </html>
