@@ -5815,11 +5815,13 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
         💳 Pay My Balance
     </a>
 </div>
+            <div id="fan-favorite" aria-live="polite"></div>
 <!-- ===== EVENT PHOTOS (home) ===== -->
 <div class="photo-upload-card" style="width: 100%; max-width: 620px; margin: 10px auto 20px;">
     <h3>📸 Share an Event Photo</h3>
     <p>Capture a moment from the outing and share it with everyone.</p>
     <input type="text" id="photo-uploader-name" class="uploader-name-input" placeholder="Your name (optional)" maxlength="40">
+    <input type="text" id="photo-caption" class="uploader-name-input" placeholder="Add a caption (optional) — e.g. Hole 7 water ball 😂" maxlength="80">
     <input type="file" id="photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelected(this)">
     <button class="photo-upload-btn" onclick="document.getElementById('photo-upload-input').click()">📷 Choose / Take Photo</button>
     <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
@@ -14289,6 +14291,299 @@ if (typeof _originalSelectSponsorship === 'function') {
 })();
 </script>
 <!-- ===== END QR PHOTO POPUP ===== -->
+    <!-- ===== PHOTO LIKES & CAPTIONS ===== -->
+<style>
+  .gallery-tile .photo-like-btn {
+    position: absolute; top: 6px; right: 6px; z-index: 3;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 9px; border: none; border-radius: 50px; cursor: pointer;
+    background: rgba(0,0,0,0.55); color: #fff; font-size: 13px; font-weight: 700;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  .gallery-tile .photo-like-btn.liked { background: rgba(231,76,60,0.85); }
+  .gallery-tile .photo-like-btn.pop .heart { animation: bigRHeartPop 0.35s ease; }
+  @keyframes bigRHeartPop { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+  .gallery-tile .photo-meta {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: 18px 8px 6px; color: #f8fafc; font-size: 11px; line-height: 1.35;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  }
+  .gallery-tile .photo-meta .cap { font-size: 12px; font-weight: 600; display: block; }
+  .gallery-tile .photo-meta .by { color: #cbd5e1; }
+</style>
+<script>
+(function () {
+  var LIKED_KEY = 'bigR_likedPhotos';
+
+  function getLiked() {
+    try { return JSON.parse(localStorage.getItem(LIKED_KEY) || '[]'); } catch (e) { return []; }
+  }
+  function setLiked(list) {
+    try { localStorage.setItem(LIKED_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  // ---- Gallery tiles with heart button + caption ----
+  window.renderEventGallery = function (photos) {
+    var grid = document.getElementById('event-gallery-grid');
+    var empty = document.getElementById('event-gallery-empty');
+    if (!grid || !empty) return;
+
+    if (!photos || photos.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+
+    var liked = getLiked();
+    grid.innerHTML = photos.map(function (p) {
+      var isLiked = liked.indexOf(p.fileId) !== -1;
+      var likes = p.likes || 0;
+      var heart = p.rowIndex
+        ? '<button type="button" class="photo-like-btn' + (isLiked ? ' liked' : '') + '"' +
+            ' data-row="' + p.rowIndex + '" data-file="' + p.fileId + '"' +
+            ' aria-label="Like this photo" onclick="togglePhotoLike(event, this)">' +
+            '<span class="heart">' + (isLiked ? '❤️' : '🤍') + '</span>' +
+            '<span class="count">' + likes + '</span></button>'
+        : '';
+      var hasName = p.uploader && p.uploader !== 'Anonymous';
+      var meta = (p.caption || hasName)
+        ? '<div class="photo-meta">' +
+            (p.caption ? '<span class="cap">' + escapeTributeHtml(p.caption) + '</span>' : '') +
+            (hasName ? '<span class="by">📷 ' + escapeTributeHtml(p.uploader) + '</span>' : '') +
+          '</div>'
+        : '';
+      return '<div class="gallery-tile" onclick="openLightbox(\'' + p.url + '\')">' +
+               '<img src="' + p.thumbUrl + '" loading="lazy" alt="Event photo">' +
+               heart + meta +
+             '</div>';
+    }).join('');
+  };
+
+  // ---- Heart tap: like / unlike (one per photo per phone) ----
+  window.togglePhotoLike = function (e, btn) {
+    if (e) e.stopPropagation(); // don't open the full-screen view
+    if (btn.disabled) return;
+
+    var fileId = btn.getAttribute('data-file');
+    var rowIndex = parseInt(btn.getAttribute('data-row'), 10);
+    var countEl = btn.querySelector('.count');
+    var heartEl = btn.querySelector('.heart');
+    var liked = getLiked();
+    var wasLiked = liked.indexOf(fileId) !== -1;
+    var delta = wasLiked ? -1 : 1;
+    var oldCount = parseInt(countEl.textContent, 10) || 0;
+
+    // Update instantly on screen
+    countEl.textContent = Math.max(0, oldCount + delta);
+    btn.classList.toggle('liked', !wasLiked);
+    heartEl.textContent = wasLiked ? '🤍' : '❤️';
+    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
+    setLiked(wasLiked ? liked.filter(function (id) { return id !== fileId; }) : liked.concat([fileId]));
+    btn.disabled = true;
+
+    fetch(GOOGLE_APP_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'like_photo', rowIndex: rowIndex, fileId: fileId, delta: delta })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.result !== 'success') throw new Error(data.error || 'Failed');
+      countEl.textContent = data.likes;
+    })
+    .catch(function () {
+      // Undo on failure
+      countEl.textContent = oldCount;
+      btn.classList.toggle('liked', wasLiked);
+      heartEl.textContent = wasLiked ? '❤️' : '🤍';
+      setLiked(wasLiked ? getLiked().concat([fileId]) : getLiked().filter(function (id) { return id !== fileId; }));
+    })
+    .then(function () { btn.disabled = false; });
+  };
+
+  // ---- Upload with caption ----
+  window.handlePhotoSelected = async function (input) {
+    if (!input.files || input.files.length === 0) return;
+
+    var statusEl = document.getElementById('photo-upload-status');
+    var nameInput = document.getElementById('photo-uploader-name');
+    var capInput = document.getElementById('photo-caption');
+    var uploaderName = (nameInput && nameInput.value) ? nameInput.value.trim().slice(0, 40) : 'Anonymous';
+    var caption = (capInput && capInput.value) ? capInput.value.trim().slice(0, 80) : '';
+
+    var filesToProcess = Array.from(input.files).slice(0, 5);
+    if (input.files.length > 5) {
+      alert("You can only upload up to 5 photos at a time. Only the first 5 will be processed.");
+    }
+
+    var successCount = 0;
+    var failCount = 0;
+
+    for (var i = 0; i < filesToProcess.length; i++) {
+      var file = filesToProcess[i];
+      statusEl.innerHTML = '<span style="color:#f1c40f;">⚙️ Compressing & uploading ' + (i + 1) + ' of ' + filesToProcess.length + '...</span>';
+
+      if (file.size > 15 * 1024 * 1024) { failCount++; continue; }
+
+      await new Promise(function (resolve) {
+        compressPhotoForUpload(file, function (base64, mimeType) {
+          fetch(GOOGLE_APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'upload_photo',
+              imageBase64: base64,
+              mimeType: mimeType,
+              uploaderName: uploaderName,
+              caption: caption
+            })
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.result === 'success') successCount++; else failCount++;
+            resolve();
+          })
+          .catch(function () { failCount++; resolve(); });
+        });
+      });
+    }
+
+    input.value = '';
+
+    if (successCount > 0) {
+      statusEl.innerHTML = '<span style="color:#2ecc71;">Posted ' + successCount + ' photo(s) to the gallery!</span>';
+      if (capInput) capInput.value = '';
+      fetchGlobalData();
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ['#f39c12', '#f1c40f', '#ffffff'] });
+      }
+    } else {
+      statusEl.innerHTML = '';
+    }
+    if (failCount > 0) {
+      statusEl.innerHTML += '<br><span style="color:#e74c3c;">❌ ' + failCount + ' photo(s) failed (e.g., too large or network error).</span>';
+    }
+  };
+
+  // ---- QR popup (if installed): add a caption box and carry it over ----
+  document.addEventListener('DOMContentLoaded', function () {
+    var qppName = document.getElementById('qpp-name');
+    if (!qppName || document.getElementById('qpp-caption')) return;
+    qppName.insertAdjacentHTML('afterend',
+      '<input type="text" id="qpp-caption" placeholder="Add a caption (optional)" maxlength="80">');
+    var originalGo = window.qrPhotoGo;
+    if (typeof originalGo === 'function') {
+      window.qrPhotoGo = function () {
+        var qc = document.getElementById('qpp-caption');
+        var real = document.getElementById('photo-caption');
+        if (qc && real) real.value = qc.value.trim();
+        originalGo();
+      };
+    }
+  });
+})();
+</script>
+<!-- ===== END PHOTO LIKES & CAPTIONS ===== -->
+    <!-- ===== FAN FAVORITE PHOTO ===== -->
+<style>
+  #fan-favorite { display: none; width: 100%; max-width: 620px; margin: 10px auto 25px; }
+  #fan-favorite.show { display: block; animation: ffFadeIn 0.5s ease; }
+  @keyframes ffFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  #fan-favorite .ff-card {
+    position: relative; padding: 18px; border-radius: 18px; text-align: center;
+    background: linear-gradient(160deg, rgba(241,196,15,0.14), rgba(0,0,0,0.45));
+    border: 2px solid rgba(241,196,15,0.7);
+    box-shadow: 0 0 30px rgba(241,196,15,0.18), 0 10px 30px rgba(0,0,0,0.4);
+  }
+  #fan-favorite .ff-badge {
+    display: inline-block; margin-bottom: 12px; padding: 6px 16px; border-radius: 50px;
+    background: #f1c40f; color: #0f172a; font-size: 13px; font-weight: 800;
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  #fan-favorite .ff-photo {
+    width: 100%; max-height: 420px; object-fit: cover; display: block; cursor: pointer;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+  }
+  #fan-favorite .ff-caption { color: #f8fafc; font-size: 17px; font-weight: 700; margin: 14px 0 4px; }
+  #fan-favorite .ff-meta { color: #cbd5e1; font-size: 13px; margin-bottom: 14px; }
+  #fan-favorite .ff-like {
+    padding: 11px 24px; border-radius: 50px; cursor: pointer; font-size: 14px; font-weight: 700;
+    border: 1px solid rgba(231,76,60,0.7); background: rgba(231,76,60,0.12); color: #fff;
+  }
+  #fan-favorite .ff-like.liked { background: rgba(231,76,60,0.85); }
+</style>
+<script>
+(function () {
+  var MIN_LIKES = 1;          // photo needs at least this many likes to be featured
+  var photosCache = [];
+
+  function getLiked() {
+    try { return JSON.parse(localStorage.getItem('bigR_likedPhotos') || '[]'); } catch (e) { return []; }
+  }
+
+  function renderFanFavorite() {
+    var box = document.getElementById('fan-favorite');
+    if (!box) return;
+
+    // Most likes wins; on a tie, the earlier upload keeps the spot
+    var top = null;
+    photosCache.forEach(function (p) {
+      if ((p.likes || 0) >= MIN_LIKES && (!top || (p.likes || 0) >= (top.likes || 0))) top = p;
+    });
+    if (!top) { box.classList.remove('show'); box.innerHTML = ''; return; }
+
+    var likes = top.likes || 0;
+    var isLiked = getLiked().indexOf(top.fileId) !== -1;
+    var hasName = top.uploader && top.uploader !== 'Anonymous';
+
+    box.innerHTML =
+      '<div class="ff-card">' +
+        '<div class="ff-badge">🏆 Fan Favorite</div>' +
+        '<img class="ff-photo" src="' + top.url + '" alt="Fan favorite photo" onclick="openLightbox(\'' + top.url + '\')">' +
+        (top.caption ? '<div class="ff-caption">' + escapeTributeHtml(top.caption) + '</div>' : '<div style="height:12px"></div>') +
+        '<div class="ff-meta">' + (hasName ? '📷 ' + escapeTributeHtml(top.uploader) + ' &nbsp;·&nbsp; ' : '') +
+          '❤️ ' + likes + ' like' + (likes === 1 ? '' : 's') + '</div>' +
+        '<button type="button" class="ff-like' + (isLiked ? ' liked' : '') + '" data-file="' + top.fileId + '" onclick="fanFavoriteLike(this)">' +
+          (isLiked ? '❤️ You liked this' : '🤍 Like this photo') + '</button>' +
+      '</div>';
+    box.classList.add('show');
+  }
+
+  // The Fan Favorite button presses the same photo's heart in the gallery
+  window.fanFavoriteLike = function (btn) {
+    var fileId = btn.getAttribute('data-file');
+    var galleryBtn = document.querySelector('#event-gallery-grid .photo-like-btn[data-file="' + fileId + '"]');
+    if (galleryBtn) galleryBtn.click();
+  };
+
+  // Pick up the photo list every time the gallery is drawn
+  var originalRender = window.renderEventGallery;
+  window.renderEventGallery = function (photos) {
+    if (typeof originalRender === 'function') originalRender(photos);
+    photosCache = (photos || []).slice();
+    renderFanFavorite();
+  };
+
+  // Re-check the leader whenever anyone taps a heart
+  function syncFromGallery() {
+    document.querySelectorAll('#event-gallery-grid .photo-like-btn').forEach(function (b) {
+      var id = b.getAttribute('data-file');
+      var n = parseInt((b.querySelector('.count') || {}).textContent, 10);
+      photosCache.forEach(function (p) { if (p.fileId === id && !isNaN(n)) p.likes = n; });
+    });
+    renderFanFavorite();
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.photo-like-btn')) {
+      setTimeout(syncFromGallery, 50);    // instant update
+      setTimeout(syncFromGallery, 3000);  // after the server confirms
+    }
+  }, true);
+})();
+</script>
+<!-- ===== END FAN FAVORITE PHOTO ===== -->
 <!-- ===== SITE LOGO SWITCHER ===== -->
 <script>
 (function () {
