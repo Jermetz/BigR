@@ -5599,7 +5599,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
                 <label>SMS Text Blast</label>  
                      <div style="background: rgba(241,196,15,0.08); border: 1px solid rgba(241,196,15,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">  
                     <p style="font-size: 12px; color: #f1c40f; margin-bottom: 8px; font-weight: 600;">💰 Target unpaid registrants</p>  
-                    <button type="button" class="secondary-btn" onclick="loadUnpaidPhones()" style="width: 100%; font-size: 13px; padding: 10px;">📲 Load Unpaid Primary Contacts</button>  
+                    <button type="button" class="secondary-btn" onclick="loadUnpaidPhones()" style="width: 100%; font-size: 13px; padding: 10px;">📲 Load Unpaid Primary Contacts</button>
+                         <button type="button" class="secondary-btn" onclick="loadAllPhones()" style="width: 100%; font-size: 13px; padding: 10px; margin-top: 8px; background-color: #9b59b6;">📲 Load Everyone (with text consent)</button>
                     <p id="unpaid-phones-status" style="font-size: 11px; color: #94a3b8; margin-top: 8px; min-height: 14px; line-height: 1.5;"></p>  
                 </div>  
   
@@ -10449,7 +10450,37 @@ function submitAdminSponsor() {
             });  
         }  
   
-  
+          function loadAllPhones() {
+            const password = document.getElementById('admin-pass').value;
+            const statusEl = document.getElementById('unpaid-phones-status');
+            if (!password) { alert("Please enter the Admin Password."); return; }
+
+            statusEl.innerHTML = '<span style="color:#f1c40f;">Loading all contacts...</span>';
+
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_all_phones', password: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result !== 'success') throw new Error(data.error || 'Failed');
+                const list = data.phones || [];
+                if (list.length === 0) {
+                    statusEl.innerHTML = '<span style="color:#e74c3c;">No phone numbers with text consent found.</span>';
+                    return;
+                }
+                document.getElementById('admin-sms-numbers').value = list.join(', ');
+                let msg = `<span style="color:#2ecc71;">✅ Loaded ${list.length} number${list.length !== 1 ? 's' : ''} with text consent.</span>`;
+                if (data.noConsentCount > 0) {
+                    msg += `<br><span style="color:#e74c3c;">⚠️ ${data.noConsentCount} ${data.noConsentCount === 1 ? 'person has' : 'people have'} a number on file but did NOT give text consent — email them instead.</span>`;
+                }
+                statusEl.innerHTML = msg;
+            })
+            .catch(err => {
+                statusEl.innerHTML = '<span style="color:#e74c3c;">❌ ' + err.message + '</span>';
+            });
+        }
        let pendingSmsPayload = null;  
   
         function sendSmsBlast() {  
