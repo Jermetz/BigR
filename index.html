@@ -5827,7 +5827,8 @@ tr.lb-team-row:hover td { background: rgba(52, 152, 219, 0.1) !important; }
     <p id="photo-upload-status" style="margin-top: 12px; min-height: 18px; font-size: 13px;"></p>
     <p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Up to 5 photos at a time. They appear in the gallery below right away.</p>
 </div>
-<div class="event-gallery-section" style="width: 100%; max-width: 720px; margin: 0 auto 35px; padding-top: 0; border-top: none;">
+ <div id="event-gallery-section" class="event-gallery-section" style="width: 100%; max-width: 720px;
+margin: 0 auto 35px; padding-top: 0; border-top: none;">
     <h3>📷 Event Gallery</h3>
     <div id="event-gallery-grid" class="event-gallery-grid"></div>
     <div id="event-gallery-empty" class="gallery-empty" style="display: none;">No event photos yet — be the first to share one above.</div>
@@ -14247,14 +14248,29 @@ if (typeof _originalSelectSponsorship === 'function') {
 </div>
 <script>
 (function () {
-  function scrollToEl(id) {
-    var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    function scrollToEl(id) {
+    var cancelled = false;
+    function stop() { cancelled = true; }
+    window.addEventListener('touchstart', stop, { once: true, passive: true });
+    window.addEventListener('wheel', stop, { once: true, passive: true });
+    function go() {
+      if (cancelled) return;
+      var el = document.getElementById(id);
+      if (!el) return;
+      var top = el.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo(0, Math.max(0, top));
+    }
+    go();
+    setTimeout(go, 400);
+    setTimeout(go, 1200);
+    setTimeout(go, 2500);
   }
+
 
   window.closeQrPhotoPopup = function (goToGallery) {
     document.getElementById('qr-photo-popup').classList.remove('show');
-    if (goToGallery) setTimeout(function () { scrollToEl('event-gallery-grid'); }, 150);
+    if (goToGallery) setTimeout(function () { scrollToEl('event-gallery-section')
+; }, 150);
   };
 
   window.qrPhotoGo = function () {
